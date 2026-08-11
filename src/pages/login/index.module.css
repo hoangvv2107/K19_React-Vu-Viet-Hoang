@@ -1,0 +1,41 @@
+.login_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  background: #f7f7f7;
+}
+.login_container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 32px;
+  background-color: #fff;
+  border-radius: 32px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
+  color: #263a4d;
+}
+.logo_wrapper {
+  width: 100px;
+  display: block;
+  margin: 0 auto;
+}
+.logo {
+  width: 100px;
+  display: block;
+}
+.header_title {
+  color: #263a4d;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
+.option_auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
