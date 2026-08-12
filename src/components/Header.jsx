@@ -17,6 +17,7 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 const Header = () => {
   return (
     <AppBar
+      position="sticky"
       elevation={0}
       sx={{
         display: "flex",
