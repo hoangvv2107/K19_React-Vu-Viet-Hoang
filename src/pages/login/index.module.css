@@ -3,9 +3,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh; /* Đổi thành min-height */
   background: #f7f7f7;
+  padding: 16px; /* Thêm khoảng cách hai bên cho mobile */
 }
+
 .login_container {
   display: flex;
   justify-content: center;
@@ -15,16 +17,28 @@
   border-radius: 32px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
   color: #263a4d;
+  width: 100%; /* Giúp container co giãn linh hoạt */
 }
+
+/* Responsive cho màn hình điện thoại (nhỏ hơn 600px) */
+@media (max-width: 600px) {
+  .login_container {
+    padding: 24px 16px; /* Giảm padding trên mobile */
+    border-radius: 24px; /* Bo góc nhỏ lại một chút */
+  }
+}
+
 .logo_wrapper {
   width: 100px;
   display: block;
   margin: 0 auto;
 }
+
 .logo {
   width: 100px;
   display: block;
 }
+
 .header_title {
   color: #263a4d;
   font-size: 16px;

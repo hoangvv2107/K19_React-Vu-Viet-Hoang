@@ -1,29 +1,31 @@
 import {
   Box,
   Button,
-  Container,
   IconButton,
   InputAdornment,
   Link,
   TextField,
   Typography,
 } from "@mui/material";
-import logoTopCV from "../../assets/topcv-logo.webp";
+import logoTopCV from "../../assets/topcv-logo-login.webp";
 import styles from "./index.module.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
+
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
   return (
     <Box className={styles.login_wrapper}>
       <Box
         className={styles.login_container}
-        sx={{ width: "648px", maxWidth: "100%" }}
+        // Responsive width: mobile dùng full 100%, từ màn sm trở lên dùng 648px
+        sx={{ width: { xs: "100%", sm: "648px" }, maxWidth: "100%" }}
       >
         <Link
           href="#"
@@ -134,8 +136,10 @@ const LoginPage = () => {
             textTransform: "none",
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             gap: "8px",
-            padding: "6px 12px",
+            padding: "8px 12px", // Tăng xíu padding cho dễ bấm trên mobile
+            mt: 1, // Thêm margin top để tách biệt với ô password
           }}
         >
           Đăng nhập <ArrowForwardIcon sx={{ fontSize: "16px" }} />
@@ -167,23 +171,26 @@ const LoginPage = () => {
 
         <Typography
           sx={{
-            fontSize: "12px",
-            padding: "6px 10px",
+            fontSize: { xs: "11px", sm: "12px" }, // Giữ nguyên 12px cho PC, 11px cho mobile
+            padding: "8px 10px",
             background: "#f2f4f5",
             borderRadius: "999px",
-            mt: "10px",
+            mt: "16px",
+            textAlign: "center", // Căn giữa nội dung khi rớt dòng
+            lineHeight: 1.5,
           }}
         >
           Bạn gặp khó khăn khi tạo tài khoản? Vui lòng gọi tới số
           <Link
-            href="tel:1900 068 889"
+            href="tel:1900068889"
             color="success"
             sx={{
               fontSize: "inherit",
               fontWeight: "500",
               textDecoration: "none",
-              mx: "2px",
+              mx: "4px",
               "&:hover": { textDecoration: "underline" },
+              display: "inline-block", // Tránh link bị cắt đôi
             }}
           >
             1900 068 889 | Nhánh 2
@@ -191,10 +198,21 @@ const LoginPage = () => {
           (giờ hành chính).
         </Typography>
       </Box>
-      <Typography sx={{ color: "#bfbfbf", margin: "60px 0 24px" }}>
+
+      {/* Footer Text */}
+      <Typography
+        sx={{
+          color: "#bfbfbf",
+          // Responsive margin: giảm khoảng cách m trên mobile
+          margin: { xs: "24px 0 16px", sm: "60px 0 24px" },
+          fontSize: { xs: "12px", sm: "14px" },
+          textAlign: "center",
+        }}
+      >
         © 2016. All Rights Reserved. TopCV Vietnam JSC.
       </Typography>
     </Box>
   );
 };
+
 export default LoginPage;
