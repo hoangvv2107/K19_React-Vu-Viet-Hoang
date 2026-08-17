@@ -51,14 +51,14 @@ const CreateCV = () => {
         Ảnh 3x4
       </div>
       <div style="flex: 1;">
-        <h1 style="margin: 0; color: #212f3f; font-size: 28px;">Vũ Việt Hoàng</h1>
+        <h1 style="margin: 0; color: #212f3f; font-size: 28px;">Họ và Tên</h1>
         <p style="margin: 5px 0 15px 0; color: #64748b; font-size: 16px;">Vị trí ứng tuyển</p>
         <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #4b5563; line-height: 1.8;">
-          <li><strong>Ngày sinh:</strong> 21/07/2006</li>
-          <li><strong>Giới tính:</strong> Nam</li>
+          <li><strong>Ngày sinh:</strong> DD/MM/YYYY</li>
+          <li><strong>Giới tính:</strong> Nam/Nữ</li>
           <li><strong>Số điện thoại:</strong> 0123 456 789</li>
-          <li><strong>Email:</strong> hoangvv.2107@gmail.com</li>
-          <li><strong>Website:</strong> github.com/hoangvv2107</li>
+          <li><strong>Email:</strong> email@example.com</li>
+          <li><strong>Website:</strong> facebook.com/TopCV.vn</li>
           <li><strong>Địa chỉ:</strong> Quận A, Thành phố Hà Nội</li>
         </ul>
       </div>
@@ -89,6 +89,52 @@ const CreateCV = () => {
         <div style="color: #64748b; margin-top: 5px;">Mô tả kinh nghiệm làm việc của bạn</div>
       </div>
     </div>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">HOẠT ĐỘNG</h3>
+    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
+      <div style="width: 150px; color: #64748b;">Bắt đầu - Kết thúc</div>
+      <div style="flex: 1;">
+        <strong style="color: #212f3f;">Tên tổ chức</strong>
+        <div style="color: #4b5563;">Vị trí của bạn</div>
+        <div style="color: #64748b; margin-top: 5px;">Mô tả hoạt động</div>
+      </div>
+    </div>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">CHỨNG CHỈ</h3>
+    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
+      <div style="width: 150px; color: #64748b;">Thời gian</div>
+      <div style="flex: 1;">
+        <div style="color: #4b5563;">Tên chứng chỉ</div>
+      </div>
+    </div>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">DANH HIỆU VÀ GIẢI THƯỞNG</h3>
+    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
+      <div style="width: 150px; color: #64748b;">Thời gian</div>
+      <div style="flex: 1;">
+        <div style="color: #4b5563;">Tên giải thưởng</div>
+      </div>
+    </div>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">KỸ NĂNG</h3>
+    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
+      <div style="width: 150px; color: #64748b;">Tên kỹ năng</div>
+      <div style="flex: 1;">
+        <div style="color: #4b5563;">Mô tả kỹ năng</div>
+      </div>
+    </div>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">NGƯỜI GIỚI THIỆU</h3>
+    <p style="color: #64748b; font-size: 14px; margin-bottom: 10px;">Thông tin người tham chiếu bao gồm tên, chức vụ và thông tin liên hệ</p>
+
+    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
+    <h3 style="color: #212f3f; margin-bottom: 10px;">SỞ THÍCH</h3>
+    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Điền các sở thích của bạn</p>
   `;
 
   const [editorData, setEditorData] = useState(initialCVData);
@@ -195,6 +241,7 @@ const CreateCV = () => {
               overflow: "auto",
               display: "flex",
               justifyContent: "center",
+              alignItems: "flex-start",
               py: 4,
             }}
           >
@@ -203,6 +250,7 @@ const CreateCV = () => {
               sx={{
                 width: "210mm", // Chuẩn chiều ngang A4
                 minHeight: "297mm", // Chuẩn chiều dọc A4
+                height: "max-content",
                 bgcolor: "#fff",
                 boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 p: "40px",

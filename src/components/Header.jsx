@@ -47,45 +47,8 @@ const Header = () => {
             gap: 3,
           }}
         >
-          <NavItem title="Việc làm" />
-          <NavItem title="Tạo CV" />
-          <NavItem title="Công cụ" />
-          <NavItem title="Cẩm nang nghề nghiệp" />
-
-          {/* Mục TopCV Pro riêng biệt vì không có icon mũi tên và có badge */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              cursor: "pointer",
-              padding: "26px 16px",
-              "&:hover": {
-                "& .MuiTypography-root ": {
-                  color: "#00b14f",
-                },
-              },
-            }}
-          >
-            <Typography
-              sx={{ fontSize: "14px", fontWeight: 600, color: "#212f3f" }}
-            >
-              TopCV
-            </Typography>
-            <Box
-              sx={{
-                background: "linear-gradient(90deg, #ffb543, #ff8c00)",
-                color: "#fff",
-                px: 1,
-                py: 0.25,
-                borderRadius: "4px",
-                fontSize: "12px",
-                fontWeight: "bold",
-              }}
-            >
-              Pro
-            </Box>
-          </Box>
+          <NavItem title="Việc làm" to={"/"} />
+          <NavItem title="Tạo CV" to={"/tao-cv"} />
         </Box>
       </Box>
 
@@ -180,7 +143,7 @@ const Header = () => {
             Bạn là nhà tuyển dụng?
           </Typography>
           <Link
-            href="#"
+            href="/dang-tuyen"
             sx={{
               textDecoration: "none",
               display: "flex",

@@ -17,6 +17,7 @@ import HomePage from "./pages/home";
 import JobInfo from "./pages/jobInfo";
 import CompanyDetail from "./pages/CompanyDetail";
 import CreateCV from "./pages/createCV/CreateCV";
+import PostJob from "./pages/PostJob";
 
 const theme = createTheme({
   palette: {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
   {
     path: "/tao-cv",
     element: <CreateCV />,
+  },
+  {
+    path: "/dang-tuyen",
+    element: <PostJob />,
   },
 ]);
 

@@ -8,6 +8,7 @@ import {
   Stack,
   Chip,
   Grid,
+  Link,
 } from "@mui/material";
 
 // === Import Icons ===
@@ -460,7 +461,13 @@ const JobDetail = () => {
                     "&:hover": { bgcolor: "#f7fffb" },
                   }}
                 >
-                  Xem trang công ty ↗
+                  <Link
+                    href="/company-detail"
+                    underline="none"
+                    sx={{ color: "inherit" }}
+                  >
+                    Xem trang công ty
+                  </Link>
                 </Typography>
               </Box>
 

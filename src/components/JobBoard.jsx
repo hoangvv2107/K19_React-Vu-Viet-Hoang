@@ -6,6 +6,7 @@ import {
   IconButton,
   Avatar,
   Skeleton,
+  Link,
 } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -18,7 +19,6 @@ import { styled } from "@mui/material/styles";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useState } from "react";
-
 const JobHoverTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -275,7 +275,13 @@ const JobBoard = ({ isLoading, jobs }) => {
                             "&:hover": { color: "#00b14f" },
                           }}
                         >
-                          {j.title}
+                          <Link
+                            href="/job-info"
+                            underline="none"
+                            sx={{ color: "inherit" }}
+                          >
+                            {j.title}
+                          </Link>
                         </Typography>
                       </JobHoverTooltip>
                       <Typography

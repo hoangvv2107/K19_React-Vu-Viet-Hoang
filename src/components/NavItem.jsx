@@ -1,8 +1,15 @@
 import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-const NavItem = ({ title }) => (
+import { Link } from "react-router";
+
+const NavItem = (
+  { title, to }, // 2. Thêm prop 'to' để nhận đường dẫn
+) => (
   <Box
+    component={Link} // 3. Ép cái Box này hoạt động như một component Link
+    to={to} // 4. Gắn đường dẫn vào
     sx={{
+      textDecoration: "none", // 5. Thêm dòng này để xóa gạch chân mặc định của thẻ <a>
       display: "flex",
       alignItems: "center",
       cursor: "pointer",
@@ -35,4 +42,5 @@ const NavItem = ({ title }) => (
     />
   </Box>
 );
+
 export default NavItem;
