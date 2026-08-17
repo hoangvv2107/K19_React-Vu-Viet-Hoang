@@ -15,6 +15,8 @@ import "@fontsource/inter/700.css";
 import LoginPage from "./pages/login";
 import HomePage from "./pages/home";
 import JobInfo from "./pages/jobInfo";
+import CompanyDetail from "./pages/CompanyDetail";
+import CreateCV from "./pages/createCV/CreateCV";
 
 const theme = createTheme({
   palette: {
@@ -43,9 +45,18 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
-  },{
+  },
+  {
     path: "/job-info",
     element: <JobInfo />,
+  },
+  {
+    path: "/company-detail",
+    element: <CompanyDetail />,
+  },
+  {
+    path: "/tao-cv",
+    element: <CreateCV />,
   },
 ]);
 
