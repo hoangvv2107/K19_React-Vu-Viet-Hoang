@@ -14,6 +14,7 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/700.css";
 import LoginPage from "./pages/login";
 import HomePage from "./pages/home";
+import JobInfo from "./pages/jobInfo";
 
 const theme = createTheme({
   palette: {
@@ -42,6 +43,9 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },{
+    path: "/job-info",
+    element: <JobInfo />,
   },
 ]);
 
