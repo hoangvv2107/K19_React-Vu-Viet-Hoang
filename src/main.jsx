@@ -18,6 +18,7 @@ import JobInfo from "./pages/jobInfo";
 import CompanyDetail from "./pages/CompanyDetail";
 import CreateCV from "./pages/createCV/CreateCV";
 import PostJob from "./pages/PostJob";
+import RegisterPage from "./pages/register";
 
 const theme = createTheme({
   palette: {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/job-info",

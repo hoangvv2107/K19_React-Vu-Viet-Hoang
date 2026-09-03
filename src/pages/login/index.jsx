@@ -157,7 +157,7 @@ const LoginPage = () => {
         >
           <Typography variant="inherit">Bạn chưa có tài khoản?</Typography>
           <Link
-            href="#"
+            href="/register"
             color="success"
             sx={{
               textDecoration: "none",
