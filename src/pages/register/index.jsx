@@ -7,18 +7,25 @@ import {
   TextField,
   Typography,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import logoTopCV from "../../assets/topcv-logo-login.webp";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
+import api from "../../plugins/axios";
+import NotificationDialog from "../../components/NotificationDialog";
+import { useNavigate } from "react-router";
 
 const RegisterPage = () => {
+  let navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // 1. Quản lý dữ liệu người dùng nhập
   const [userData, setUserData] = useState({
     email: "",
     password: "",
@@ -26,7 +33,6 @@ const RegisterPage = () => {
     confirm_password: "",
   });
 
-  // 2. Quản lý trạng thái lỗi của từng trường (true = có lỗi)
   const [errors, setErrors] = useState({
     full_name: false,
     email: false,
@@ -34,10 +40,15 @@ const RegisterPage = () => {
     confirm_password: false,
   });
 
-  // 3. Quản lý lỗi điều khoản và lỗi chung
   const [isAgreement, setIsAgreement] = useState(false);
   const [agreementError, setAgreementError] = useState(false);
   const [generalError, setGeneralError] = useState(false);
+  const [passwordMatchError, setPasswordMatchError] = useState(false);
+
+  // 2. Tạo State quản lý trạng thái của Popup
+  const [openPopup, setOpenPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false); // true = Xanh (Thành công), false = Đỏ (Lỗi)
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
@@ -48,7 +59,6 @@ const RegisterPage = () => {
     setAgreementError(false);
   };
 
-  // Hàm cập nhật dữ liệu khi người dùng gõ phím
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -57,49 +67,83 @@ const RegisterPage = () => {
     });
     if (errors[name]) setErrors({ ...errors, [name]: false });
     if (generalError) setGeneralError(false);
+    if (
+      passwordMatchError &&
+      (name === "password" || name === "confirm_password")
+    ) {
+      setPasswordMatchError(false);
+    }
   };
 
   const handleRegister = async () => {
-    // === PHẦN BẠN SẼ TỰ VIẾT LOGIC VALIDATE Ở ĐÂY ===
-    // Bước 1: Tạo một object lưu trạng thái lỗi mới
-    // Bước 2: Kiểm tra từng trường trong userData, nếu rỗng thì đánh dấu là true
-    // Bước 3: Cập nhật state errors
-    // Bước 4: Kiểm tra isAgreement, nếu chưa tích thì setAgreementError(true)
-    // Bước 5: Kiểm tra xem có bất kỳ lỗi nào không. Nếu có trường rỗng, setGeneralError(true).
-    // Bước 6: Nếu tất cả hợp lệ, tiến hành gọi API.
     let isOk = true;
     const newErrors = { ...errors };
     let hasEmptyField = false;
 
+    // Check rỗng
     for (const data in userData) {
       if (!Object.hasOwn(userData, data)) continue;
-
       const ud = userData[data];
       if (ud.trim() === "") {
         newErrors[data] = true;
-        if (isOk) isOk = false;
-        if (!hasEmptyField) hasEmptyField = true;
+        isOk = false;
+        hasEmptyField = true;
       } else newErrors[data] = false;
     }
-    setErrors(newErrors);
-    setGeneralError(hasEmptyField);
-    if (!isAgreement) {
-      setAgreementError(true);
-      if (isOk) isOk = false;
+
+    // Check mật khẩu khớp
+    let isPasswordMismatch = false;
+    if (
+      userData.password.trim() !== "" &&
+      userData.confirm_password.trim() !== "" &&
+      userData.password !== userData.confirm_password
+    ) {
+      newErrors.password = true;
+      newErrors.confirm_password = true;
+      isPasswordMismatch = true;
+      isOk = false;
     }
 
+    setErrors(newErrors);
+    setGeneralError(hasEmptyField);
+    setPasswordMatchError(isPasswordMismatch);
+
+    // Check điều khoản
+    if (!isAgreement) {
+      setAgreementError(true);
+      isOk = false;
+    }
+
+    // Gọi API
     if (isOk) {
-      // Logic call API
       const registerData = {
         email: userData.email,
         password: userData.password,
         full_name: userData.full_name,
       };
+
       try {
         await api.post("/api/v1/auth/register", registerData);
+        setIsSuccessPopup(true);
+        setPopupMessage("Đăng ký tài khoản thành công!");
+        setOpenPopup(true);
       } catch (error) {
-        alert("Da xay ra loi");
+        const errorMsg =
+          error.response?.data?.message ||
+          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.";
+        setIsSuccessPopup(false);
+        setPopupMessage(errorMsg);
+        setOpenPopup(true);
       }
+    }
+  };
+
+  // Hàm đóng Popup
+  const handleClosePopup = () => {
+    setOpenPopup(false);
+    // Nếu thành công thì khi đóng popup có thể điều hướng sang trang đăng nhập
+    if (isSuccessPopup) {
+      navigate("/");
     }
   };
 
@@ -160,6 +204,8 @@ const RegisterPage = () => {
           </Typography>
         </Link>
 
+        {/* --- Các thẻ input, mật khẩu, xác nhận mật khẩu, điều khoản giữ nguyên như cũ --- */}
+
         {/* Họ và tên */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
@@ -173,10 +219,10 @@ const RegisterPage = () => {
             Họ và tên
           </Typography>
           <TextField
-            name="full_name" // Bắt buộc có name để handleChange hoạt động
+            name="full_name"
             value={userData.full_name}
             onChange={handleChange}
-            error={errors.full_name} // Đỏ viền nếu true
+            error={errors.full_name}
             placeholder="Nhập họ tên"
             id="fullname-input"
             variant="outlined"
@@ -306,6 +352,15 @@ const RegisterPage = () => {
               },
             }}
           />
+          {passwordMatchError && (
+            <Typography
+              color="error"
+              variant="body2"
+              sx={{ fontSize: "13px", mt: 0.25 }}
+            >
+              Mật khẩu đang không khớp
+            </Typography>
+          )}
         </Box>
 
         {/* Checkbox Điều khoản */}
@@ -350,8 +405,6 @@ const RegisterPage = () => {
               của TopCV (Bắt buộc)
             </Typography>
           </Box>
-
-          {/* Cảnh báo lỗi điều khoản */}
           {agreementError && (
             <Typography
               color="error"
@@ -363,7 +416,6 @@ const RegisterPage = () => {
           )}
         </Box>
 
-        {/* Cảnh báo lỗi chung */}
         {generalError && (
           <Typography
             color="error"
@@ -395,7 +447,6 @@ const RegisterPage = () => {
           Đăng ký <ArrowForwardIcon sx={{ fontSize: "16px" }} />
         </Button>
 
-        {/* Các phần khác giữ nguyên... */}
         <Box
           sx={{
             display: "flex",
@@ -421,6 +472,14 @@ const RegisterPage = () => {
           </Link>
         </Box>
       </Box>
+
+      {/* 4. Đặt Component Dialog ra ngoài cùng của khối giao diện chính */}
+      <NotificationDialog
+        open={openPopup}
+        onClose={handleClosePopup}
+        message={popupMessage}
+        isSuccess={isSuccessPopup}
+      />
     </Box>
   );
 };
