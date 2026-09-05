@@ -17,29 +17,92 @@ import { useState } from "react";
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // 1. Quản lý dữ liệu người dùng nhập
   const [userData, setUserData] = useState({
-    email: null,
-    password: null,
-    full_name: null,
+    email: "",
+    password: "",
+    full_name: "",
+    confirm_password: "",
   });
+
+  // 2. Quản lý trạng thái lỗi của từng trường (true = có lỗi)
+  const [errors, setErrors] = useState({
+    full_name: false,
+    email: false,
+    password: false,
+    confirm_password: false,
+  });
+
+  // 3. Quản lý lỗi điều khoản và lỗi chung
   const [isAgreement, setIsAgreement] = useState(false);
-  const handleClickIsAgreement = () => {
-    setIsAgreement(!isAgreement);
-  };
+  const [agreementError, setAgreementError] = useState(false);
+  const [generalError, setGeneralError] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () => {
+  const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
+
+  const handleClickIsAgreement = () => {
+    setIsAgreement(!isAgreement);
+    setAgreementError(false);
   };
 
-  const handleRegister = () => {
+  // Hàm cập nhật dữ liệu khi người dùng gõ phím
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({
+      ...userData,
+      [name]: value,
+    });
+    if (errors[name]) setErrors({ ...errors, [name]: false });
+    if (generalError) setGeneralError(false);
+  };
+
+  const handleRegister = async () => {
+    // === PHẦN BẠN SẼ TỰ VIẾT LOGIC VALIDATE Ở ĐÂY ===
+    // Bước 1: Tạo một object lưu trạng thái lỗi mới
+    // Bước 2: Kiểm tra từng trường trong userData, nếu rỗng thì đánh dấu là true
+    // Bước 3: Cập nhật state errors
+    // Bước 4: Kiểm tra isAgreement, nếu chưa tích thì setAgreementError(true)
+    // Bước 5: Kiểm tra xem có bất kỳ lỗi nào không. Nếu có trường rỗng, setGeneralError(true).
+    // Bước 6: Nếu tất cả hợp lệ, tiến hành gọi API.
+    let isOk = true;
+    const newErrors = { ...errors };
+    let hasEmptyField = false;
+
+    for (const data in userData) {
+      if (!Object.hasOwn(userData, data)) continue;
+
+      const ud = userData[data];
+      if (ud.trim() === "") {
+        newErrors[data] = true;
+        if (isOk) isOk = false;
+        if (!hasEmptyField) hasEmptyField = true;
+      } else newErrors[data] = false;
+    }
+    setErrors(newErrors);
+    setGeneralError(hasEmptyField);
     if (!isAgreement) {
-      alert(
-        "Bạn cần đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư để tiếp tục.",
-      );
-      return;
+      setAgreementError(true);
+      if (isOk) isOk = false;
+    }
+
+    if (isOk) {
+      // Logic call API
+      const registerData = {
+        email: userData.email,
+        password: userData.password,
+        full_name: userData.full_name,
+      };
+      try {
+        await api.post("/api/v1/auth/register", registerData);
+      } catch (error) {
+        alert("Da xay ra loi");
+      }
     }
   };
+
   return (
     <Box
       sx={{
@@ -48,7 +111,7 @@ const RegisterPage = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#f4f5f5", // Nền xám nhạt toàn trang
+        bgcolor: "#f4f5f5",
         py: 4,
         px: 2,
       }}
@@ -60,7 +123,7 @@ const RegisterPage = () => {
           bgcolor: "#ffffff",
           borderRadius: "12px",
           p: { xs: 3, sm: 5 },
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)", // Đổ bóng mờ cho card
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
         }}
       >
         <Link
@@ -97,7 +160,7 @@ const RegisterPage = () => {
           </Typography>
         </Link>
 
-        {/* Họ và tên (full_name) */}
+        {/* Họ và tên */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -110,6 +173,10 @@ const RegisterPage = () => {
             Họ và tên
           </Typography>
           <TextField
+            name="full_name" // Bắt buộc có name để handleChange hoạt động
+            value={userData.full_name}
+            onChange={handleChange}
+            error={errors.full_name} // Đỏ viền nếu true
             placeholder="Nhập họ tên"
             id="fullname-input"
             variant="outlined"
@@ -117,10 +184,7 @@ const RegisterPage = () => {
             size="small"
             color="success"
             sx={{
-              "& .MuiInputBase-input": {
-                fontSize: "14px",
-                color: "#263a4d",
-              },
+              "& .MuiInputBase-input": { fontSize: "14px", color: "#263a4d" },
             }}
           />
         </Box>
@@ -138,6 +202,10 @@ const RegisterPage = () => {
             Email
           </Typography>
           <TextField
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+            error={errors.email}
             placeholder="Nhập email"
             id="email-input"
             variant="outlined"
@@ -145,15 +213,12 @@ const RegisterPage = () => {
             size="small"
             color="success"
             sx={{
-              "& .MuiInputBase-input": {
-                fontSize: "14px",
-                color: "#263a4d",
-              },
+              "& .MuiInputBase-input": { fontSize: "14px", color: "#263a4d" },
             }}
           />
         </Box>
 
-        {/* Mật khẩu (password) */}
+        {/* Mật khẩu */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -166,6 +231,10 @@ const RegisterPage = () => {
             Mật khẩu
           </Typography>
           <TextField
+            name="password"
+            value={userData.password}
+            onChange={handleChange}
+            error={errors.password}
             placeholder="Nhập mật khẩu"
             id="password-input"
             variant="outlined"
@@ -174,10 +243,7 @@ const RegisterPage = () => {
             color="success"
             type={showPassword ? "text" : "password"}
             sx={{
-              "& .MuiInputBase-input": {
-                fontSize: "14px",
-                color: "#263a4d",
-              },
+              "& .MuiInputBase-input": { fontSize: "14px", color: "#263a4d" },
             }}
             slotProps={{
               input: {
@@ -197,7 +263,7 @@ const RegisterPage = () => {
           />
         </Box>
 
-        {/* Xác nhận mật khẩu (UI Only - Validate trước khi submit JSON) */}
+        {/* Xác nhận mật khẩu */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -210,6 +276,10 @@ const RegisterPage = () => {
             Xác nhận mật khẩu
           </Typography>
           <TextField
+            name="confirm_password"
+            value={userData.confirm_password}
+            onChange={handleChange}
+            error={errors.confirm_password}
             placeholder="Nhập lại mật khẩu"
             id="confirm-password-input"
             variant="outlined"
@@ -218,10 +288,7 @@ const RegisterPage = () => {
             color="success"
             type={showConfirmPassword ? "text" : "password"}
             sx={{
-              "& .MuiInputBase-input": {
-                fontSize: "14px",
-                color: "#263a4d",
-              },
+              "& .MuiInputBase-input": { fontSize: "14px", color: "#263a4d" },
             }}
             slotProps={{
               input: {
@@ -242,57 +309,74 @@ const RegisterPage = () => {
         </Box>
 
         {/* Checkbox Điều khoản */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 1,
-            mt: 1,
-            mb: 2,
-          }}
-        >
-          <Checkbox
-            size="small"
-            id="agreement"
-            color="success"
-            checked={isAgreement}
-            onClick={handleClickIsAgreement}
-            sx={{ padding: 0, mt: "2px" }}
-          />
-          <Typography
-            variant="body2"
-            sx={{ fontSize: "13px", color: "#666", lineHeight: 1.5 }}
-          >
-            <label htmlFor="agreement" style={{ cursor: "pointer" }}>
-              Tôi đã đọc và đồng ý với{" "}
-            </label>
-            <Link
-              href="#"
+        <Box sx={{ mt: 1, mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+            <Checkbox
+              size="small"
+              id="agreement"
               color="success"
-              sx={{
-                textDecoration: "none",
-                "&:hover": { textDecoration: "underline" },
-              }}
+              checked={isAgreement}
+              onChange={handleClickIsAgreement}
+              sx={{ padding: 0, mt: "2px" }}
+            />
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "13px", color: "#666", lineHeight: 1.5 }}
             >
-              Điều khoản dịch vụ
-            </Link>{" "}
-            và{" "}
-            <Link
-              href="#"
-              color="success"
-              sx={{
-                textDecoration: "none",
-                "&:hover": { textDecoration: "underline" },
-              }}
+              <label htmlFor="agreement" style={{ cursor: "pointer" }}>
+                Tôi đã đọc và đồng ý với{" "}
+              </label>
+              <Link
+                href="#"
+                color="success"
+                sx={{
+                  textDecoration: "none",
+                  "&:hover": { textDecoration: "underline" },
+                }}
+              >
+                Điều khoản dịch vụ
+              </Link>{" "}
+              và{" "}
+              <Link
+                href="#"
+                color="success"
+                sx={{
+                  textDecoration: "none",
+                  "&:hover": { textDecoration: "underline" },
+                }}
+              >
+                Chính sách quyền riêng tư
+              </Link>{" "}
+              của TopCV (Bắt buộc)
+            </Typography>
+          </Box>
+
+          {/* Cảnh báo lỗi điều khoản */}
+          {agreementError && (
+            <Typography
+              color="error"
+              variant="body2"
+              sx={{ fontSize: "13px", ml: 3.5, mt: 0.5 }}
             >
-              Chính sách quyền riêng tư
-            </Link>{" "}
-            của TopCV (Bắt buộc)
-          </Typography>
+              Vui lòng xác nhận điều khoản để tiếp tục
+            </Typography>
+          )}
         </Box>
+
+        {/* Cảnh báo lỗi chung */}
+        {generalError && (
+          <Typography
+            color="error"
+            variant="body2"
+            sx={{ fontSize: "13px", mb: 1, textAlign: "center" }}
+          >
+            Hãy nhập đủ thông tin
+          </Typography>
+        )}
 
         {/* Nút Submit */}
         <Button
+          onClick={handleRegister}
           variant="contained"
           sx={{
             borderRadius: "999px",
@@ -303,7 +387,6 @@ const RegisterPage = () => {
             justifyContent: "center",
             gap: "8px",
             padding: "10px 12px",
-            mt: 1,
             width: "100%",
             fontSize: "15px",
             "&:hover": { background: "#009643" },
@@ -312,7 +395,7 @@ const RegisterPage = () => {
           Đăng ký <ArrowForwardIcon sx={{ fontSize: "16px" }} />
         </Button>
 
-        {/* Link chuyển sang Đăng nhập */}
+        {/* Các phần khác giữ nguyên... */}
         <Box
           sx={{
             display: "flex",
@@ -337,49 +420,7 @@ const RegisterPage = () => {
             Đăng nhập ngay
           </Link>
         </Box>
-
-        {/* Support Box */}
-        <Typography
-          sx={{
-            fontSize: { xs: "11px", sm: "12px" },
-            padding: "8px 10px",
-            background: "#f2f4f5",
-            borderRadius: "999px",
-            mt: "16px",
-            textAlign: "center",
-            lineHeight: 1.5,
-          }}
-        >
-          Bạn gặp khó khăn khi tạo tài khoản? Vui lòng gọi tới số
-          <Link
-            href="tel:1900068889"
-            color="success"
-            sx={{
-              fontSize: "inherit",
-              fontWeight: "500",
-              textDecoration: "none",
-              mx: "4px",
-              "&:hover": { textDecoration: "underline" },
-              display: "inline-block",
-            }}
-          >
-            1900 068 889 | Nhánh 2
-          </Link>
-          (giờ hành chính).
-        </Typography>
       </Box>
-
-      {/* Footer Text */}
-      <Typography
-        sx={{
-          color: "#bfbfbf",
-          margin: { xs: "24px 0 16px", sm: "40px 0 24px" },
-          fontSize: { xs: "12px", sm: "14px" },
-          textAlign: "center",
-        }}
-      >
-        © 2016. All Rights Reserved. TopCV Vietnam JSC.
-      </Typography>
     </Box>
   );
 };
