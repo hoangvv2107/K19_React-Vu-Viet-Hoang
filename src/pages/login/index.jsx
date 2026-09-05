@@ -12,12 +12,71 @@ import styles from "./index.module.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../../plugins/axios";
+import NotificationDialog from "../../components/NotificationDialog";
+import { useNavigate } from "react-router";
 
 const LoginPage = () => {
+  let navigate = useNavigate();
+
+  const [account, setAccount] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    email: false,
+    password: false,
+  });
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleDialog = () => {
+    setOpenDialog(false);
+  };
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
+
+  const [isError, setIsError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAccount({ ...account, [name]: value });
+    if (errors[name]) setErrors({ ...errors, [name]: false });
+    if (isError) setIsError(false);
+  };
+  const submitBtn = async () => {
+    let isOk = true;
+    const dataE = { ...errors };
+    for (const acData in account) {
+      if (!Object.hasOwn(account, acData)) continue;
+
+      const data = account[acData];
+      if (data.trim() === "") {
+        dataE[acData] = true;
+        if (!isError) setIsError(true);
+        if (isOk) isOk = false;
+      }
+    }
+    setErrors(dataE);
+    if (isOk) {
+      try {
+        const response = await api.post("/api/v1/auth/login", account);
+        localStorage.setItem("access_token", response.data.access_token);
+        setOpenDialog(true);
+        setPopupMessage("Đăng nhập thành công vui lòng đợi!");
+        setIsSuccessPopup(true);
+        navigate("/");
+      } catch (error) {
+        const errorMsg =
+          error.response?.data?.detail?.[0]?.msg ||
+          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.";
+        setIsSuccessPopup(false);
+        setPopupMessage(errorMsg);
+        setOpenDialog(true);
+      }
+    }
   };
 
   return (
@@ -58,6 +117,10 @@ const LoginPage = () => {
           </Typography>
           <TextField
             placeholder="Nhập email"
+            name="email"
+            onChange={handleChange}
+            error={errors.email}
+            value={account.email}
             id="email-input"
             variant="outlined"
             fullWidth
@@ -98,6 +161,10 @@ const LoginPage = () => {
           </Box>
           <TextField
             placeholder="Nhập mật khẩu"
+            name="password"
+            onChange={handleChange}
+            value={account.password}
+            error={errors.password}
             id="password-input"
             variant="outlined"
             fullWidth
@@ -127,9 +194,19 @@ const LoginPage = () => {
             }}
           />
         </Box>
+        {isError && (
+          <Typography
+            color="error"
+            variant="body2"
+            sx={{ fontSize: "13px", mb: 1, textAlign: "center" }}
+          >
+            Hãy nhập đủ thông tin
+          </Typography>
+        )}
 
         <Button
           variant="contained"
+          onClick={submitBtn}
           sx={{
             borderRadius: "999px",
             background: "#00b14f",
@@ -211,6 +288,13 @@ const LoginPage = () => {
       >
         © 2016. All Rights Reserved. TopCV Vietnam JSC.
       </Typography>
+
+      <NotificationDialog
+        open={openDialog}
+        onClose={handleDialog}
+        message={popupMessage}
+        isSuccess={isSuccessPopup}
+      />
     </Box>
   );
 };

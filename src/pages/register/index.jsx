@@ -123,13 +123,14 @@ const RegisterPage = () => {
       };
 
       try {
-        await api.post("/api/v1/auth/register", registerData);
+        const response = await api.post("/api/v1/auth/register", registerData);
+        localStorage.setItem("access_token", response.data.access_token);
         setIsSuccessPopup(true);
         setPopupMessage("Đăng ký tài khoản thành công!");
         setOpenPopup(true);
       } catch (error) {
         const errorMsg =
-          error.response?.data?.message ||
+          error.response?.data?.detail?.[0]?.msg ||
           "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.";
         setIsSuccessPopup(false);
         setPopupMessage(errorMsg);
