@@ -20,21 +20,25 @@ import { useNavigate } from "react-router";
 const EmployerRegisterPage = () => {
   let navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // State khớp 100% API + thêm confirm_password để xử lý giao diện
   const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirm_password: "",
     tax_code: "",
     company_name: "",
     international_name: "",
     short_name: "",
     director: "",
     headquarters_address: "",
-    email: "",
     phone_number: "",
     website: "",
-    password: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [passwordMatchError, setPasswordMatchError] = useState(false);
   const [isAgreement, setIsAgreement] = useState(false);
   const [agreementError, setAgreementError] = useState(false);
   const [generalError, setGeneralError] = useState(false);
@@ -44,6 +48,8 @@ const EmployerRegisterPage = () => {
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +59,12 @@ const EmployerRegisterPage = () => {
     });
     if (errors[name]) setErrors({ ...errors, [name]: false });
     if (generalError) setGeneralError(false);
+    if (
+      passwordMatchError &&
+      (name === "password" || name === "confirm_password")
+    ) {
+      setPasswordMatchError(false);
+    }
   };
 
   const handleRegister = async () => {
@@ -60,7 +72,7 @@ const EmployerRegisterPage = () => {
     const newErrors = {};
     let hasEmptyField = false;
 
-    // Kiểm tra các trường bắt buộc cơ bản
+    // Kiểm tra rỗng tất cả các trường
     for (const key in formData) {
       if (!formData[key] || formData[key].trim() === "") {
         newErrors[key] = true;
@@ -69,8 +81,22 @@ const EmployerRegisterPage = () => {
       }
     }
 
+    // Kiểm tra mật khẩu khớp nhau
+    let isPasswordMismatch = false;
+    if (
+      formData.password.trim() !== "" &&
+      formData.confirm_password.trim() !== "" &&
+      formData.password !== formData.confirm_password
+    ) {
+      newErrors.password = true;
+      newErrors.confirm_password = true;
+      isPasswordMismatch = true;
+      isOk = false;
+    }
+
     setErrors(newErrors);
     setGeneralError(hasEmptyField);
+    setPasswordMatchError(isPasswordMismatch);
 
     // Kiểm tra điều khoản
     if (!isAgreement) {
@@ -78,10 +104,11 @@ const EmployerRegisterPage = () => {
       isOk = false;
     }
 
-    // Gọi API đăng ký Nhà tuyển dụng
+    // Gửi dữ liệu lên API (loại bỏ confirm_password vì API không nhận trường này)
     if (isOk) {
+      const { confirm_password, ...apiData } = formData;
       try {
-        await api.post("/api/v1/companies/register", formData);
+        await api.post("/api/v1/companies/register", apiData);
         setIsSuccessPopup(true);
         setPopupMessage("Đăng ký tài khoản nhà tuyển dụng thành công!");
         setOpenPopup(true);
@@ -166,16 +193,10 @@ const EmployerRegisterPage = () => {
 
           {/* Form Fields */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {/* Email & Mật khẩu */}
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                flexDirection: { xs: "column", sm: "row" },
-              }}
-            >
+            {/* Email đăng nhập */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <TextField
-                label="Email đăng nhập *"
+                label="Email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -184,13 +205,53 @@ const EmployerRegisterPage = () => {
                 fullWidth
                 color="success"
               />
+              <Typography
+                variant="caption"
+                sx={{ color: "#d32f2f", fontSize: "11px", lineHeight: 1.4 }}
+              >
+                Trường hợp bạn đăng ký tài khoản bằng email không phải email tên
+                miền công ty, một số dịch vụ trên tài khoản có thể sẽ bị giới
+                hạn quyền mua hoặc sử dụng.
+              </Typography>
+            </Box>
+
+            {/* Mật khẩu */}
+            <TextField
+              label="Mật khẩu"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              error={errors.password}
+              size="small"
+              fullWidth
+              color="success"
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword}>
+                        {showPassword ? (
+                          <VisibilityIcon />
+                        ) : (
+                          <VisibilityOffIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+
+            {/* Nhập lại mật khẩu */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <TextField
-                label="Mật khẩu *"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
+                label="Nhập lại mật khẩu"
+                name="confirm_password"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirm_password}
                 onChange={handleChange}
-                error={errors.password}
+                error={errors.confirm_password}
                 size="small"
                 fullWidth
                 color="success"
@@ -198,8 +259,8 @@ const EmployerRegisterPage = () => {
                   input: {
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowPassword}>
-                          {showPassword ? (
+                        <IconButton onClick={handleClickShowConfirmPassword}>
+                          {showConfirmPassword ? (
                             <VisibilityIcon />
                           ) : (
                             <VisibilityOffIcon />
@@ -210,7 +271,30 @@ const EmployerRegisterPage = () => {
                   },
                 }}
               />
+              {passwordMatchError && (
+                <Typography
+                  color="error"
+                  variant="caption"
+                  sx={{ fontSize: "12px" }}
+                >
+                  Mật khẩu đang không khớp
+                </Typography>
+              )}
             </Box>
+
+            {/* TIÊU ĐỀ: Thông tin nhà tuyển dụng */}
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                color: "#212f3f",
+                mt: 1,
+                mb: 0.5,
+                fontSize: "16px",
+              }}
+            >
+              Thông tin nhà tuyển dụng
+            </Typography>
 
             {/* Tên công ty & Tên viết tắt */}
             <Box
@@ -221,7 +305,7 @@ const EmployerRegisterPage = () => {
               }}
             >
               <TextField
-                label="Tên công ty *"
+                label="Tên công ty"
                 name="company_name"
                 value={formData.company_name}
                 onChange={handleChange}
@@ -231,7 +315,7 @@ const EmployerRegisterPage = () => {
                 color="success"
               />
               <TextField
-                label="Tên viết tắt *"
+                label="Tên viết tắt"
                 name="short_name"
                 value={formData.short_name}
                 onChange={handleChange}
@@ -251,7 +335,7 @@ const EmployerRegisterPage = () => {
               }}
             >
               <TextField
-                label="Tên quốc tế *"
+                label="Tên quốc tế"
                 name="international_name"
                 value={formData.international_name}
                 onChange={handleChange}
@@ -261,7 +345,7 @@ const EmployerRegisterPage = () => {
                 color="success"
               />
               <TextField
-                label="Mã số thuế *"
+                label="Mã số thuế"
                 name="tax_code"
                 value={formData.tax_code}
                 onChange={handleChange}
@@ -272,7 +356,7 @@ const EmployerRegisterPage = () => {
               />
             </Box>
 
-            {/* Người đại diện & Số điện thoại */}
+            {/* Người đại diện pháp luật & Số điện thoại */}
             <Box
               sx={{
                 display: "flex",
@@ -281,7 +365,7 @@ const EmployerRegisterPage = () => {
               }}
             >
               <TextField
-                label="Người đại diện pháp luật *"
+                label="Người đại diện pháp luật"
                 name="director"
                 value={formData.director}
                 onChange={handleChange}
@@ -291,7 +375,7 @@ const EmployerRegisterPage = () => {
                 color="success"
               />
               <TextField
-                label="Số điện thoại cá nhân *"
+                label="Số điện thoại cá nhân"
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
@@ -302,9 +386,9 @@ const EmployerRegisterPage = () => {
               />
             </Box>
 
-            {/* Địa chỉ trụ sở */}
+            {/* Địa chỉ trụ sở chính */}
             <TextField
-              label="Địa chỉ trụ sở chính *"
+              label="Địa chỉ trụ sở chính"
               name="headquarters_address"
               value={formData.headquarters_address}
               onChange={handleChange}
@@ -314,9 +398,9 @@ const EmployerRegisterPage = () => {
               color="success"
             />
 
-            {/* Website */}
+            {/* Website công ty */}
             <TextField
-              label="Website công ty *"
+              label="Website công ty"
               name="website"
               value={formData.website}
               onChange={handleChange}
@@ -389,7 +473,7 @@ const EmployerRegisterPage = () => {
               variant="body2"
               sx={{ fontSize: "13px", mb: 1, textAlign: "center" }}
             >
-              Vui lòng nhập đầy đủ tất cả các trường thông tin bắt buộc (*)
+              Vui lòng nhập đầy đủ tất cả các trường thông tin bắt buộc
             </Typography>
           )}
 
@@ -438,7 +522,7 @@ const EmployerRegisterPage = () => {
         </Box>
       </Box>
 
-      {/* CỘT PHẢI: BANNER TRANG TRÍ (Ẩn trên màn hình nhỏ) */}
+      {/* CỘT PHẢI: BANNER TRANG TRÍ */}
       <Box
         sx={{
           display: { xs: "none", md: "flex" },
