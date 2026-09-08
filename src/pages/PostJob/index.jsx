@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -7,8 +7,6 @@ import {
   Button,
   Grid,
   Divider,
-  FormControlLabel,
-  Switch,
 } from "@mui/material";
 
 // === Import CKEditor ===
@@ -38,14 +36,20 @@ import NotificationDialog from "../../components/NotificationDialog";
 const PostJob = () => {
   const navigate = useNavigate();
 
-  // Khởi tạo state dữ liệu khớp 100% với API Schema yêu cầu
+  // State lưu danh sách categories lấy từ API
+  const [categoriesData, setCategoriesData] = useState([]);
+
+  // State lưu danh sách các nghề con (chuyên ngành) ứng với nhóm nghề đang chọn
+  const [availableSpecialties, setAvailableSpecialties] = useState([]);
+
+  // Khởi tạo state dữ liệu gửi lên API tạo job
   const [formData, setFormData] = useState({
     title: "",
-    category: "",
-    specialty: "",
+    category: "", // Lưu tên Nhóm nghề (hoặc group_name)
+    specialty: "", // Lưu tên Nghề con (category name)
     job_type: "FULL_TIME",
     experience_level: "Nhân viên",
-    gender: "OTHER",
+    gender: "MALE",
     quantity: 1,
     salary: {
       type: "RANGE",
@@ -74,13 +78,51 @@ const PostJob = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
-  // Xử lý thay đổi các trường thông tin chung
+  // 1. Gọi API lấy danh sách categories khi vừa vào trang
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get("/api/v1/categories");
+        setCategoriesData(data);
+        // Nếu có dữ liệu, mặc định gán nhóm đầu tiên và danh sách con của nó
+        if (data && data.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            category: data[0].group_name,
+            specialty: data[0].categories?.[0]?.name || "",
+          }));
+          setAvailableSpecialties(data[0].categories || []);
+        }
+      } catch (error) {
+        console.log("Lỗi lấy danh mục nghề:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Xử lý thay đổi các trường text đơn giản
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    if (name === "category") {
+      // Khi người dùng đổi Nhóm nghề, tìm các nghề con tương ứng
+      const selectedGroup = categoriesData.find(
+        (item) => item.group_name === value,
+      );
+      const subCategories = selectedGroup ? selectedGroup.categories : [];
+
+      setAvailableSpecialties(subCategories);
+      setFormData({
+        ...formData,
+        category: value,
+        specialty: subCategories.length > 0 ? subCategories[0].name : "", // Reset lại chuyên ngành đầu tiên của nhóm đó
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   // Xử lý thay đổi cấu hình lương
@@ -108,7 +150,7 @@ const PostJob = () => {
     });
   };
 
-  // Gửi request lên API
+  // Gửi request lên API tạo Job
   const handlePostJob = async () => {
     try {
       await api.post("/api/v1/employer/jobs", formData);
@@ -179,7 +221,7 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Ngành nghề */}
+            {/* Ngành nghề (Đổ dữ liệu từ API categories group_name) */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -189,26 +231,30 @@ const PostJob = () => {
                 value={formData.category}
                 onChange={handleChange}
               >
-                <MenuItem value="Công nghệ thông tin">IT - Phần mềm</MenuItem>
-                <MenuItem value="Marketing / Truyền thông">
-                  Marketing / Truyền thông
-                </MenuItem>
-                <MenuItem value="Kinh doanh / Bán hàng">
-                  Kinh doanh / Bán hàng
-                </MenuItem>
+                {categoriesData.map((group) => (
+                  <MenuItem key={group.id} value={group.group_name}>
+                    {group.group_name}
+                  </MenuItem>
+                ))}
               </TextField>
             </Grid>
 
-            {/* Chuyên ngành */}
+            {/* Chuyên ngành (Đổ dữ liệu từ danh sách categories con tương ứng) */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
+                select
                 label="Chuyên ngành"
                 name="specialty"
                 value={formData.specialty}
                 onChange={handleChange}
-                placeholder="VD: Lập trình Frontend"
-              />
+              >
+                {availableSpecialties.map((sub) => (
+                  <MenuItem key={sub.id} value={sub.name}>
+                    {sub.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             {/* Cấp bậc */}
@@ -272,7 +318,7 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Loại lương: RANGE hoặc AGREEMENT */}
+            {/* Hình thức trả lương */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -286,7 +332,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Nếu là RANGE thì hiện Min - Max */}
             {formData.salary.type === "RANGE" && (
               <>
                 <Grid size={{ xs: 12, md: 3 }}>
@@ -314,7 +359,7 @@ const PostJob = () => {
               </>
             )}
 
-            {/* Địa chỉ chi tiết */}
+            {/* Địa chỉ làm việc chi tiết */}
             <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
@@ -328,19 +373,49 @@ const PostJob = () => {
 
           <Divider sx={{ my: 4 }} />
 
-          {/* ================= PHẦN 2: MÔ TẢ & CHI TIẾT (CKEDITOR) ================= */}
+          {/* ================= PHẦN 2: CHI TIẾT MÔ TẢ CÔNG VIỆC (CKEDITOR) ================= */}
           <Typography
             variant="h6"
             sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
           >
             2. Chi tiết mô tả công việc
           </Typography>
+
+          {/* Mô tả công việc */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Mô tả công việc
             </Typography>
             <CKEditor
               editor={ClassicEditor}
+              config={{
+                licenseKey: "GPL",
+                plugins: [
+                  Essentials,
+                  Paragraph,
+                  Bold,
+                  Italic,
+                  List,
+                  Heading,
+                  Link,
+                  Alignment,
+                ],
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "|",
+                  "alignment",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo",
+                ],
+              }}
               data={formData.description_html}
               onChange={(event, editor) => {
                 setFormData({
@@ -351,12 +426,41 @@ const PostJob = () => {
             />
           </Box>
 
+          {/* Yêu cầu ứng viên */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Yêu cầu ứng viên
             </Typography>
             <CKEditor
               editor={ClassicEditor}
+              config={{
+                licenseKey: "GPL",
+                plugins: [
+                  Essentials,
+                  Paragraph,
+                  Bold,
+                  Italic,
+                  List,
+                  Heading,
+                  Link,
+                  Alignment,
+                ],
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "|",
+                  "alignment",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo",
+                ],
+              }}
               data={formData.requirements_html}
               onChange={(event, editor) => {
                 setFormData({
@@ -367,12 +471,41 @@ const PostJob = () => {
             />
           </Box>
 
+          {/* Quyền lợi được hưởng */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Quyền lợi được hưởng
             </Typography>
             <CKEditor
               editor={ClassicEditor}
+              config={{
+                licenseKey: "GPL",
+                plugins: [
+                  Essentials,
+                  Paragraph,
+                  Bold,
+                  Italic,
+                  List,
+                  Heading,
+                  Link,
+                  Alignment,
+                ],
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "|",
+                  "alignment",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "link",
+                  "undo",
+                  "redo",
+                ],
+              }}
               data={formData.benefits_html}
               onChange={(event, editor) => {
                 setFormData({ ...formData, benefits_html: editor.getData() });
@@ -382,20 +515,8 @@ const PostJob = () => {
 
           <Divider sx={{ my: 4 }} />
 
-          {/* ================= PHẦN 3: HÀNH ĐỘNG ================= */}
+          {/* ================= PHẦN 3: NÚT HÀNH ĐỘNG ================= */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button
-              variant="outlined"
-              startIcon={<SaveAsIcon />}
-              sx={{
-                color: "#4b5563",
-                borderColor: "#e5e7eb",
-                textTransform: "none",
-                fontWeight: 600,
-              }}
-            >
-              Lưu nháp
-            </Button>
             <Button
               variant="contained"
               onClick={handlePostJob}
@@ -414,6 +535,7 @@ const PostJob = () => {
         </Box>
       </Box>
 
+      {/* Popup thông báo kết quả */}
       <NotificationDialog
         open={openPopup}
         onClose={handleClosePopup}
