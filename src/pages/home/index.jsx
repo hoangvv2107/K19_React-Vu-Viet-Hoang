@@ -8,12 +8,14 @@ import Footer from "../../components/Footer";
 const HomePage = () => {
   const [categoryGroups, setCategoryGroups] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [totalPageJobs, setTotalPageJobs] = useState(0);
+  const [pageJobsCurrent, setPageJobsCurrent] = useState(1);
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
   const [isJobsLoading, setIsJobsLoading] = useState(true);
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
-      const { data } = await api.get("/category_groups");
+      const { data } = await api.get("/api/v1/categories");
       setCategoryGroups(data);
     } catch (error) {
       console.log(error);
@@ -24,8 +26,16 @@ const HomePage = () => {
   const getJobsData = async () => {
     try {
       setIsJobsLoading(true);
-      const { data } = await api.get("/jobs");
-      setJobs(data);
+      const { data } = await api.get("/api/v1/jobs", {
+        params: {
+          page: pageJobsCurrent, // Mặc định là trang 1
+          // keyword: null, // (Tuỳ chọn) Lấy từ state ô input search
+          // category_slug: null, // (Tuỳ chọn)
+          // city_id: null, // (Tuỳ chọn) Nếu user không chọn địa điểm thì để trống hoặc null
+        },
+      });
+      setJobs(data.data);
+      setTotalPageJobs(data.total);
     } catch (error) {
       console.log(error);
     } finally {
@@ -34,8 +44,10 @@ const HomePage = () => {
   };
   useEffect(() => {
     getCategoryGroupsData();
-    getJobsData();
   }, []);
+  useEffect(() => {
+    getJobsData();
+  }, [pageJobsCurrent]);
 
   return (
     <>
@@ -60,7 +72,12 @@ const HomePage = () => {
           minHeight: "100vh",
         }}
       >
-        <JobBoard jobs={jobs} isLoading={isJobsLoading} />
+        <JobBoard
+          jobs={jobs}
+          isLoading={isJobsLoading}
+          pageCurrent={pageJobsCurrent}
+          totalPage={totalPageJobs}
+        />
       </Box>
 
       <Footer />

@@ -20,10 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 
 const SearchBar = ({ isLoading, categoryData }) => {
-  if (isLoading)
-    return (
-      <CircularProgress enableTrackSlot size="30px" aria-label="Loading…" />
-    );
+ 
   const [showCategoryJobs, setShowCategoryJobs] = useState(false);
   const handleClickShowCategoryJobs = () => {
     setShowCategoryJobs(!showCategoryJobs);
@@ -66,6 +63,10 @@ const SearchBar = ({ isLoading, categoryData }) => {
       setSelectedCategories([...selectedCategories, childId]);
     }
   };
+   if (isLoading)
+    return (
+      <CircularProgress enableTrackSlot size="30px" aria-label="Loading…" />
+    );
   return (
     <ClickAwayListener onClickAway={offCategoryJobs}>
       <Box

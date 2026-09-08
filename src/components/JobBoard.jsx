@@ -28,7 +28,7 @@ const JobHoverTooltip = styled(({ className, ...props }) => (
     maxWidth: 500, // Đới nới rộng giới hạn chiều ngang
   },
 }));
-const JobBoard = ({ isLoading, jobs }) => {
+const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
   // 2. ĐÃ XÓA CHECK LOADING Ở ĐÂY ĐỂ TRÁNH MẤT GIAO DIỆN
 
   const formatSalary = (salaryObj) => {
@@ -392,7 +392,10 @@ const JobBoard = ({ isLoading, jobs }) => {
           component="span"
           sx={{ mx: 2, fontSize: "14px", color: "#7f878f" }}
         >
-          <strong style={{ color: "#00b14f", fontWeight: 600 }}>1</strong> / 127
+          <strong style={{ color: "#00b14f", fontWeight: 600 }}>
+            {pageCurrent}
+          </strong>{" "}
+          / {totalPage}
           trang
         </Typography>
         <IconButton

@@ -116,7 +116,7 @@ const Footer = () => {
         {/* ================= PHẦN 1: UPPER FOOTER (4 CỘT) ================= */}
         <Grid container spacing={4}>
           {/* Cột 1: Thông tin liên hệ & App */}
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Box sx={{ mb: 2 }}>
               <Typography
                 variant="h4"
@@ -255,21 +255,21 @@ const Footer = () => {
           </Grid>
 
           {/* Cột 2 */}
-          <Grid item xs={12} md={2.5}>
+          <Grid xs={12} md={2.5}>
             {FOOTER_LINKS.col1.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
             ))}
           </Grid>
 
           {/* Cột 3 */}
-          <Grid item xs={12} md={2.5}>
+          <Grid xs={12} md={2.5}>
             {FOOTER_LINKS.col2.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
             ))}
           </Grid>
 
           {/* Cột 4 */}
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             {FOOTER_LINKS.col3.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
             ))}
@@ -355,7 +355,7 @@ const Footer = () => {
 
             {/* Hệ sinh thái Buttons */}
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid xs={12} sm={6} md={3}>
                 <Box
                   sx={{
                     bgcolor: "#0d3b38",
@@ -375,7 +375,7 @@ const Footer = () => {
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid xs={12} sm={6} md={3}>
                 <Box
                   sx={{
                     bgcolor: "#f58220",
@@ -396,7 +396,7 @@ const Footer = () => {
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid xs={12} sm={6} md={3}>
                 <Box
                   sx={{
                     bgcolor: "#1952a2",
@@ -417,7 +417,7 @@ const Footer = () => {
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid xs={12} sm={6} md={3}>
                 <Box
                   sx={{
                     bgcolor: "#00b14f",

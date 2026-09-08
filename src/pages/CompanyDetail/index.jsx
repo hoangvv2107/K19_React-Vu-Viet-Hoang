@@ -9,6 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import SearchBar from "../../components/SearchBar";
+import api from "../../plugins/axios";
 
 const CompanyDetail = () => {
   const [categoryGroups, setCategoryGroups] = useState([]);

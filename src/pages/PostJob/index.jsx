@@ -69,7 +69,7 @@ const PostJob = () => {
 
           <Grid container spacing={3}>
             {/* Tiêu đề công việc - Chiếm trọn 1 dòng (12 cột) */}
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <TextField
                 fullWidth
                 label="Tiêu đề công việc"
@@ -79,7 +79,7 @@ const PostJob = () => {
             </Grid>
 
             {/* Các trường ngắn - Mỗi trường chiếm nửa dòng (6 cột) */}
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <TextField fullWidth select label="Ngành nghề" defaultValue="it">
                 <MenuItem value="it">IT - Phần mềm</MenuItem>
                 <MenuItem value="marketing">Marketing / Truyền thông</MenuItem>
@@ -87,7 +87,7 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <TextField
                 fullWidth
                 select
@@ -100,7 +100,7 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Mức lương"
@@ -108,7 +108,7 @@ const PostJob = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Địa điểm làm việc"
