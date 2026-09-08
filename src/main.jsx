@@ -19,6 +19,7 @@ import CompanyDetail from "./pages/CompanyDetail";
 import CreateCV from "./pages/createCV/CreateCV";
 import PostJob from "./pages/PostJob";
 import RegisterPage from "./pages/register";
+import EmployerRegisterPage from "./pages/EmployerRegister";
 
 const theme = createTheme({
   palette: {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
   {
     path: "/dang-tuyen",
     element: <PostJob />,
+  },
+  {
+    path: "/employer-register",
+    element: <EmployerRegisterPage />,
   },
 ]);
 

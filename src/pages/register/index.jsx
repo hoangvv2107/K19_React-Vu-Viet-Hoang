@@ -381,29 +381,29 @@ const RegisterPage = () => {
             >
               <label htmlFor="agreement" style={{ cursor: "pointer" }}>
                 Tôi đã đọc và đồng ý với{" "}
+                <Link
+                  href="#"
+                  color="success"
+                  sx={{
+                    textDecoration: "none",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  Điều khoản dịch vụ
+                </Link>{" "}
+                và{" "}
+                <Link
+                  href="#"
+                  color="success"
+                  sx={{
+                    textDecoration: "none",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  Chính sách quyền riêng tư
+                </Link>{" "}
+                của TopCV (Bắt buộc)
               </label>
-              <Link
-                href="#"
-                color="success"
-                sx={{
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Điều khoản dịch vụ
-              </Link>{" "}
-              và{" "}
-              <Link
-                href="#"
-                color="success"
-                sx={{
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
-                }}
-              >
-                Chính sách quyền riêng tư
-              </Link>{" "}
-              của TopCV (Bắt buộc)
             </Typography>
           </Box>
           {agreementError && (
