@@ -7,6 +7,7 @@ import {
   Button,
   Grid,
   Divider,
+  Autocomplete,
 } from "@mui/material";
 
 // === Import CKEditor ===
@@ -28,10 +29,11 @@ import "ckeditor5/ckeditor5.css";
 import SendIcon from "@mui/icons-material/Send";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 
-// === Import Plugin Axios & Navigation ===
+// === Import Plugin Axios, Navigation & Danh sách Tỉnh thành ===
 import api from "../../plugins/axios";
 import { useNavigate } from "react-router";
 import NotificationDialog from "../../components/NotificationDialog";
+import { CITIES_DATA } from "../../plugins/cities";
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -45,8 +47,8 @@ const PostJob = () => {
   // Khởi tạo state dữ liệu gửi lên API tạo job
   const [formData, setFormData] = useState({
     title: "",
-    category: "", // Lưu tên Nhóm nghề (hoặc group_name)
-    specialty: "", // Lưu tên Nghề con (category name)
+    category: "",
+    specialty: "",
     job_type: "FULL_TIME",
     experience_level: "Nhân viên",
     gender: "MALE",
@@ -60,8 +62,8 @@ const PostJob = () => {
     },
     work_location: [
       {
-        city_id: 1,
-        city_name: "Hà Nội",
+        city_id: null,
+        city_name: "",
         address_detail: "",
       },
     ],
@@ -84,7 +86,6 @@ const PostJob = () => {
       try {
         const { data } = await api.get("/api/v1/categories");
         setCategoriesData(data);
-        // Nếu có dữ liệu, mặc định gán nhóm đầu tiên và danh sách con của nó
         if (data && data.length > 0) {
           setFormData((prev) => ({
             ...prev,
@@ -105,7 +106,6 @@ const PostJob = () => {
     const { name, value } = e.target;
 
     if (name === "category") {
-      // Khi người dùng đổi Nhóm nghề, tìm các nghề con tương ứng
       const selectedGroup = categoriesData.find(
         (item) => item.group_name === value,
       );
@@ -115,7 +115,7 @@ const PostJob = () => {
       setFormData({
         ...formData,
         category: value,
-        specialty: subCategories.length > 0 ? subCategories[0].name : "", // Reset lại chuyên ngành đầu tiên của nhóm đó
+        specialty: subCategories.length > 0 ? subCategories[0].name : "",
       });
     } else {
       setFormData({
@@ -136,6 +136,20 @@ const PostJob = () => {
     });
   };
 
+  // Xử lý chọn Tỉnh/Thành phố thông qua Autocomplete (Gõ tìm kiếm)
+  const handleCityChange = (event, selectedCity) => {
+    setFormData({
+      ...formData,
+      work_location: [
+        {
+          ...formData.work_location[0],
+          city_id: selectedCity ? selectedCity.id : null,
+          city_name: selectedCity ? selectedCity.name : "",
+        },
+      ],
+    });
+  };
+
   // Xử lý địa chỉ chi tiết
   const handleLocationChange = (e) => {
     const value = e.target.value;
@@ -150,8 +164,50 @@ const PostJob = () => {
     });
   };
 
+  // Hàm kiểm tra tính hợp lệ trước khi gửi API
+  const validateForm = () => {
+    if (!formData.title || formData.title.trim() === "") {
+      return "Vui lòng nhập tiêu đề công việc!";
+    }
+    if (!formData.category || formData.category.trim() === "") {
+      return "Vui lòng chọn ngành nghề!";
+    }
+    if (!formData.specialty || formData.specialty.trim() === "") {
+      return "Vui lòng chọn chuyên ngành!";
+    }
+    if (!formData.work_location[0].city_id) {
+      return "Vui lòng chọn Tỉnh / Thành phố làm việc!";
+    }
+    if (
+      !formData.work_location[0].address_detail ||
+      formData.work_location[0].address_detail.trim() === ""
+    ) {
+      return "Vui lòng nhập địa chỉ chi tiết làm việc!";
+    }
+    if (formData.salary.type === "RANGE") {
+      if (formData.salary.min === "" || formData.salary.max === "") {
+        return "Vui lòng nhập đầy đủ khoảng lương tối thiểu và tối đa!";
+      }
+      if (Number(formData.salary.min) > Number(formData.salary.max)) {
+        return "Lương tối thiểu không được lớn hơn lương tối đa!";
+      }
+    }
+    if (!formData.quantity || Number(formData.quantity) <= 0) {
+      return "Số lượng tuyển phải lớn hơn 0!";
+    }
+    return null;
+  };
+
   // Gửi request lên API tạo Job
   const handlePostJob = async () => {
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      setIsSuccessPopup(false);
+      setPopupMessage(errorMessage);
+      setOpenPopup(true);
+      return;
+    }
+
     try {
       await api.post("/api/v1/employer/jobs", formData);
       setIsSuccessPopup(true);
@@ -221,12 +277,12 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Ngành nghề (Đổ dữ liệu từ API categories group_name) */}
+            {/* Ngành nghề */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 select
-                label="Ngành nghề"
+                label="Ngành nghề *"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
@@ -239,12 +295,12 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Chuyên ngành (Đổ dữ liệu từ danh sách categories con tương ứng) */}
+            {/* Chuyên ngành */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 select
-                label="Chuyên ngành"
+                label="Chuyên ngành *"
                 name="specialty"
                 value={formData.specialty}
                 onChange={handleChange}
@@ -311,7 +367,7 @@ const PostJob = () => {
               <TextField
                 fullWidth
                 type="number"
-                label="Số lượng tuyển"
+                label="Số lượng tuyển *"
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
@@ -338,33 +394,50 @@ const PostJob = () => {
                   <TextField
                     fullWidth
                     type="number"
-                    label="Lương tối thiểu (VND)"
+                    label="Lương tối thiểu (VND) *"
                     value={formData.salary.min}
-                    onChange={(e) =>
-                      handleSalaryChange("min", Number(e.target.value))
-                    }
+                    onChange={(e) => handleSalaryChange("min", e.target.value)}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 3 }}>
                   <TextField
                     fullWidth
                     type="number"
-                    label="Lương tối đa (VND)"
+                    label="Lương tối đa (VND) *"
                     value={formData.salary.max}
-                    onChange={(e) =>
-                      handleSalaryChange("max", Number(e.target.value))
-                    }
+                    onChange={(e) => handleSalaryChange("max", e.target.value)}
                   />
                 </Grid>
               </>
             )}
 
+            {/* Ô tìm kiếm Tỉnh / Thành phố bằng Autocomplete */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Autocomplete
+                options={CITIES_DATA}
+                getOptionLabel={(option) => option.name}
+                value={
+                  CITIES_DATA.find(
+                    (c) => c.id === formData.work_location[0].city_id,
+                  ) || null
+                }
+                onChange={handleCityChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Tỉnh / Thành phố *"
+                    placeholder="Gõ để tìm nhanh tên tỉnh/thành..."
+                  />
+                )}
+              />
+            </Grid>
+
             {/* Địa chỉ làm việc chi tiết */}
-            <Grid size={{ xs: 12 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
-                label="Địa chỉ chi tiết làm việc"
-                placeholder="VD: Tòa nhà A, Số 47 Nguyễn Tuân, Hà Nội"
+                label="Địa chỉ chi tiết làm việc *"
+                placeholder="VD: Tòa nhà A, Số 47 Nguyễn Tuân"
                 value={formData.work_location[0].address_detail}
                 onChange={handleLocationChange}
               />
