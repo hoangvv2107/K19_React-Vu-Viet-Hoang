@@ -1,145 +1,152 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Box,
   Typography,
   Button,
   IconButton,
-  Stack,
   Divider,
+  TextField,
+  Grid,
+  Paper,
 } from "@mui/material";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import {
-  DecoupledEditor,
-  Essentials,
-  Paragraph,
-  Bold,
-  Italic,
-  List,
-  Heading,
-  Link,
-  Image,
-  ImageInsert,
-  Base64UploadAdapter,
-  Table,
-  BlockQuote,
-  MediaEmbed,
-  Indent,
-  IndentBlock,
-  Alignment,
-} from "ckeditor5";
-import "ckeditor5/ckeditor5.css";
 
-// === Import Icons ===
-import ColorLensOutlinedIcon from "@mui/icons-material/ColorLensOutlined";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
-import AutoAwesomeMosaicOutlinedIcon from "@mui/icons-material/AutoAwesomeMosaicOutlined";
-import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
-import LibraryBooksOutlinedIcon from "@mui/icons-material/LibraryBooksOutlined";
 import SaveIcon from "@mui/icons-material/Save";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import UndoIcon from "@mui/icons-material/Undo";
-import RedoIcon from "@mui/icons-material/Redo";
 import DescriptionIcon from "@mui/icons-material/Description";
+import AddCircleOutline from "@mui/icons-material/AddCircle";
+import DeleteOutline from "@mui/icons-material/Delete";
+
 import Header from "../../components/Header";
+import api from "../../plugins/axios";
+import NotificationDialog from "../../components/NotificationDialog";
 
 const CreateCV = () => {
-  // Dữ liệu HTML mẫu ban đầu của CV
-  const initialCVData = `
-    <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px;">
-      <div style="width: 130px; height: 160px; background-color: #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff;">
-        Ảnh 3x4
-      </div>
-      <div style="flex: 1;">
-        <h1 style="margin: 0; color: #212f3f; font-size: 28px;">Họ và Tên</h1>
-        <p style="margin: 5px 0 15px 0; color: #64748b; font-size: 16px;">Vị trí ứng tuyển</p>
-        <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #4b5563; line-height: 1.8;">
-          <li><strong>Ngày sinh:</strong> DD/MM/YYYY</li>
-          <li><strong>Giới tính:</strong> Nam/Nữ</li>
-          <li><strong>Số điện thoại:</strong> 0123 456 789</li>
-          <li><strong>Email:</strong> email@example.com</li>
-          <li><strong>Website:</strong> facebook.com/TopCV.vn</li>
-          <li><strong>Địa chỉ:</strong> Quận A, Thành phố Hà Nội</li>
-        </ul>
-      </div>
-    </div>
-    
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">MỤC TIÊU NGHỀ NGHIỆP</h3>
-    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Mục tiêu nghề nghiệp của bạn, bao gồm mục tiêu ngắn hạn và dài hạn...</p>
+  const navigate = useNavigate();
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">HỌC VẤN</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Bắt đầu - Kết thúc</div>
-      <div style="flex: 1;">
-        <strong style="color: #212f3f;">Tên trường học</strong>
-        <div style="color: #4b5563;">Ngành học / Môn học</div>
-        <div style="color: #64748b; margin-top: 5px;">Mô tả quá trình học tập hoặc thành tích của bạn</div>
-      </div>
-    </div>
+  // --- 1. STATE CẤU TRÚC DỮ LIỆU KHỚP VỚI API BACKEND ---
+  const [cvData, setCvData] = useState({
+    full_name: "",
+    phone: "",
+    email: "",
+    summary: "",
+    education: [{ school_name: "", major: "", duration: "" }],
+    experience: [{ company_name: "", position: "", description: "" }],
+    skills: [""],
+  });
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">KINH NGHIỆM LÀM VIỆC</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Bắt đầu - Kết thúc</div>
-      <div style="flex: 1;">
-        <strong style="color: #212f3f;">Tên công ty</strong>
-        <div style="color: #4b5563;">Vị trí công việc</div>
-        <div style="color: #64748b; margin-top: 5px;">Mô tả kinh nghiệm làm việc của bạn</div>
-      </div>
-    </div>
+  // --- STATE QUẢN LÝ THÔNG BÁO ---
+  const [openDialog, setOpenDialog] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">HOẠT ĐỘNG</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Bắt đầu - Kết thúc</div>
-      <div style="flex: 1;">
-        <strong style="color: #212f3f;">Tên tổ chức</strong>
-        <div style="color: #4b5563;">Vị trí của bạn</div>
-        <div style="color: #64748b; margin-top: 5px;">Mô tả hoạt động</div>
-      </div>
-    </div>
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">CHỨNG CHỈ</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Thời gian</div>
-      <div style="flex: 1;">
-        <div style="color: #4b5563;">Tên chứng chỉ</div>
-      </div>
-    </div>
+  // --- XỬ LÝ THAY ĐỔI DỮ LIỆU CƠ BẢN ---
+  const handleBasicChange = (e) => {
+    const { name, value } = e.target;
+    setCvData({ ...cvData, [name]: value });
+  };
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">DANH HIỆU VÀ GIẢI THƯỞNG</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Thời gian</div>
-      <div style="flex: 1;">
-        <div style="color: #4b5563;">Tên giải thưởng</div>
-      </div>
-    </div>
+  // --- XỬ LÝ MẢNG HỌC VẤN (EDUCATION) ---
+  const handleEduChange = (index, field, value) => {
+    const newEdu = [...cvData.education];
+    newEdu[index][field] = value;
+    setCvData({ ...cvData, education: newEdu });
+  };
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">KỸ NĂNG</h3>
-    <div style="display: flex; margin-bottom: 15px; font-size: 14px;">
-      <div style="width: 150px; color: #64748b;">Tên kỹ năng</div>
-      <div style="flex: 1;">
-        <div style="color: #4b5563;">Mô tả kỹ năng</div>
-      </div>
-    </div>
+  const handleAddEdu = () => {
+    setCvData({
+      ...cvData,
+      education: [
+        ...cvData.education,
+        { school_name: "", major: "", duration: "" },
+      ],
+    });
+  };
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">NGƯỜI GIỚI THIỆU</h3>
-    <p style="color: #64748b; font-size: 14px; margin-bottom: 10px;">Thông tin người tham chiếu bao gồm tên, chức vụ và thông tin liên hệ</p>
+  const handleRemoveEdu = (index) => {
+    const newEdu = cvData.education.filter((_, i) => i !== index);
+    setCvData({ ...cvData, education: newEdu });
+  };
 
-    <hr style="border: 0; border-bottom: 2px solid #212f3f; margin: 20px 0;" />
-    <h3 style="color: #212f3f; margin-bottom: 10px;">SỞ THÍCH</h3>
-    <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Điền các sở thích của bạn</p>
-  `;
+  // --- XỬ LÝ MẢNG KINH NGHIỆM (EXPERIENCE) ---
+  const handleExpChange = (index, field, value) => {
+    const newExp = [...cvData.experience];
+    newExp[index][field] = value;
+    setCvData({ ...cvData, experience: newExp });
+  };
 
-  const [editorData, setEditorData] = useState(initialCVData);
+  const handleAddExp = () => {
+    setCvData({
+      ...cvData,
+      experience: [
+        ...cvData.experience,
+        { company_name: "", position: "", description: "" },
+      ],
+    });
+  };
 
-  const toolbarContainerRef = useRef(null);
+  const handleRemoveExp = (index) => {
+    const newExp = cvData.experience.filter((_, i) => i !== index);
+    setCvData({ ...cvData, experience: newExp });
+  };
+
+  // --- XỬ LÝ MẢNG KỸ NĂNG (SKILLS) ---
+  const handleSkillChange = (index, value) => {
+    const newSkills = [...cvData.skills];
+    newSkills[index] = value;
+    setCvData({ ...cvData, skills: newSkills });
+  };
+
+  const handleAddSkill = () => {
+    setCvData({ ...cvData, skills: [...cvData.skills, ""] });
+  };
+
+  const handleRemoveSkill = (index) => {
+    const newSkills = cvData.skills.filter((_, i) => i !== index);
+    setCvData({ ...cvData, skills: newSkills });
+  };
+
+  // --- GỌI API LƯU CV ---
+  const handleSaveCV = async () => {
+    const token = localStorage.getItem("access_token");
+    const role = localStorage.getItem("user_role");
+
+    if (!token) {
+      setPopupMessage("Bạn cần đăng nhập để tạo CV!");
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
+
+    if (role === "EMPLOYER") {
+      setPopupMessage("Tài khoản Nhà tuyển dụng không thể tạo CV!");
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
+
+    try {
+      // Gửi toàn bộ cục JSON lên API POST /api/v1/candidate/cvs
+      const { data } = await api.post("/api/v1/candidate/cvs", cvData);
+
+      setPopupMessage(`Lưu CV thành công! Mã CV của bạn là: ${data.cv_id}`);
+      setIsSuccessPopup(true);
+      setOpenDialog(true);
+
+      console.log("Kết quả tạo CV:", data);
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.detail?.[0]?.msg ||
+        error.response?.data?.message ||
+        "Có lỗi xảy ra khi lưu CV!";
+      setPopupMessage(errorMsg);
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+    }
+  };
 
   return (
     <>
@@ -148,213 +155,407 @@ const CreateCV = () => {
       <Box
         sx={{
           display: "flex",
-          height: "100vh",
-          overflow: "hidden",
+          flexDirection: "column",
+          minHeight: "calc(100vh - 72px)",
           bgcolor: "#f4f5f5",
         }}
       >
-        {/* ================= KHU VỰC CHÍNH (BÊN PHẢI) ================= */}
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          {/* === Thanh Sub-header (Lưu, Xem trước) === */}
-          <Box
-            sx={{
-              height: "60px",
-              bgcolor: "#fff",
-              borderBottom: "1px solid #e5e7eb",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              px: 3,
-              flexShrink: 0,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <DescriptionIcon sx={{ color: "#00b14f" }} />
-              <Typography
-                sx={{ fontWeight: 600, color: "#212f3f", fontSize: "16px" }}
-              >
-                CV chưa đặt tên
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <IconButton size="small">
-                <UndoIcon />
-              </IconButton>
-              <IconButton size="small">
-                <RedoIcon />
-              </IconButton>
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ mx: 1, my: 1.5 }}
-              />
-              <Button
-                startIcon={<VisibilityOutlinedIcon />}
-                sx={{
-                  color: "#4b5563",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}
-              >
-                Xem trước
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<SaveIcon />}
-                sx={{
-                  bgcolor: "#00b14f",
-                  textTransform: "none",
-                  fontWeight: 600,
-                  borderRadius: "20px",
-                  px: 3,
-                }}
-              >
-                Lưu CV
-              </Button>
-            </Box>
-          </Box>
-
-          <Box
-            ref={toolbarContainerRef}
-            sx={{
-              borderBottom: "1px solid #e5e7eb",
-              bgcolor: "#fafafa",
-              py: 0.5,
-
-              // Xóa viền và nền của thanh công cụ
-              "& .ck-toolbar": {
-                border: "none",
-                bgcolor: "transparent",
-              },
-
-              // 🚨 THÊM DÒNG NÀY: Ép các nút bấm bên trong ra giữa
-              "& .ck-toolbar__items": {
-                justifyContent: "center",
-              },
-            }}
-          />
-
-          {/* === Vùng chứa Tờ giấy A4 (Khu vực cuộn) === */}
-          <Box
-            sx={{
-              flex: 1,
-              overflow: "auto",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              py: 4,
-            }}
-          >
-            {/* Tờ giấy A4 */}
-            <Box
-              sx={{
-                width: "210mm", // Chuẩn chiều ngang A4
-                minHeight: "297mm", // Chuẩn chiều dọc A4
-                height: "max-content",
-                bgcolor: "#fff",
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                p: "40px",
-                "& .ck-editor__editable": {
-                  border: "none !important", // Ẩn viền của CKEditor
-                  boxShadow: "none !important",
-                  minHeight: "100%",
-                },
-                "& .ck-editor__editable:focus": {
-                  border: "none !important",
-                  outline: "none !important",
-                },
-              }}
+        {/* === Thanh Sub-header (Lưu, Tiêu đề) === */}
+        <Box
+          sx={{
+            height: "60px",
+            bgcolor: "#fff",
+            borderBottom: "1px solid #e5e7eb",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            px: 4,
+            flexShrink: 0,
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <DescriptionIcon sx={{ color: "#00b14f" }} />
+            <Typography
+              sx={{ fontWeight: 600, color: "#212f3f", fontSize: "16px" }}
             >
-              {/* CKEDITOR 5 INLINE */}
-              <CKEditor
-                editor={DecoupledEditor}
-                config={{
-                  licenseKey: "GPL",
-                  // Nạp toàn bộ chức năng vào đây
-                  plugins: [
-                    Essentials,
-                    Paragraph,
-                    Bold,
-                    Italic,
-                    List,
-                    Heading,
-                    Link,
-                    Image,
-                    ImageInsert,
-                    Base64UploadAdapter,
-                    Table,
-                    BlockQuote,
-                    MediaEmbed,
-                    Indent,
-                    IndentBlock,
-                    Alignment,
-                  ],
-                  // Sắp xếp thứ tự hiển thị các nút trên thanh công cụ
-                  toolbar: [
-                    "undo",
-                    "redo",
-                    "|",
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "|",
-                    "alignment",
-                    "|",
-                    "link",
-                    "insertImage",
-                    "insertTable",
-                    "blockQuote",
-                    "mediaEmbed",
-                    "|",
-                    "bulletedList",
-                    "numberedList",
-                    "outdent",
-                    "indent",
-                  ],
-                }}
-                data={editorData}
-                onReady={(editor) => {
-                  if (toolbarContainerRef.current) {
-                    toolbarContainerRef.current.innerHTML = "";
-                    toolbarContainerRef.current.appendChild(
-                      editor.ui.view.toolbar.element,
-                    );
-                  }
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  setEditorData(data);
-                }}
-              />
-            </Box>
+              Tạo hồ sơ CV trực tuyến
+            </Typography>
           </Box>
+          <Button
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={handleSaveCV}
+            sx={{
+              bgcolor: "#00b14f",
+              textTransform: "none",
+              fontWeight: 600,
+              borderRadius: "20px",
+              px: 3,
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#009944", boxShadow: "none" },
+            }}
+          >
+            Lưu CV
+          </Button>
+        </Box>
+
+        {/* === KHU VỰC NHẬP LIỆU FORM (Giống như tờ giấy soạn thảo nằm giữa màn hình) === */}
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            py: 4,
+            px: 2,
+          }}
+        >
+          <Paper
+            elevation={1}
+            sx={{
+              width: "100%",
+              maxWidth: "850px",
+              p: "40px",
+              borderRadius: "8px",
+              bgcolor: "#fff",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            }}
+          >
+            {/* 1. THÔNG TIN CÁ NHÂN */}
+            <Box>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ color: "#00b14f", mb: 2 }}
+              >
+                1. Thông tin cá nhân
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Họ và tên"
+                    name="full_name"
+                    value={cvData.full_name}
+                    onChange={handleBasicChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Số điện thoại"
+                    name="phone"
+                    value={cvData.phone}
+                    onChange={handleBasicChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Email liên hệ"
+                    name="email"
+                    value={cvData.email}
+                    onChange={handleBasicChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    size="small"
+                    label="Mục tiêu nghề nghiệp / Giới thiệu bản thân (Summary)"
+                    name="summary"
+                    value={cvData.summary}
+                    onChange={handleBasicChange}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+
+            <Divider />
+
+            {/* 2. HỌC VẤN (EDUCATION) */}
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{ color: "#00b14f" }}
+                >
+                  2. Học vấn
+                </Typography>
+                <Button
+                  size="small"
+                  startIcon={<AddCircleOutline />}
+                  onClick={handleAddEdu}
+                  sx={{
+                    color: "#00b14f",
+                    textTransform: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Thêm học vấn
+                </Button>
+              </Box>
+
+              {cvData.education.map((edu, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    border: "1px dashed #e5e7eb",
+                    borderRadius: "6px",
+                    position: "relative",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Tên trường"
+                        value={edu.school_name}
+                        onChange={(e) =>
+                          handleEduChange(index, "school_name", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Chuyên ngành"
+                        value={edu.major}
+                        onChange={(e) =>
+                          handleEduChange(index, "major", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Thời gian (VD: 2020 - 2024)"
+                        value={edu.duration}
+                        onChange={(e) =>
+                          handleEduChange(index, "duration", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={1}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {cvData.education.length > 1 && (
+                        <IconButton
+                          color="error"
+                          onClick={() => handleRemoveEdu(index)}
+                        >
+                          <DeleteOutline />
+                        </IconButton>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Box>
+              ))}
+            </Box>
+
+            <Divider />
+
+            {/* 3. KINH NGHIỆM LÀM VIỆC (EXPERIENCE) */}
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{ color: "#00b14f" }}
+                >
+                  3. Kinh nghiệm làm việc
+                </Typography>
+                <Button
+                  size="small"
+                  startIcon={<AddCircleOutline />}
+                  onClick={handleAddExp}
+                  sx={{
+                    color: "#00b14f",
+                    textTransform: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Thêm kinh nghiệm
+                </Button>
+              </Box>
+
+              {cvData.experience.map((exp, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    border: "1px dashed #e5e7eb",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Tên công ty"
+                        value={exp.company_name}
+                        onChange={(e) =>
+                          handleExpChange(index, "company_name", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Vị trí công việc"
+                        value={exp.position}
+                        onChange={(e) =>
+                          handleExpChange(index, "position", e.target.value)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        size="small"
+                        label="Mô tả công việc / Thành tích"
+                        value={exp.description}
+                        onChange={(e) =>
+                          handleExpChange(index, "description", e.target.value)
+                        }
+                      />
+                    </Grid>
+                  </Grid>
+                  {cvData.experience.length > 1 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        mt: 1,
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        color="error"
+                        startIcon={<DeleteOutline />}
+                        onClick={() => handleRemoveExp(index)}
+                      >
+                        Xóa kinh nghiệm này
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Box>
+
+            <Divider />
+
+            {/* 4. KỸ NĂNG (SKILLS) */}
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{ color: "#00b14f" }}
+                >
+                  4. Kỹ năng
+                </Typography>
+                <Button
+                  size="small"
+                  startIcon={<AddCircleOutline />}
+                  onClick={handleAddSkill}
+                  sx={{
+                    color: "#00b14f",
+                    textTransform: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Thêm kỹ năng
+                </Button>
+              </Box>
+
+              <Grid container spacing={2}>
+                {cvData.skills.map((skill, index) => (
+                  <Grid item xs={12} sm={6} key={index}>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="VD: ReactJS, Teamwork, Tiếng Anh..."
+                        value={skill}
+                        onChange={(e) =>
+                          handleSkillChange(index, e.target.value)
+                        }
+                      />
+                      {cvData.skills.length > 1 && (
+                        <IconButton
+                          color="error"
+                          onClick={() => handleRemoveSkill(index)}
+                        >
+                          <DeleteOutline />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Paper>
         </Box>
       </Box>
+
+      {/* Thông báo kết quả */}
+      <NotificationDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        message={popupMessage}
+        isSuccess={isSuccessPopup}
+      />
     </>
   );
 };
-
-// Component con để render nút bấm trên Sidebar
-const SidebarItem = ({ icon, label }) => (
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 1,
-      py: 2,
-      cursor: "pointer",
-      color: "#4b5563",
-      "&:hover": { bgcolor: "#f4f5f5", color: "#00b14f" },
-    }}
-  >
-    {React.cloneElement(icon, { fontSize: "medium" })}
-    <Typography sx={{ fontSize: "12px", fontWeight: 600, textAlign: "center" }}>
-      {label}
-    </Typography>
-  </Box>
-);
 
 export default CreateCV;

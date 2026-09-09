@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Box,
   Typography,
@@ -8,7 +9,13 @@ import {
   Stack,
   Chip,
   Grid,
-  Link,
+  Skeleton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 
 // === Import Icons ===
@@ -24,7 +31,180 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 
-const JobDetail = () => {
+import api from "../plugins/axios";
+import NotificationDialog from "./NotificationDialog";
+
+const JobDetail = ({ jobData, isLoading }) => {
+  const navigate = useNavigate();
+
+  // --- STATE QUẢN LÝ POPUP ỨNG TUYỂN ---
+  const [openApply, setOpenApply] = useState(false);
+  const [applyForm, setApplyForm] = useState({
+    cv_id: "",
+    cover_letter: "",
+  });
+
+  // --- STATE QUẢN LÝ THÔNG BÁO (NOTIFICATION DIALOG) ---
+  const [openDialog, setOpenDialog] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
+  const [redirectAfterClose, setRedirectAfterClose] = useState(""); // Lưu URL cần chuyển hướng sau khi đóng thông báo
+
+  // Đóng Dialog thông báo
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    if (redirectAfterClose) {
+      navigate(redirectAfterClose);
+      setRedirectAfterClose(""); // Reset
+    }
+  };
+
+  const mockMyCVs = [
+    {
+      id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      name: "CV_LapTrinhVien_NguyenVanA.pdf",
+    },
+    {
+      id: "12345678-1234-1234-1234-1234567890ab",
+      name: "CV_TiengAnh_Thang9.pdf",
+    },
+  ];
+
+  // --- LOGIC XỬ LÝ ỨNG TUYỂN ---
+  const handleOpenApply = () => {
+    const token = localStorage.getItem("access_token");
+    const role = localStorage.getItem("user_role");
+
+    if (!token) {
+      setPopupMessage("Bạn cần đăng nhập để ứng tuyển công việc này!");
+      setIsSuccessPopup(false);
+      setRedirectAfterClose("/login"); // Nhớ url để lát đóng thông báo thì chuyển sang login
+      setOpenDialog(true);
+      return;
+    }
+
+    if (role === "EMPLOYER") {
+      setPopupMessage(
+        "Tài khoản Nhà tuyển dụng không thể ứng tuyển công việc!",
+      );
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
+
+    setOpenApply(true);
+  };
+
+  const handleCloseApply = () => {
+    setOpenApply(false);
+    setApplyForm({ cv_id: "", cover_letter: "" });
+  };
+
+  const submitApply = async () => {
+    if (!applyForm.cv_id) {
+      setPopupMessage("Vui lòng chọn CV để ứng tuyển!");
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
+
+    try {
+      await api.post(`/api/v1/jobs/${jobData.id}/apply`, applyForm);
+      handleCloseApply(); // Đóng modal nộp đơn trước
+
+      setPopupMessage(
+        "Ứng tuyển thành công! Nhà tuyển dụng sẽ sớm liên hệ với bạn.",
+      );
+      setIsSuccessPopup(true);
+      setOpenDialog(true);
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.detail?.[0]?.msg ||
+        error.response?.data?.message ||
+        "Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.";
+
+      setPopupMessage(errorMsg);
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+    }
+  };
+
+  // --- Các hàm Format Dữ Liệu ---
+  const formatSalary = (salaryObj) => {
+    if (!salaryObj) return "Chưa cập nhật";
+    if (salaryObj.type === "AGREEMENT") return "Thoả thuận";
+    if (salaryObj.type === "RANGE") {
+      const minM = salaryObj.min / 1000000;
+      const maxM = salaryObj.max / 1000000;
+      return `${minM} - ${maxM} triệu`;
+    }
+    return "Thoả thuận";
+  };
+
+  const formatWorkLocation = (work_location) => {
+    if (!work_location || work_location.length === 0) return "Chưa cập nhật";
+    return work_location.map((location) => location.city_name).join(" & ");
+  };
+
+  const formatDate = (isoString) => {
+    if (!isoString) return "Chưa cập nhật";
+    const date = new Date(isoString);
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const getJobTypeString = (type) => {
+    const types = {
+      FULL_TIME: "Toàn thời gian",
+      PART_TIME: "Bán thời gian",
+      REMOTE: "Làm từ xa",
+    };
+    return types[type] || type;
+  };
+
+  const getGenderString = (gender) => {
+    const genders = {
+      MALE: "Nam",
+      FEMALE: "Nữ",
+      OTHER: "Không yêu cầu",
+    };
+    return genders[gender] || gender;
+  };
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "1170px",
+          margin: "0 auto",
+          px: "15px",
+          py: 3,
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height={400}
+          sx={{ borderRadius: 2 }}
+        />
+      </Box>
+    );
+  }
+
+  if (!jobData) {
+    return (
+      <Box sx={{ textAlign: "center", py: 10 }}>
+        <Typography variant="h5" color="text.secondary">
+          Không tìm thấy thông tin công việc!
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ bgcolor: "#f4f5f5", minHeight: "100vh", py: 3 }}>
       <Box
@@ -35,7 +215,6 @@ const JobDetail = () => {
           px: "15px",
         }}
       >
-        {/* === SỬ DỤNG FLEXBOX THAY CHO GRID ĐỂ CHIA 2 CỘT === */}
         <Box
           sx={{
             display: "flex",
@@ -44,7 +223,7 @@ const JobDetail = () => {
             flexDirection: { xs: "column", md: "row" },
           }}
         >
-          {/* ================= CỘT TRÁI (NỘI DUNG CHÍNH - CHIẾM 2 PHẦN) ================= */}
+          {/* ================= CỘT TRÁI (NỘI DUNG CHÍNH) ================= */}
           <Box sx={{ flex: 2, width: "100%" }}>
             <Box
               sx={{
@@ -55,7 +234,6 @@ const JobDetail = () => {
                 mb: 3,
               }}
             >
-              {/* --- Header: Tên Job & Lương --- */}
               <Typography
                 variant="h5"
                 sx={{
@@ -67,8 +245,12 @@ const JobDetail = () => {
                   gap: 1,
                 }}
               >
-                Nhân Viên Kinh Doanh B2B
-                <VerifiedUserIcon sx={{ color: "#00b14f", fontSize: "20px" }} />
+                {jobData.title}
+                {jobData.is_hot && (
+                  <VerifiedUserIcon
+                    sx={{ color: "#00b14f", fontSize: "20px" }}
+                  />
+                )}
               </Typography>
 
               <Box
@@ -78,13 +260,12 @@ const JobDetail = () => {
                 <Typography
                   sx={{ fontSize: "18px", fontWeight: 700, color: "#00b14f" }}
                 >
-                  12 - 20 triệu
+                  {formatSalary(jobData.salary)}
                 </Typography>
               </Box>
 
-              {/* --- Meta Info --- */}
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid xs={4}>
+                <Grid item xs={12} sm={4}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -108,12 +289,12 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        Hồ Chí Minh
+                        {formatWorkLocation(jobData.work_location)}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
-                <Grid xs={4}>
+                <Grid item xs={12} sm={4}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -137,12 +318,12 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        1 năm
+                        {jobData.experience_level}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
-                <Grid xs={4}>
+                <Grid item xs={12} sm={4}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -166,18 +347,19 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        05/09/2026
+                        {formatDate(jobData.deadline)}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
               </Grid>
 
-              {/* --- Nút Ứng tuyển & Lưu tin --- */}
+              {/* Nút Ứng tuyển */}
               <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
                 <Button
                   variant="contained"
                   startIcon={<SendIcon />}
+                  onClick={handleOpenApply}
                   sx={{
                     flex: 1,
                     bgcolor: "#00b14f",
@@ -192,25 +374,10 @@ const JobDetail = () => {
                 >
                   Ứng tuyển ngay
                 </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<FavoriteBorderIcon />}
-                  sx={{
-                    color: "#00b14f",
-                    borderColor: "#00b14f",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    px: 3,
-                    "&:hover": { borderColor: "#009944", bgcolor: "#f7fffb" },
-                  }}
-                >
-                  Lưu tin
-                </Button>
               </Box>
 
               <Divider sx={{ mb: 3 }} />
 
-              {/* --- Chi tiết: Mô tả công việc --- */}
               <Box sx={{ mb: 4 }}>
                 <Box
                   sx={{
@@ -236,30 +403,17 @@ const JobDetail = () => {
                   </Typography>
                 </Box>
                 <Box
-                  component="ul"
+                  dangerouslySetInnerHTML={{ __html: jobData.description_html }}
                   sx={{
-                    pl: 3,
-                    m: 0,
                     color: "#4b5563",
                     fontSize: "15px",
                     lineHeight: 1.8,
+                    "& ul, & ol": { pl: 3, m: 0 },
+                    "& h4": { color: "#212f3f", mb: 1 },
                   }}
-                >
-                  <li>
-                    Chăm sóc khách hàng cũ và phát triển hệ thống khách hàng mới
-                    trong khu vực chủ yếu kênh nhà hàng, khách sạn, resort,
-                    coffee, bakery shop...
-                  </li>
-                  <li>Xử lí phản hồi thông tin từ khách hàng và thị trường.</li>
-                  <li>Đàm phán, đề xuất các chương trình khuyến mại.</li>
-                  <li>
-                    Theo dõi xuất, nhập, tồn, phân tích, đánh giá và kiểm soát
-                    lượng hàng tồn, hàng nhập theo tuần tháng.
-                  </li>
-                </Box>
+                />
               </Box>
 
-              {/* --- Chi tiết: Yêu cầu ứng viên --- */}
               <Box sx={{ mb: 4 }}>
                 <Box
                   sx={{
@@ -285,29 +439,19 @@ const JobDetail = () => {
                   </Typography>
                 </Box>
                 <Box
-                  component="ul"
+                  dangerouslySetInnerHTML={{
+                    __html: jobData.requirements_html,
+                  }}
                   sx={{
-                    pl: 3,
-                    m: 0,
                     color: "#4b5563",
                     fontSize: "15px",
                     lineHeight: 1.8,
+                    "& ul, & ol": { pl: 3, m: 0 },
+                    "& h4": { color: "#212f3f", mb: 1 },
                   }}
-                >
-                  <li>
-                    Có thể đi thị trường để gặp khách hàng trực tiếp (B khách
-                    hàng/ngày cho vị trí Kinh doanh).
-                  </li>
-                  <li>Ngoại hình sáng, phong cách ăn mặc lịch sự, gọn gàng.</li>
-                  <li>
-                    Không yêu cầu ngoại ngữ, tuy nhiên giao tiếp Tiếng Anh tốt
-                    là lợi thế.
-                  </li>
-                  <li>Có kinh nghiệm bán hàng ít nhất 1 năm.</li>
-                </Box>
+                />
               </Box>
 
-              {/* --- Chi tiết: Quyền lợi --- */}
               <Box sx={{ mb: 4 }}>
                 <Box
                   sx={{
@@ -333,23 +477,17 @@ const JobDetail = () => {
                   </Typography>
                 </Box>
                 <Box
-                  component="ul"
+                  dangerouslySetInnerHTML={{ __html: jobData.benefits_html }}
                   sx={{
-                    pl: 3,
-                    m: 0,
                     color: "#4b5563",
                     fontSize: "15px",
                     lineHeight: 1.8,
+                    "& ul, & ol": { pl: 3, m: 0 },
+                    "& h4": { color: "#212f3f", mb: 1 },
                   }}
-                >
-                  <li>Thu nhập khi đạt 100% KPI: 12 - 20 triệu VNĐ.</li>
-                  <li>Review lương vào tháng 3 hàng năm.</li>
-                  <li>Thưởng lương tháng 13 và thưởng cuối năm.</li>
-                  <li>Thưởng các ngày lễ, Tết, hiếu hỉ, sinh nhật.</li>
-                </Box>
+                />
               </Box>
 
-              {/* --- Chi tiết: Địa điểm làm việc --- */}
               <Box sx={{ mb: 2 }}>
                 <Box
                   sx={{
@@ -374,19 +512,21 @@ const JobDetail = () => {
                     Địa điểm làm việc
                   </Typography>
                 </Box>
-                <Typography sx={{ color: "#4b5563", fontSize: "15px", pl: 1 }}>
-                  - Hồ Chí Minh: Tòa nhà Dali, 24C Phan Đăng Lưu, Phường 6, Quận
-                  Bình Thạnh.
-                </Typography>
+                {jobData.work_location?.map((loc, index) => (
+                  <Typography
+                    key={index}
+                    sx={{ color: "#4b5563", fontSize: "15px", pl: 1, mb: 0.5 }}
+                  >
+                    - {loc.city_name}: {loc.address_detail}
+                  </Typography>
+                ))}
               </Box>
             </Box>
           </Box>
-          {/* ================= HẾT CỘT TRÁI ================= */}
 
-          {/* ================= CỘT PHẢI (SIDEBAR - CHIẾM 1 PHẦN) ================= */}
+          {/* ================= CỘT PHẢI (SIDEBAR) ================= */}
           <Box sx={{ flex: 1, width: "100%" }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              {/* 1. Card thông tin Công ty */}
               <Box
                 sx={{
                   bgcolor: "#fff",
@@ -398,7 +538,7 @@ const JobDetail = () => {
                 <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                   <Avatar
                     variant="square"
-                    src="https://via.placeholder.com/64"
+                    src={jobData.company?.logo_url}
                     sx={{
                       width: 64,
                       height: 64,
@@ -419,7 +559,7 @@ const JobDetail = () => {
                         overflow: "hidden",
                       }}
                     >
-                      GOOD FOOD CO., LTD
+                      {jobData.company?.company_name}
                     </Typography>
                   </Box>
                 </Box>
@@ -428,50 +568,27 @@ const JobDetail = () => {
                   <Box sx={{ display: "flex", gap: 1, color: "#7f878f" }}>
                     <PeopleAltOutlinedIcon fontSize="small" />
                     <Typography sx={{ fontSize: "13px", color: "#4b5563" }}>
-                      <strong>Quy mô:</strong> 25-99 nhân viên
+                      <strong>Quy mô:</strong>{" "}
+                      {jobData.company?.company_size || "Chưa cập nhật"}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1, color: "#7f878f" }}>
                     <BusinessOutlinedIcon fontSize="small" />
                     <Typography sx={{ fontSize: "13px", color: "#4b5563" }}>
-                      <strong>Lĩnh vực:</strong> Bán lẻ - Hàng tiêu dùng - FMCG
+                      <strong>Lĩnh vực:</strong>{" "}
+                      {jobData.company?.category || "Chưa cập nhật"}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", gap: 1, color: "#7f878f" }}>
                     <LocationOnOutlinedIcon fontSize="small" />
                     <Typography sx={{ fontSize: "13px", color: "#4b5563" }}>
-                      <strong>Địa điểm:</strong> Tháp A1, Sarica, Khu đô thị
-                      Sala, Quận 2, TP.HCM
+                      <strong>Địa điểm:</strong>{" "}
+                      {jobData.company?.headquarters_address || "Chưa cập nhật"}
                     </Typography>
                   </Box>
                 </Stack>
-                <Typography
-                  component="a"
-                  href="#"
-                  sx={{
-                    display: "block",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    color: "#00b14f",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                    p: 1,
-                    border: "1px solid #00b14f",
-                    borderRadius: "4px",
-                    "&:hover": { bgcolor: "#f7fffb" },
-                  }}
-                >
-                  <Link
-                    href="/company-detail"
-                    underline="none"
-                    sx={{ color: "inherit" }}
-                  >
-                    Xem trang công ty
-                  </Link>
-                </Typography>
               </Box>
 
-              {/* 2. Card thông tin chung */}
               <Box
                 sx={{
                   bgcolor: "#fff",
@@ -515,7 +632,7 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        Nhân viên
+                        {jobData.experience_level}
                       </Typography>
                     </Box>
                   </Box>
@@ -544,7 +661,7 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        1 năm
+                        {jobData.experience_level}
                       </Typography>
                     </Box>
                   </Box>
@@ -573,7 +690,7 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        5 người
+                        {jobData.quantity} người
                       </Typography>
                     </Box>
                   </Box>
@@ -602,7 +719,7 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        Toàn thời gian
+                        {getJobTypeString(jobData.job_type)}
                       </Typography>
                     </Box>
                   </Box>
@@ -631,14 +748,13 @@ const JobDetail = () => {
                           color: "#212f3f",
                         }}
                       >
-                        Không yêu cầu
+                        {getGenderString(jobData.gender)}
                       </Typography>
                     </Box>
                   </Box>
                 </Stack>
               </Box>
 
-              {/* 3. Danh mục nghề liên quan */}
               <Box
                 sx={{
                   bgcolor: "#fff",
@@ -658,37 +774,129 @@ const JobDetail = () => {
                   Danh mục nghề liên quan
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  <Chip
-                    label="Kinh doanh / Bán hàng"
-                    sx={{
-                      bgcolor: "#f4f5f5",
-                      color: "#4b5563",
-                      borderRadius: "4px",
-                    }}
-                  />
-                  <Chip
-                    label="Bán lẻ / Hàng tiêu dùng"
-                    sx={{
-                      bgcolor: "#f4f5f5",
-                      color: "#4b5563",
-                      borderRadius: "4px",
-                    }}
-                  />
-                  <Chip
-                    label="B2B Sales"
-                    sx={{
-                      bgcolor: "#f4f5f5",
-                      color: "#4b5563",
-                      borderRadius: "4px",
-                    }}
-                  />
+                  {jobData.category && (
+                    <Chip
+                      label={jobData.category}
+                      sx={{
+                        bgcolor: "#f4f5f5",
+                        color: "#4b5563",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  )}
+                  {jobData.specialty && (
+                    <Chip
+                      label={jobData.specialty}
+                      sx={{
+                        bgcolor: "#f4f5f5",
+                        color: "#4b5563",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  )}
                 </Box>
               </Box>
             </Box>
           </Box>
-          {/* ================= HẾT CỘT PHẢI ================= */}
         </Box>
       </Box>
+
+      {/* ================= DIALOG / POPUP ỨNG TUYỂN ================= */}
+      <Dialog
+        open={openApply}
+        onClose={handleCloseApply}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 700,
+            color: "#212f3f",
+            borderBottom: "1px solid #e5e7eb",
+          }}
+        >
+          Ứng tuyển: {jobData?.title}
+        </DialogTitle>
+
+        <DialogContent sx={{ mt: 2 }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ mb: 1, color: "#212f3f" }}
+            >
+              Chọn CV của bạn *
+            </Typography>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              value={applyForm.cv_id}
+              onChange={(e) =>
+                setApplyForm({ ...applyForm, cv_id: e.target.value })
+              }
+            >
+              <MenuItem value="" disabled>
+                -- Vui lòng chọn CV --
+              </MenuItem>
+              {mockMyCVs.map((cv) => (
+                <MenuItem key={cv.id} value={cv.id}>
+                  {cv.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+          <Box>
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ mb: 1, color: "#212f3f" }}
+            >
+              Thư giới thiệu (Cover Letter)
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              placeholder="Nhập lời chào và giới thiệu ngắn gọn điểm mạnh của bạn (Không bắt buộc)..."
+              value={applyForm.cover_letter}
+              onChange={(e) =>
+                setApplyForm({ ...applyForm, cover_letter: e.target.value })
+              }
+            />
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 3, borderTop: "1px solid #e5e7eb" }}>
+          <Button
+            onClick={handleCloseApply}
+            sx={{ color: "#7f878f", fontWeight: 600 }}
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={submitApply}
+            variant="contained"
+            sx={{
+              bgcolor: "#00b14f",
+              fontWeight: 600,
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#009944", boxShadow: "none" },
+            }}
+          >
+            Nộp hồ sơ
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ================= NOTIFICATION DIALOG ================= */}
+      <NotificationDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        message={popupMessage}
+        isSuccess={isSuccessPopup}
+      />
     </Box>
   );
 };

@@ -54,7 +54,7 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
-    path: "/job-info",
+    path: "/job-info/:slug",
     element: <JobInfo />,
   },
   {

@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Button,
   Chip,
   IconButton,
   Avatar,
@@ -12,25 +11,21 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CloseIcon from "@mui/icons-material/Close";
 import EmojiObjectsOutlinedIcon from "@mui/icons-material/EmojiObjectsOutlined";
-import BoltIcon from "@mui/icons-material/Bolt";
 import JobDetailCard from "./JobDetailCard";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useState } from "react";
+
 const JobHoverTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "transparent", // Xóa nền đen
-    padding: 0, // Xóa khoảng cách để card ôm sát
-    maxWidth: 500, // Đới nới rộng giới hạn chiều ngang
+    backgroundColor: "transparent",
+    padding: 0,
+    maxWidth: 500,
   },
 }));
-const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
-  // 2. ĐÃ XÓA CHECK LOADING Ở ĐÂY ĐỂ TRÁNH MẤT GIAO DIỆN
 
+const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Chưa cập nhật";
 
@@ -44,7 +39,7 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
       return `${minM} - ${maxM} triệu`;
     }
 
-    return "Thoả thuận"; // Fallback dự phòng
+    return "Thoả thuận";
   };
 
   const formatWorkLocation = (work_location) => {
@@ -52,21 +47,6 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
     return work_location.map((location) => location.city_name).join(" & ");
   };
 
-  // State lưu danh sách ID các công việc đã thích
-  const [likedJobs, setLikedJobs] = useState([]);
-
-  // Hàm xử lý click thả tim
-  const handleToggleLike = (jobId) => {
-    const isLiked = likedJobs.includes(jobId);
-
-    if (isLiked) {
-      // Đã thích rồi -> Bỏ thích (Lọc bỏ ID ra khỏi mảng)
-      setLikedJobs(likedJobs.filter((id) => id !== jobId));
-    } else {
-      // Chưa thích -> Thêm ID vào mảng
-      setLikedJobs([...likedJobs, jobId]);
-    }
-  };
   return (
     <Box
       sx={{
@@ -146,10 +126,8 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
           gap: 2.5,
         }}
       >
-        {/* 3. LOGIC LOADING & HIỂN THỊ DATA */}
         {isLoading
-          ? // KHI ĐANG TẢI: In ra 6 cái Skeleton
-            Array.from(new Array(6)).map((_, index) => (
+          ? Array.from(new Array(6)).map((_, index) => (
               <Box
                 key={index}
                 sx={{
@@ -211,8 +189,7 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                 </Box>
               </Box>
             ))
-          : // KHI TẢI XONG: In ra thẻ Jobs thật
-            jobs.map((j) => {
+          : jobs.map((j) => {
               return (
                 <Box
                   key={j.id}
@@ -230,7 +207,6 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                     },
                   }}
                 >
-                  {/* Nửa trên: Logo & Thông tin */}
                   <Box
                     sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}
                   >
@@ -254,11 +230,10 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                     </Box>
 
                     <Box sx={{ flex: 1, overflow: "hidden" }}>
-                      {/* BỌC TOOLTIP VÀO ĐÂY */}
                       <JobHoverTooltip
                         title={<JobDetailCard job={j} />}
-                        placement="right-start" // Cho nó hiện ra bên phải, ngang hàng với tiêu đề
-                        interactive // Cho phép chuột rê vào trong popup để bấm nút "Ứng tuyển"
+                        placement="right-start"
+                        interactive
                       >
                         <Typography
                           sx={{
@@ -276,7 +251,7 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                           }}
                         >
                           <Link
-                            href="/job-info"
+                            href={`/job-info/${j.slug}`}
                             underline="none"
                             sx={{ color: "inherit" }}
                           >
@@ -300,7 +275,6 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                     </Box>
                   </Box>
 
-                  {/* Nửa dưới: Tags & Heart Icon */}
                   <Box
                     sx={{
                       display: "flex",
@@ -332,40 +306,6 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
                         }}
                       />
                     </Box>
-                    {/* Icon trái tim */}
-                    <IconButton
-                      size="small"
-                      onClick={() => handleToggleLike(j.id)} // Gắn sự kiện click
-                      sx={{
-                        // Nếu có ID trong mảng thì viền xanh, không thì viền xám
-                        border: "1px solid",
-                        borderColor: likedJobs.includes(j.id)
-                          ? "#00b14f"
-                          : "#e5e7eb",
-
-                        // Nếu có ID trong mảng thì nền xanh nhạt, không thì nền trắng
-                        bgcolor: likedJobs.includes(j.id) ? "#f7fffb" : "#fff",
-
-                        "&:hover": {
-                          bgcolor: likedJobs.includes(j.id)
-                            ? "#e8f8ee"
-                            : "#f4f5f5",
-                        },
-                      }}
-                    >
-                      {/* Kiểm tra: Có ID thì hiện Tim đặc màu xanh, Không có thì hiện Tim rỗng màu xám */}
-                      {likedJobs.includes(j.id) ? (
-                        <FavoriteIcon
-                          fontSize="small"
-                          sx={{ color: "#00b14f" }}
-                        />
-                      ) : (
-                        <FavoriteBorderIcon
-                          fontSize="small"
-                          sx={{ color: "#a6acb2" }}
-                        />
-                      )}
-                    </IconButton>
                   </Box>
                 </Box>
               );
@@ -395,8 +335,7 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
           <strong style={{ color: "#00b14f", fontWeight: 600 }}>
             {pageCurrent}
           </strong>{" "}
-          / {totalPage}{" "}
-          trang
+          / {totalPage} trang
         </Typography>
         <IconButton
           size="small"
