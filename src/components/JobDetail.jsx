@@ -59,16 +59,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
   };
 
-  const mockMyCVs = [
-    {
-      id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      name: "CV_LapTrinhVien_NguyenVanA.pdf",
-    },
-    {
-      id: "12345678-1234-1234-1234-1234567890ab",
-      name: "CV_TiengAnh_Thang9.pdf",
-    },
-  ];
+  const [myCVs, setMyCVs] = useState([]);
 
   // --- LOGIC XỬ LÝ ỨNG TUYỂN ---
   const handleOpenApply = () => {
@@ -78,7 +69,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     if (!token) {
       setPopupMessage("Bạn cần đăng nhập để ứng tuyển công việc này!");
       setIsSuccessPopup(false);
-      setRedirectAfterClose("/login"); // Nhớ url để lát đóng thông báo thì chuyển sang login
+      setRedirectAfterClose("/login");
       setOpenDialog(true);
       return;
     }
@@ -90,6 +81,12 @@ const JobDetail = ({ jobData, isLoading }) => {
       setIsSuccessPopup(false);
       setOpenDialog(true);
       return;
+    }
+
+    // --- TỰ ĐỘNG LẤY CV ID VỪA TẠO GẦN NHẤT ---
+    const savedCvId = localStorage.getItem("last_created_cv_id");
+    if (savedCvId) {
+      setApplyForm((prev) => ({ ...prev, cv_id: savedCvId }));
     }
 
     setOpenApply(true);
@@ -839,11 +836,16 @@ const JobDetail = ({ jobData, isLoading }) => {
               <MenuItem value="" disabled>
                 -- Vui lòng chọn CV --
               </MenuItem>
-              {mockMyCVs.map((cv) => (
-                <MenuItem key={cv.id} value={cv.id}>
-                  {cv.name}
+              {localStorage.getItem("last_created_cv_id") ? (
+                <MenuItem value={localStorage.getItem("last_created_cv_id")}>
+                  {localStorage.getItem("last_created_cv_name") || "CV của tôi"}{" "}
+                  (Mới nhất)
                 </MenuItem>
-              ))}
+              ) : (
+                <MenuItem value="" disabled>
+                  Chưa có CV nào được lưu. Vui lòng tạo CV trước!
+                </MenuItem>
+              )}
             </TextField>
           </Box>
 

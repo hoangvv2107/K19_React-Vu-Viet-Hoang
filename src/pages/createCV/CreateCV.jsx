@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   Box,
@@ -7,14 +7,13 @@ import {
   IconButton,
   Divider,
   TextField,
-  Grid,
   Paper,
 } from "@mui/material";
 
 import SaveIcon from "@mui/icons-material/Save";
 import DescriptionIcon from "@mui/icons-material/Description";
-import AddCircleOutline from "@mui/icons-material/AddCircle";
-import DeleteOutline from "@mui/icons-material/Delete";
+import AddCircle from "@mui/icons-material/AddCircle";
+import Delete from "@mui/icons-material/Delete";
 
 import Header from "../../components/Header";
 import api from "../../plugins/axios";
@@ -22,8 +21,13 @@ import NotificationDialog from "../../components/NotificationDialog";
 
 const CreateCV = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
-  // --- 1. STATE CẤU TRÚC DỮ LIỆU KHỚP VỚI API BACKEND ---
   const [cvData, setCvData] = useState({
     full_name: "",
     phone: "",
@@ -34,7 +38,6 @@ const CreateCV = () => {
     skills: [""],
   });
 
-  // --- STATE QUẢN LÝ THÔNG BÁO ---
   const [openDialog, setOpenDialog] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
@@ -43,13 +46,11 @@ const CreateCV = () => {
     setOpenDialog(false);
   };
 
-  // --- XỬ LÝ THAY ĐỔI DỮ LIỆU CƠ BẢN ---
   const handleBasicChange = (e) => {
     const { name, value } = e.target;
     setCvData({ ...cvData, [name]: value });
   };
 
-  // --- XỬ LÝ MẢNG HỌC VẤN (EDUCATION) ---
   const handleEduChange = (index, field, value) => {
     const newEdu = [...cvData.education];
     newEdu[index][field] = value;
@@ -71,7 +72,6 @@ const CreateCV = () => {
     setCvData({ ...cvData, education: newEdu });
   };
 
-  // --- XỬ LÝ MẢNG KINH NGHIỆM (EXPERIENCE) ---
   const handleExpChange = (index, field, value) => {
     const newExp = [...cvData.experience];
     newExp[index][field] = value;
@@ -93,7 +93,6 @@ const CreateCV = () => {
     setCvData({ ...cvData, experience: newExp });
   };
 
-  // --- XỬ LÝ MẢNG KỸ NĂNG (SKILLS) ---
   const handleSkillChange = (index, value) => {
     const newSkills = [...cvData.skills];
     newSkills[index] = value;
@@ -128,15 +127,41 @@ const CreateCV = () => {
       return;
     }
 
-    try {
-      // Gửi toàn bộ cục JSON lên API POST /api/v1/candidate/cvs
-      const { data } = await api.post("/api/v1/candidate/cvs", cvData);
+    // --- KIỂM TRA NHẬP ĐỦ THÔNG TIN CƠ BẢN ---
+    if (
+      !cvData.full_name.trim() ||
+      !cvData.phone.trim() ||
+      !cvData.email.trim()
+    ) {
+      setPopupMessage(
+        "Vui lòng điền đầy đủ Họ và tên, Số điện thoại và Email!",
+      );
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
 
+    // --- KIỂM TRA THÔNG TIN HỌC VẤN (Ít nhất phải điền tên trường dòng đầu tiên) ---
+    if (
+      cvData.education.length > 0 &&
+      !cvData.education[0].school_name.trim()
+    ) {
+      setPopupMessage("Vui lòng điền ít nhất thông tin Học vấn (Tên trường)!");
+      setIsSuccessPopup(false);
+      setOpenDialog(true);
+      return;
+    }
+
+    try {
+      const { data } = await api.post("/api/v1/candidate/cvs", cvData);
+      localStorage.setItem("last_created_cv_id", data.cv_id);
+      localStorage.setItem(
+        "last_created_cv_name",
+        cvData.full_name || "CV của tôi",
+      );
       setPopupMessage(`Lưu CV thành công! Mã CV của bạn là: ${data.cv_id}`);
       setIsSuccessPopup(true);
       setOpenDialog(true);
-
-      console.log("Kết quả tạo CV:", data);
     } catch (error) {
       const errorMsg =
         error.response?.data?.detail?.[0]?.msg ||
@@ -160,7 +185,7 @@ const CreateCV = () => {
           bgcolor: "#f4f5f5",
         }}
       >
-        {/* === Thanh Sub-header (Lưu, Tiêu đề) === */}
+        {/* === Thanh Sub-header === */}
         <Box
           sx={{
             height: "60px",
@@ -202,13 +227,13 @@ const CreateCV = () => {
           </Button>
         </Box>
 
-        {/* === KHU VỰC NHẬP LIỆU FORM (Giống như tờ giấy soạn thảo nằm giữa màn hình) === */}
+        {/* === KHU VỰC NHẬP LIỆU FORM === */}
         <Box
           sx={{
             flex: 1,
             display: "flex",
             justifyContent: "center",
-            py: 4,
+            py: 5,
             px: 2,
           }}
         >
@@ -217,12 +242,12 @@ const CreateCV = () => {
             sx={{
               width: "100%",
               maxWidth: "850px",
-              p: "40px",
-              borderRadius: "8px",
+              p: "48px",
+              borderRadius: "12px",
               bgcolor: "#fff",
               display: "flex",
               flexDirection: "column",
-              gap: 4,
+              gap: 5,
             }}
           >
             {/* 1. THÔNG TIN CÁ NHÂN */}
@@ -230,54 +255,42 @@ const CreateCV = () => {
               <Typography
                 variant="h6"
                 fontWeight={700}
-                sx={{ color: "#00b14f", mb: 2 }}
+                sx={{ color: "#00b14f", mb: 3 }}
               >
                 1. Thông tin cá nhân
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Họ và tên"
-                    name="full_name"
-                    value={cvData.full_name}
-                    onChange={handleBasicChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Số điện thoại"
-                    name="phone"
-                    value={cvData.phone}
-                    onChange={handleBasicChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    label="Email liên hệ"
-                    name="email"
-                    value={cvData.email}
-                    onChange={handleBasicChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    size="small"
-                    label="Mục tiêu nghề nghiệp / Giới thiệu bản thân (Summary)"
-                    name="summary"
-                    value={cvData.summary}
-                    onChange={handleBasicChange}
-                  />
-                </Grid>
-              </Grid>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Họ và tên"
+                  name="full_name"
+                  value={cvData.full_name}
+                  onChange={handleBasicChange}
+                />
+                <TextField
+                  fullWidth
+                  label="Số điện thoại"
+                  name="phone"
+                  value={cvData.phone}
+                  onChange={handleBasicChange}
+                />
+                <TextField
+                  fullWidth
+                  label="Email liên hệ"
+                  name="email"
+                  value={cvData.email}
+                  onChange={handleBasicChange}
+                />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Mục tiêu nghề nghiệp / Giới thiệu bản thân (Summary)"
+                  name="summary"
+                  value={cvData.summary}
+                  onChange={handleBasicChange}
+                />
+              </Box>
             </Box>
 
             <Divider />
@@ -289,7 +302,7 @@ const CreateCV = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  mb: 2,
+                  mb: 3,
                 }}
               >
                 <Typography
@@ -301,7 +314,7 @@ const CreateCV = () => {
                 </Typography>
                 <Button
                   size="small"
-                  startIcon={<AddCircleOutline />}
+                  startIcon={<AddCircle />}
                   onClick={handleAddEdu}
                   sx={{
                     color: "#00b14f",
@@ -317,67 +330,53 @@ const CreateCV = () => {
                 <Box
                   key={index}
                   sx={{
-                    p: 2,
-                    mb: 2,
-                    border: "1px dashed #e5e7eb",
-                    borderRadius: "6px",
-                    position: "relative",
+                    p: 3,
+                    mb: 3,
+                    border: "1px dashed #cbd5e1",
+                    borderRadius: "8px",
+                    bgcolor: "#fafafa",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3,
                   }}
                 >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
+                  <TextField
+                    fullWidth
+                    label="Tên trường"
+                    value={edu.school_name}
+                    onChange={(e) =>
+                      handleEduChange(index, "school_name", e.target.value)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    label="Chuyên ngành"
+                    value={edu.major}
+                    onChange={(e) =>
+                      handleEduChange(index, "major", e.target.value)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    label="Thời gian (VD: 2020 - 2024)"
+                    value={edu.duration}
+                    onChange={(e) =>
+                      handleEduChange(index, "duration", e.target.value)
+                    }
+                  />
+
+                  {cvData.education.length > 1 && (
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Button
                         size="small"
-                        label="Tên trường"
-                        value={edu.school_name}
-                        onChange={(e) =>
-                          handleEduChange(index, "school_name", e.target.value)
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Chuyên ngành"
-                        value={edu.major}
-                        onChange={(e) =>
-                          handleEduChange(index, "major", e.target.value)
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Thời gian (VD: 2020 - 2024)"
-                        value={edu.duration}
-                        onChange={(e) =>
-                          handleEduChange(index, "duration", e.target.value)
-                        }
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      xs={12}
-                      sm={1}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {cvData.education.length > 1 && (
-                        <IconButton
-                          color="error"
-                          onClick={() => handleRemoveEdu(index)}
-                        >
-                          <DeleteOutline />
-                        </IconButton>
-                      )}
-                    </Grid>
-                  </Grid>
+                        color="error"
+                        startIcon={<Delete />}
+                        onClick={() => handleRemoveEdu(index)}
+                      >
+                        Xóa học vấn này
+                      </Button>
+                    </Box>
+                  )}
                 </Box>
               ))}
             </Box>
@@ -391,7 +390,7 @@ const CreateCV = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  mb: 2,
+                  mb: 3,
                 }}
               >
                 <Typography
@@ -403,7 +402,7 @@ const CreateCV = () => {
                 </Typography>
                 <Button
                   size="small"
-                  startIcon={<AddCircleOutline />}
+                  startIcon={<AddCircle />}
                   onClick={handleAddExp}
                   sx={{
                     color: "#00b14f",
@@ -419,61 +418,49 @@ const CreateCV = () => {
                 <Box
                   key={index}
                   sx={{
-                    p: 2,
-                    mb: 2,
-                    border: "1px dashed #e5e7eb",
-                    borderRadius: "6px",
+                    p: 3,
+                    mb: 3,
+                    border: "1px dashed #cbd5e1",
+                    borderRadius: "8px",
+                    bgcolor: "#fafafa",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3,
                   }}
                 >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Tên công ty"
-                        value={exp.company_name}
-                        onChange={(e) =>
-                          handleExpChange(index, "company_name", e.target.value)
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Vị trí công việc"
-                        value={exp.position}
-                        onChange={(e) =>
-                          handleExpChange(index, "position", e.target.value)
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        multiline
-                        rows={2}
-                        size="small"
-                        label="Mô tả công việc / Thành tích"
-                        value={exp.description}
-                        onChange={(e) =>
-                          handleExpChange(index, "description", e.target.value)
-                        }
-                      />
-                    </Grid>
-                  </Grid>
+                  <TextField
+                    fullWidth
+                    label="Tên công ty"
+                    value={exp.company_name}
+                    onChange={(e) =>
+                      handleExpChange(index, "company_name", e.target.value)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    label="Vị trí công việc"
+                    value={exp.position}
+                    onChange={(e) =>
+                      handleExpChange(index, "position", e.target.value)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    label="Mô tả công việc / Thành tích"
+                    value={exp.description}
+                    onChange={(e) =>
+                      handleExpChange(index, "description", e.target.value)
+                    }
+                  />
+
                   {cvData.experience.length > 1 && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        mt: 1,
-                      }}
-                    >
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <Button
                         size="small"
                         color="error"
-                        startIcon={<DeleteOutline />}
+                        startIcon={<Delete />}
                         onClick={() => handleRemoveExp(index)}
                       >
                         Xóa kinh nghiệm này
@@ -493,7 +480,7 @@ const CreateCV = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  mb: 2,
+                  mb: 3,
                 }}
               >
                 <Typography
@@ -505,7 +492,7 @@ const CreateCV = () => {
                 </Typography>
                 <Button
                   size="small"
-                  startIcon={<AddCircleOutline />}
+                  startIcon={<AddCircle />}
                   onClick={handleAddSkill}
                   sx={{
                     color: "#00b14f",
@@ -517,37 +504,34 @@ const CreateCV = () => {
                 </Button>
               </Box>
 
-              <Grid container spacing={2}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {cvData.skills.map((skill, index) => (
-                  <Grid item xs={12} sm={6} key={index}>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="VD: ReactJS, Teamwork, Tiếng Anh..."
-                        value={skill}
-                        onChange={(e) =>
-                          handleSkillChange(index, e.target.value)
-                        }
-                      />
-                      {cvData.skills.length > 1 && (
-                        <IconButton
-                          color="error"
-                          onClick={() => handleRemoveSkill(index)}
-                        >
-                          <DeleteOutline />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </Grid>
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                  >
+                    <TextField
+                      fullWidth
+                      placeholder="VD: ReactJS, Teamwork, Tiếng Anh..."
+                      value={skill}
+                      onChange={(e) => handleSkillChange(index, e.target.value)}
+                    />
+                    {cvData.skills.length > 1 && (
+                      <IconButton
+                        color="error"
+                        onClick={() => handleRemoveSkill(index)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    )}
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </Box>
           </Paper>
         </Box>
       </Box>
 
-      {/* Thông báo kết quả */}
       <NotificationDialog
         open={openDialog}
         onClose={handleCloseDialog}
