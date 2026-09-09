@@ -395,7 +395,7 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
           <strong style={{ color: "#00b14f", fontWeight: 600 }}>
             {pageCurrent}
           </strong>{" "}
-          / {totalPage}
+          / {totalPage}{" "}
           trang
         </Typography>
         <IconButton

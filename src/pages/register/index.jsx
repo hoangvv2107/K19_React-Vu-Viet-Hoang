@@ -123,8 +123,11 @@ const RegisterPage = () => {
       };
 
       try {
-        const response = await api.post("/api/v1/auth/register", registerData);
-        localStorage.setItem("access_token", response.data.access_token);
+        const { data } = await api.post("/api/v1/auth/login", account);
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user_id", data.user.id);
+        localStorage.setItem("user_email", data.user.email);
+        localStorage.setItem("user_role", data.user.role);
         setIsSuccessPopup(true);
         setPopupMessage("Đăng ký tài khoản thành công!");
         setOpenPopup(true);

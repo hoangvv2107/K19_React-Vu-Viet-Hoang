@@ -7,6 +7,8 @@ import {
   IconButton,
   Link,
   Typography,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import logoTopCV from "../assets/topcv-logo-home.png";
 import NavItem from "./NavItem";
@@ -15,10 +17,18 @@ import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineR
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { useEffect, useState } from "react";
+import api from "../plugins/axios";
+import { useNavigate } from "react-router";
 
 const Header = () => {
+  let navigate = useNavigate();
+
   // 1. Tạo state quản lý trạng thái đăng nhập
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // State quản lý việc đóng/mở menu của Avatar
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
 
   // 2. Kiểm tra token trong localStorage khi Header vừa render
   useEffect(() => {
@@ -27,6 +37,28 @@ const Header = () => {
       setIsLoggedIn(true);
     }
   }, []);
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/v1/auth/logout");
+    } catch (error) {
+      console.log("Logout API error:", error);
+    } finally {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+      setIsLoggedIn(false);
+      handleCloseMenu();
+      navigate("/");
+    }
+  };
 
   return (
     <AppBar
@@ -41,7 +73,7 @@ const Header = () => {
         borderBottom: "1px solid #f4f5f5",
       }}
     >
-      {/* Nửa bên trái: Logo & Menu giữ nguyên */}
+      {/* Nửa bên trái: Logo & Menu */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
         <Link href="/">
           <Box
@@ -72,40 +104,9 @@ const Header = () => {
             gap: "12px",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              color: "#263a4d",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton
-              sx={{
-                background: "#f2f4f5",
-                display: "flex",
-                justifyContent: "center",
-                borderRadius: "50%",
-                alignItems: "center",
-              }}
-            >
-              <NotificationsNoneIcon />
-            </IconButton>
-            <IconButton
-              sx={{
-                background: "#f2f4f5",
-                display: "flex",
-                justifyContent: "center",
-                borderRadius: "50%",
-                alignItems: "center",
-              }}
-            >
-              <ChatBubbleOutlineRoundedIcon />
-            </IconButton>
-          </Box>
-
+          {/* Nút Avatar */}
           <IconButton
+            onClick={handleAvatarClick}
             disableRipple
             sx={{
               padding: 0,
@@ -126,6 +127,23 @@ const Header = () => {
               <Avatar alt="avatar user" src="/src/assets/avatar-default.webp" />
             </Badge>
           </IconButton>
+
+          {/* Menu xổ xuống chỉ chứa nút Đăng xuất */}
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            sx={{ mt: 1 }}
+          >
+            <MenuItem
+              onClick={handleLogout}
+              sx={{ color: "error.main", fontWeight: "bold" }}
+            >
+              Đăng xuất
+            </MenuItem>
+          </Menu>
 
           <Box
             sx={{

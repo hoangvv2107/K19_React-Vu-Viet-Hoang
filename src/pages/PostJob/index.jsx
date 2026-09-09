@@ -37,6 +37,26 @@ import { CITIES_DATA } from "../../plugins/cities";
 
 const PostJob = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    // 1. Lấy dữ liệu từ kho lưu trữ
+    const token = localStorage.getItem("access_token");
+    const userRole = localStorage.getItem("user_role"); 
+
+    // 2. Kịch bản 1: Chưa đăng nhập
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // 3. Kịch bản 2: Đã đăng nhập nhưng là tài khoản Ứng viên (Candidate)
+    if (userRole !== "EMPLOYER") {
+      // Chỗ này tùy thuộc vào giá trị role backend trả về thực tế
+      alert("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
+      navigate("/"); // Đá về trang chủ ứng viên
+    }
+
+    // Nếu vượt qua hết các IF trên, người dùng mới được ở lại trang và gọi API categories
+  }, [navigate]);
 
   // State lưu danh sách categories lấy từ API
   const [categoriesData, setCategoriesData] = useState([]);
@@ -67,7 +87,7 @@ const PostJob = () => {
         address_detail: "",
       },
     ],
-    deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    deadline: "", // Cho phép nhà tuyển dụng chủ động chọn ngày
     is_hot: false,
     description_html:
       "<h4>1. Mô tả công việc</h4><p>Nhập chi tiết mô tả...</p>",
@@ -183,6 +203,14 @@ const PostJob = () => {
       formData.work_location[0].address_detail.trim() === ""
     ) {
       return "Vui lòng nhập địa chỉ chi tiết làm việc!";
+    }
+    if (!formData.deadline) {
+      return "Vui lòng chọn hạn nộp hồ sơ!";
+    }
+    if (
+      new Date(formData.deadline).getTime() < new Date().setHours(0, 0, 0, 0)
+    ) {
+      return "Hạn nộp hồ sơ không được nhỏ hơn ngày hôm nay!";
     }
     if (formData.salary.type === "RANGE") {
       if (formData.salary.min === "" || formData.salary.max === "") {
@@ -441,6 +469,52 @@ const PostJob = () => {
                 value={formData.work_location[0].address_detail}
                 onChange={handleLocationChange}
               />
+            </Grid>
+
+            {/* Ô chọn hạn nộp hồ sơ (Deadline) */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box
+                component="label"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  cursor: "pointer",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  sx={{ color: "#212f3f" }}
+                >
+                  Hạn nộp hồ sơ *
+                </Typography>
+                <TextField
+                  fullWidth
+                  type="date"
+                  value={
+                    formData.deadline ? formData.deadline.split("T")[0] : ""
+                  }
+                  onChange={(e) => {
+                    const selectedDate = e.target.value;
+                    setFormData({
+                      ...formData,
+                      deadline: selectedDate
+                        ? new Date(selectedDate).toISOString()
+                        : "",
+                    });
+                  }}
+                  inputProps={{
+                    onClick: (e) => {
+                      // Kích hoạt bảng lịch của trình duyệt ngay cả khi bấm vào vùng chữ số ngày tháng
+                      if (typeof e.target.showPicker === "function") {
+                        e.target.showPicker();
+                      }
+                    },
+                    style: { cursor: "pointer" },
+                  }}
+                />
+              </Box>
             </Grid>
           </Grid>
 
