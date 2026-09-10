@@ -92,6 +92,7 @@ const Header = () => {
         >
           <NavItem title="Việc làm" to={"/"} />
           <NavItem title="Tạo CV" to={"/tao-cv"} />
+          <NavItem title="Danh sách công ty " to={"/CompanyList"} />
         </Box>
       </Box>
 

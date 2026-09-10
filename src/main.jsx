@@ -20,6 +20,7 @@ import CreateCV from "./pages/createCV/CreateCV";
 import PostJob from "./pages/PostJob";
 import RegisterPage from "./pages/register";
 import EmployerRegisterPage from "./pages/EmployerRegister";
+import CompanyList from "./pages/CompanyList";
 
 const theme = createTheme({
   palette: {
@@ -73,6 +74,11 @@ const router = createBrowserRouter([
     path: "/employer-register",
     element: <EmployerRegisterPage />,
   },
+  {
+    path: "/CompanyList",
+    element: <CompanyList />,
+  },
+  CompanyList,
 ]);
 
 createRoot(document.getElementById("root")).render(
