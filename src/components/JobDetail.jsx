@@ -24,14 +24,13 @@ import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import SendIcon from "@mui/icons-material/Send";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 
-import api from "../plugins/axios";
+import api, { getApiErrorMessage } from "../plugins/axios";
 import NotificationDialog from "./NotificationDialog";
 
 const JobDetail = ({ jobData, isLoading }) => {
@@ -59,8 +58,6 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
   };
 
-  const [myCVs, setMyCVs] = useState([]);
-
   // --- LOGIC XỬ LÝ ỨNG TUYỂN ---
   const handleOpenApply = () => {
     const token = localStorage.getItem("access_token");
@@ -85,10 +82,15 @@ const JobDetail = ({ jobData, isLoading }) => {
 
     // --- TỰ ĐỘNG LẤY CV ID VỪA TẠO GẦN NHẤT ---
     const savedCvId = localStorage.getItem("last_created_cv_id");
-    if (savedCvId) {
-      setApplyForm((prev) => ({ ...prev, cv_id: savedCvId }));
+    if (!savedCvId) {
+      setPopupMessage("Bạn cần tạo CV trước khi ứng tuyển!");
+      setIsSuccessPopup(false);
+      setRedirectAfterClose("/tao-cv");
+      setOpenDialog(true);
+      return;
     }
 
+    setApplyForm((prev) => ({ ...prev, cv_id: savedCvId }));
     setOpenApply(true);
   };
 
@@ -115,10 +117,10 @@ const JobDetail = ({ jobData, isLoading }) => {
       setIsSuccessPopup(true);
       setOpenDialog(true);
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.detail?.[0]?.msg ||
-        error.response?.data?.message ||
-        "Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.";
+      const errorMsg = getApiErrorMessage(
+        error,
+        "Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.",
+      );
 
       setPopupMessage(errorMsg);
       setIsSuccessPopup(false);
@@ -157,7 +159,8 @@ const JobDetail = ({ jobData, isLoading }) => {
     const types = {
       FULL_TIME: "Toàn thời gian",
       PART_TIME: "Bán thời gian",
-      REMOTE: "Làm từ xa",
+      FREELANCE: "Freelance",
+      INTERNSHIP: "Thực tập",
     };
     return types[type] || type;
   };
@@ -166,7 +169,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     const genders = {
       MALE: "Nam",
       FEMALE: "Nữ",
-      OTHER: "Không yêu cầu",
+      NOT_REQUIRED: "Không yêu cầu",
     };
     return genders[gender] || gender;
   };

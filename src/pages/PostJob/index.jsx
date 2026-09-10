@@ -71,7 +71,7 @@ const PostJob = () => {
     specialty: "",
     job_type: "FULL_TIME",
     experience_level: "Nhân viên",
-    gender: "MALE",
+    gender: "NOT_REQUIRED",
     quantity: 1,
     salary: {
       type: "RANGE",
@@ -370,7 +370,8 @@ const PostJob = () => {
               >
                 <MenuItem value="FULL_TIME">Toàn thời gian</MenuItem>
                 <MenuItem value="PART_TIME">Bán thời gian</MenuItem>
-                <MenuItem value="REMOTE">Làm từ xa</MenuItem>
+                <MenuItem value="FREELANCE">Freelance</MenuItem>
+                <MenuItem value="INTERNSHIP">Thực tập</MenuItem>
               </TextField>
             </Grid>
 
@@ -386,7 +387,7 @@ const PostJob = () => {
               >
                 <MenuItem value="MALE">Nam</MenuItem>
                 <MenuItem value="FEMALE">Nữ</MenuItem>
-                <MenuItem value="OTHER">Không yêu cầu</MenuItem>
+                <MenuItem value="NOT_REQUIRED">Không yêu cầu</MenuItem>
               </TextField>
             </Grid>
 

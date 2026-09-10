@@ -12,8 +12,6 @@ import {
 } from "@mui/material";
 import logoTopCV from "../assets/topcv-logo-home.png";
 import NavItem from "./NavItem";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { useEffect, useState } from "react";

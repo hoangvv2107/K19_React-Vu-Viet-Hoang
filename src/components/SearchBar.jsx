@@ -19,8 +19,8 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 
-const SearchBar = ({ isLoading, categoryData }) => {
- 
+const SearchBar = ({ isLoading, categoryData, onSearch }) => {
+  const [keyword, setKeyword] = useState("");
   const [showCategoryJobs, setShowCategoryJobs] = useState(false);
   const handleClickShowCategoryJobs = () => {
     setShowCategoryJobs(!showCategoryJobs);
@@ -63,7 +63,21 @@ const SearchBar = ({ isLoading, categoryData }) => {
       setSelectedCategories([...selectedCategories, childId]);
     }
   };
-   if (isLoading)
+
+  const handleSearch = () => {
+    const selectedGroup = categoryData.find((group) =>
+      group.categories?.some((category) =>
+        selectedCategories.includes(category.id),
+      ),
+    );
+
+    onSearch?.({
+      keyword: keyword.trim(),
+      category_slug: selectedGroup?.group_slug || "",
+    });
+  };
+
+  if (isLoading)
     return (
       <CircularProgress enableTrackSlot size="30px" aria-label="Loading…" />
     );
@@ -126,6 +140,11 @@ const SearchBar = ({ isLoading, categoryData }) => {
         {/* 2. Ô Input nhập liệu */}
         <InputBase
           placeholder="Vị trí tuyển dụng, tên công ty"
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") handleSearch();
+          }}
           sx={{
             flex: 1, // Chiếm toàn bộ không gian còn lại
             fontSize: "15px",
@@ -173,6 +192,7 @@ const SearchBar = ({ isLoading, categoryData }) => {
         <Button
           variant="contained"
           startIcon={<SearchIcon />}
+          onClick={handleSearch}
           sx={{
             borderRadius: "999px",
             bgcolor: "#00b14f", // Màu xanh lá đặc trưng

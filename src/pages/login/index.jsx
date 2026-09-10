@@ -13,7 +13,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useEffect, useState } from "react";
-import api from "../../plugins/axios";
+import api, { getApiErrorMessage } from "../../plugins/axios";
 import NotificationDialog from "../../components/NotificationDialog";
 import { useNavigate } from "react-router";
 
@@ -72,9 +72,10 @@ const LoginPage = () => {
         setIsSuccessPopup(true);
         navigate("/");
       } catch (error) {
-        const errorMsg =
-          error.response?.data?.detail?.[0]?.msg ||
-          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.";
+        const errorMsg = getApiErrorMessage(
+          error,
+          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.",
+        );
         setIsSuccessPopup(false);
         setPopupMessage(errorMsg);
         setOpenDialog(true);

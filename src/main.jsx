@@ -15,7 +15,6 @@ import "@fontsource/inter/700.css";
 import LoginPage from "./pages/login";
 import HomePage from "./pages/home";
 import JobInfo from "./pages/jobInfo";
-import CompanyDetail from "./pages/CompanyDetail";
 import CreateCV from "./pages/createCV/CreateCV";
 import PostJob from "./pages/PostJob";
 import RegisterPage from "./pages/register";
@@ -58,10 +57,7 @@ const router = createBrowserRouter([
     path: "/job-info/:slug",
     element: <JobInfo />,
   },
-  {
-    path: "/company-detail",
-    element: <CompanyDetail />,
-  },
+
   {
     path: "/tao-cv",
     element: <CreateCV />,
@@ -78,7 +74,6 @@ const router = createBrowserRouter([
     path: "/CompanyList",
     element: <CompanyList />,
   },
-  CompanyList,
 ]);
 
 createRoot(document.getElementById("root")).render(

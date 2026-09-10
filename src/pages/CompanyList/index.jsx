@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router";
 import {
   Box,
   Typography,
@@ -34,7 +33,7 @@ const CompanyList = () => {
   const [searchInput, setSearchInput] = useState("");
   const [keyword, setKeyword] = useState("");
 
-  const LIMIT = 12; // Giả sử mỗi trang hiển thị 12 công ty (tùy thuộc vào backend)
+  const PAGE_SIZE = 20;
 
   // --- GỌI API LẤY DANH SÁCH ---
   useEffect(() => {
@@ -78,7 +77,7 @@ const CompanyList = () => {
   };
 
   // Tính tổng số trang (Giả sử backend trả về tổng số record trong 'total')
-  const totalPages = Math.ceil(totalItems / LIMIT) || 1;
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
 
   return (
     <>
@@ -226,18 +225,14 @@ const CompanyList = () => {
                         </Avatar>
                         <Box sx={{ flex: 1 }}>
                           <Typography
-                            component={Link}
-                            to={`/company/${company.id}`} // Điều hướng tới trang chi tiết cty (nếu có)
                             sx={{
                               fontSize: "16px",
                               fontWeight: 700,
                               color: "#212f3f",
-                              textDecoration: "none",
                               display: "-webkit-box",
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: "vertical",
                               overflow: "hidden",
-                              "&:hover": { color: "#00b14f" },
                             }}
                           >
                             {company.company_name}

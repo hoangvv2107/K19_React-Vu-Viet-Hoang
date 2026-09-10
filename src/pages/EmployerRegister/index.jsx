@@ -13,7 +13,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
-import api from "../../plugins/axios";
+import api, { getApiErrorMessage } from "../../plugins/axios";
 import NotificationDialog from "../../components/NotificationDialog";
 import { useNavigate } from "react-router";
 
@@ -113,10 +113,10 @@ const EmployerRegisterPage = () => {
         setPopupMessage("Đăng ký tài khoản nhà tuyển dụng thành công!");
         setOpenPopup(true);
       } catch (error) {
-        const errorMsg =
-          error.response?.data?.detail?.[0]?.msg ||
-          error.response?.data?.message ||
-          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.";
+        const errorMsg = getApiErrorMessage(
+          error,
+          "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.",
+        );
         setIsSuccessPopup(false);
         setPopupMessage(errorMsg);
         setOpenPopup(true);

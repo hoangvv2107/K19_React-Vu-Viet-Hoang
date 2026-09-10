@@ -10,6 +10,10 @@ const HomePage = () => {
   const [jobs, setJobs] = useState([]);
   const [totalPageJobs, setTotalPageJobs] = useState(0);
   const [pageJobsCurrent, setPageJobsCurrent] = useState(1);
+  const [jobFilters, setJobFilters] = useState({
+    keyword: "",
+    category_slug: "",
+  });
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
   const [isJobsLoading, setIsJobsLoading] = useState(true);
   const getCategoryGroupsData = async () => {
@@ -29,8 +33,8 @@ const HomePage = () => {
       const { data } = await api.get("/api/v1/jobs", {
         params: {
           page: pageJobsCurrent, // Mặc định là trang 1
-          // keyword: null, // (Tuỳ chọn) Lấy từ state ô input search
-          // category_slug: null, // (Tuỳ chọn)
+          keyword: jobFilters.keyword || undefined,
+          category_slug: jobFilters.category_slug || undefined,
           // city_id: null, // (Tuỳ chọn) Nếu user không chọn địa điểm thì để trống hoặc null
         },
       });
@@ -47,7 +51,12 @@ const HomePage = () => {
   }, []);
   useEffect(() => {
     getJobsData();
-  }, [pageJobsCurrent]);
+  }, [pageJobsCurrent, jobFilters]);
+
+  const handleJobSearch = (filters) => {
+    setPageJobsCurrent(1);
+    setJobFilters(filters);
+  };
 
   return (
     <>
@@ -64,6 +73,7 @@ const HomePage = () => {
         <SearchBar
           categoryData={categoryGroups}
           isLoading={isCategoryLoading}
+          onSearch={handleJobSearch}
         />
       </Box>
       <Box

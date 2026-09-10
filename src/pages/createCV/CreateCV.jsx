@@ -16,7 +16,7 @@ import AddCircle from "@mui/icons-material/AddCircle";
 import Delete from "@mui/icons-material/Delete";
 
 import Header from "../../components/Header";
-import api from "../../plugins/axios";
+import api, { getApiErrorMessage } from "../../plugins/axios";
 import NotificationDialog from "../../components/NotificationDialog";
 
 const CreateCV = () => {
@@ -33,7 +33,7 @@ const CreateCV = () => {
     phone: "",
     email: "",
     summary: "",
-    education: [{ school_name: "", major: "", duration: "" }],
+    education: [{ school: "", major: "", start_date: "", end_date: "" }],
     experience: [{ company_name: "", position: "", description: "" }],
     skills: [""],
   });
@@ -62,7 +62,7 @@ const CreateCV = () => {
       ...cvData,
       education: [
         ...cvData.education,
-        { school_name: "", major: "", duration: "" },
+        { school: "", major: "", start_date: "", end_date: "" },
       ],
     });
   };
@@ -142,10 +142,7 @@ const CreateCV = () => {
     }
 
     // --- KIỂM TRA THÔNG TIN HỌC VẤN (Ít nhất phải điền tên trường dòng đầu tiên) ---
-    if (
-      cvData.education.length > 0 &&
-      !cvData.education[0].school_name.trim()
-    ) {
+    if (cvData.education.length > 0 && !cvData.education[0].school.trim()) {
       setPopupMessage("Vui lòng điền ít nhất thông tin Học vấn (Tên trường)!");
       setIsSuccessPopup(false);
       setOpenDialog(true);
@@ -163,10 +160,7 @@ const CreateCV = () => {
       setIsSuccessPopup(true);
       setOpenDialog(true);
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.detail?.[0]?.msg ||
-        error.response?.data?.message ||
-        "Có lỗi xảy ra khi lưu CV!";
+      const errorMsg = getApiErrorMessage(error, "Có lỗi xảy ra khi lưu CV!");
       setPopupMessage(errorMsg);
       setIsSuccessPopup(false);
       setOpenDialog(true);
@@ -343,9 +337,9 @@ const CreateCV = () => {
                   <TextField
                     fullWidth
                     label="Tên trường"
-                    value={edu.school_name}
+                    value={edu.school}
                     onChange={(e) =>
-                      handleEduChange(index, "school_name", e.target.value)
+                      handleEduChange(index, "school", e.target.value)
                     }
                   />
                   <TextField
@@ -358,10 +352,22 @@ const CreateCV = () => {
                   />
                   <TextField
                     fullWidth
-                    label="Thời gian (VD: 2020 - 2024)"
-                    value={edu.duration}
+                    type="month"
+                    label="Bắt đầu"
+                    value={edu.start_date}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     onChange={(e) =>
-                      handleEduChange(index, "duration", e.target.value)
+                      handleEduChange(index, "start_date", e.target.value)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    type="month"
+                    label="Kết thúc"
+                    value={edu.end_date}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    onChange={(e) =>
+                      handleEduChange(index, "end_date", e.target.value)
                     }
                   />
 
