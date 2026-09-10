@@ -123,7 +123,7 @@ const RegisterPage = () => {
       };
 
       try {
-        const { data } = await api.post("/api/v1/auth/login", account);
+        const { data } = await api.post("/api/v1/auth/register", registerData);
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user_id", data.user.id);
         localStorage.setItem("user_email", data.user.email);

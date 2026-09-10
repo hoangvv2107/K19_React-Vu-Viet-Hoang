@@ -22,7 +22,7 @@ const JobInfo = () => {
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
-      const { data } = await api.get("/category_groups");
+      const { data } = await api.get("/api/v1/categories");
       setCategoryGroups(data);
     } catch (error) {
       console.log(error);
