@@ -265,7 +265,7 @@ const JobDetail = ({ jobData, isLoading }) => {
               </Box>
 
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -294,7 +294,7 @@ const JobDetail = ({ jobData, isLoading }) => {
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -323,7 +323,7 @@ const JobDetail = ({ jobData, isLoading }) => {
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>
                     <Box
                       sx={{

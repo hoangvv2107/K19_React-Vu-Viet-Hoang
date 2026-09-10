@@ -130,13 +130,15 @@ const CompanyList = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: "#7f878f" }} />
-                    </InputAdornment>
-                  ),
-                  sx: { bgcolor: "#fff" },
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: "#7f878f" }} />
+                      </InputAdornment>
+                    ),
+                    sx: { bgcolor: "#fff" },
+                  },
                 }}
               />
               <Button
@@ -173,7 +175,7 @@ const CompanyList = () => {
             {isLoading
               ? // --- SKELETON LOADING ---
                 Array.from(new Array(6)).map((_, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid size={12} key={index}>
                     <Paper sx={{ p: 3, borderRadius: "8px", height: "100%" }}>
                       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                         <Skeleton variant="rounded" width={64} height={64} />
@@ -189,7 +191,7 @@ const CompanyList = () => {
                 ))
               : // --- RENDER DỮ LIỆU THẬT ---
                 companies.map((company) => (
-                  <Grid item xs={12} sm={6} md={4} key={company.id}>
+                  <Grid size={12} key={company.id}>
                     <Paper
                       elevation={0}
                       sx={{
