@@ -13,6 +13,7 @@ const HomePage = () => {
   const [jobFilters, setJobFilters] = useState({
     keyword: "",
     category_slug: "",
+    city_id: "",
   });
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
   const [isJobsLoading, setIsJobsLoading] = useState(true);
@@ -35,7 +36,7 @@ const HomePage = () => {
           page: pageJobsCurrent, // Mặc định là trang 1
           keyword: jobFilters.keyword || undefined,
           category_slug: jobFilters.category_slug || undefined,
-          // city_id: null, // (Tuỳ chọn) Nếu user không chọn địa điểm thì để trống hoặc null
+          city_id: jobFilters.city_id || undefined,
         },
       });
       setJobs(data.data);
@@ -87,6 +88,7 @@ const HomePage = () => {
           isLoading={isJobsLoading}
           pageCurrent={pageJobsCurrent}
           totalPage={totalPageJobs}
+          onPageChange={setPageJobsCurrent}
         />
       </Box>
 

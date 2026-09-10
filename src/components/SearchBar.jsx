@@ -18,15 +18,19 @@ import CloseIcon from "@mui/icons-material/Close";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
+import { CITIES_DATA } from "../plugins/cities";
 
 const SearchBar = ({ isLoading, categoryData, onSearch }) => {
   const [keyword, setKeyword] = useState("");
   const [showCategoryJobs, setShowCategoryJobs] = useState(false);
+  const [showCities, setShowCities] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
   const handleClickShowCategoryJobs = () => {
     setShowCategoryJobs(!showCategoryJobs);
   };
   const offCategoryJobs = () => {
-    if (showCategoryJobs) setShowCategoryJobs(!showCategoryJobs);
+    if (showCategoryJobs) setShowCategoryJobs(false);
+    if (showCities) setShowCities(false);
   };
   const [activeGroupId, setActiveGroupId] = useState(null);
   const activeGroup = categoryData.find((group) => group.id === activeGroupId);
@@ -74,6 +78,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
     onSearch?.({
       keyword: keyword.trim(),
       category_slug: selectedGroup?.group_slug || "",
+      city_id: selectedCity?.id || "",
     });
   };
 
@@ -169,6 +174,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           variant="text"
           startIcon={<LocationOnOutlinedIcon sx={{ color: "#4b5563" }} />}
           endIcon={<KeyboardArrowDownIcon sx={{ color: "#4b5563" }} />}
+          onClick={() => setShowCities((isOpen) => !isOpen)}
           sx={{
             color: "#212f3f",
             textTransform: "none",
@@ -185,7 +191,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             },
           }}
         >
-          Địa điểm
+          {selectedCity?.name || "Địa điểm"}
         </Button>
 
         {/* 4. Nút "Tìm kiếm" */}
@@ -213,6 +219,56 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
         >
           Tìm kiếm
         </Button>
+
+        <Box
+          sx={{
+            display: showCities ? "block" : "none",
+            position: "absolute",
+            zIndex: 1000,
+            top: "calc(100% + 10px)",
+            right: "170px",
+            width: "260px",
+            maxHeight: "320px",
+            overflowY: "auto",
+            bgcolor: "#fff",
+            borderRadius: "12px",
+            boxShadow: "0px 8px 32px rgba(0, 0, 0, 0.15)",
+            p: 1,
+          }}
+        >
+          <Button
+            fullWidth
+            onClick={() => {
+              setSelectedCity(null);
+              setShowCities(false);
+            }}
+            sx={{
+              justifyContent: "flex-start",
+              color: "#4b5563",
+              textTransform: "none",
+            }}
+          >
+            Tất cả địa điểm
+          </Button>
+          {CITIES_DATA.map((city) => (
+            <Button
+              key={city.id}
+              fullWidth
+              onClick={() => {
+                setSelectedCity(city);
+                setShowCities(false);
+              }}
+              sx={{
+                justifyContent: "flex-start",
+                color: selectedCity?.id === city.id ? "#00b14f" : "#212f3f",
+                fontWeight: selectedCity?.id === city.id ? 700 : 400,
+                textTransform: "none",
+              }}
+            >
+              {city.name}
+            </Button>
+          ))}
+        </Box>
 
         {/* category list */}
         <Box
@@ -504,6 +560,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
 
               <Button
                 variant="contained"
+                onClick={() => setShowCategoryJobs(false)}
                 sx={{
                   bgcolor: "#00b14f",
                   color: "#fff",

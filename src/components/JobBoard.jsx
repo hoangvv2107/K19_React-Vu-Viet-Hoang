@@ -14,10 +14,13 @@ import EmojiObjectsOutlinedIcon from "@mui/icons-material/EmojiObjectsOutlined";
 import JobDetailCard from "./JobDetailCard";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
+import { useState } from "react";
+
+const PAGE_SIZE = 20;
 
 const JobHoverTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
+))(() => ({
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "transparent",
     padding: 0,
@@ -25,7 +28,16 @@ const JobHoverTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
+const JobBoard = ({
+  isLoading,
+  jobs = [],
+  totalPage,
+  pageCurrent,
+  onPageChange,
+}) => {
+  const totalPages = Math.max(1, Math.ceil((totalPage || 0) / PAGE_SIZE));
+  const [showHint, setShowHint] = useState(true);
+
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Chưa cập nhật";
 
@@ -37,6 +49,14 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
       const minM = salaryObj.min / 1000000;
       const maxM = salaryObj.max / 1000000;
       return `${minM} - ${maxM} triệu`;
+    }
+
+    if (salaryObj.type === "UP_TO") {
+      return `Tới ${salaryObj.max / 1000000} triệu`;
+    }
+
+    if (salaryObj.type === "MINIMUM") {
+      return `Từ ${salaryObj.min / 1000000} triệu`;
     }
 
     return "Thoả thuận";
@@ -74,12 +94,16 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             size="small"
+            disabled={pageCurrent <= 1 || isLoading}
+            onClick={() => onPageChange?.(pageCurrent - 1)}
             sx={{ border: "1px solid #e5e7eb", bgcolor: "#fff" }}
           >
             <KeyboardArrowLeftIcon fontSize="small" />
           </IconButton>
           <IconButton
             size="small"
+            disabled={pageCurrent >= totalPages || isLoading}
+            onClick={() => onPageChange?.(pageCurrent + 1)}
             sx={{
               border: "1px solid #00b14f",
               color: "#00b14f",
@@ -92,31 +116,33 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
       </Box>
 
       {/* ================= 3. HINT BANNER ================= */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          bgcolor: "#e8f2ff",
-          border: "1px solid #b6d4fe",
-          borderRadius: "4px",
-          p: "8px 16px",
-          mb: 3,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <EmojiObjectsOutlinedIcon
-            sx={{ color: "#0d6efd", fontSize: "20px" }}
-          />
-          <Typography sx={{ fontSize: "14px", color: "#212f3f" }}>
-            <strong>Gợi ý:</strong> Di chuột vào tiêu đề việc làm để xem thêm
-            thông tin chi tiết
-          </Typography>
+      {showHint && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            bgcolor: "#e8f2ff",
+            border: "1px solid #b6d4fe",
+            borderRadius: "4px",
+            p: "8px 16px",
+            mb: 3,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <EmojiObjectsOutlinedIcon
+              sx={{ color: "#0d6efd", fontSize: "20px" }}
+            />
+            <Typography sx={{ fontSize: "14px", color: "#212f3f" }}>
+              <strong>Gợi ý:</strong> Di chuột vào tiêu đề việc làm để xem thêm
+              thông tin chi tiết
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={() => setShowHint(false)}>
+            <CloseIcon sx={{ fontSize: "16px", color: "#4b5563" }} />
+          </IconButton>
         </Box>
-        <IconButton size="small">
-          <CloseIcon sx={{ fontSize: "16px", color: "#4b5563" }} />
-        </IconButton>
-      </Box>
+      )}
 
       {/* ================= 4. JOB GRID ================= */}
       <Box
@@ -312,42 +338,63 @@ const JobBoard = ({ isLoading, jobs, totalPage, pageCurrent }) => {
             })}
       </Box>
 
-      {/* ================= 5. PAGINATION ================= */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          mt: 4,
-          pb: 2,
-        }}
-      >
-        <IconButton
-          size="small"
-          sx={{ border: "1px solid #e5e7eb", bgcolor: "#fff" }}
-        >
-          <KeyboardArrowLeftIcon fontSize="small" />
-        </IconButton>
-        <Typography
-          component="span"
-          sx={{ mx: 2, fontSize: "14px", color: "#7f878f" }}
-        >
-          <strong style={{ color: "#00b14f", fontWeight: 600 }}>
-            {pageCurrent}
-          </strong>{" "}
-          / {totalPage} trang
-        </Typography>
-        <IconButton
-          size="small"
+      {!isLoading && jobs.length === 0 && (
+        <Box
           sx={{
-            border: "1px solid #00b14f",
             bgcolor: "#fff",
-            color: "#00b14f",
+            borderRadius: "8px",
+            p: 6,
+            textAlign: "center",
           }}
         >
-          <KeyboardArrowRightIcon fontSize="small" />
-        </IconButton>
-      </Box>
+          <Typography sx={{ color: "#7f878f" }}>
+            Không tìm thấy việc làm phù hợp.
+          </Typography>
+        </Box>
+      )}
+
+      {/* ================= 5. PAGINATION ================= */}
+      {totalPages > 1 && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mt: 4,
+            pb: 2,
+          }}
+        >
+          <IconButton
+            size="small"
+            disabled={pageCurrent <= 1 || isLoading}
+            onClick={() => onPageChange?.(pageCurrent - 1)}
+            sx={{ border: "1px solid #e5e7eb", bgcolor: "#fff" }}
+          >
+            <KeyboardArrowLeftIcon fontSize="small" />
+          </IconButton>
+          <Typography
+            component="span"
+            sx={{ mx: 2, fontSize: "14px", color: "#7f878f" }}
+          >
+            <strong style={{ color: "#00b14f", fontWeight: 600 }}>
+              {pageCurrent}
+            </strong>{" "}
+            / {totalPages} trang
+          </Typography>
+          <IconButton
+            size="small"
+            disabled={pageCurrent >= totalPages || isLoading}
+            onClick={() => onPageChange?.(pageCurrent + 1)}
+            sx={{
+              border: "1px solid #00b14f",
+              bgcolor: "#fff",
+              color: "#00b14f",
+            }}
+          >
+            <KeyboardArrowRightIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      )}
     </Box>
   );
 };
