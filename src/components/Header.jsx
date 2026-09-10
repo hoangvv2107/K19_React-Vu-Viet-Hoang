@@ -14,7 +14,7 @@ import logoTopCV from "../assets/topcv-logo-home.png";
 import NavItem from "./NavItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../plugins/axios";
 import { useNavigate } from "react-router";
 
@@ -22,19 +22,13 @@ const Header = () => {
   let navigate = useNavigate();
 
   // 1. Tạo state quản lý trạng thái đăng nhập
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() =>
+    Boolean(localStorage.getItem("access_token")),
+  );
 
   // State quản lý việc đóng/mở menu của Avatar
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-
-  // 2. Kiểm tra token trong localStorage khi Header vừa render
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
