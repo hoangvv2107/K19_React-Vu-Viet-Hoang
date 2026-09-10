@@ -37,10 +37,15 @@ import { CITIES_DATA } from "../../plugins/cities";
 
 const PostJob = () => {
   const navigate = useNavigate();
+  const [openPopup, setOpenPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
+  const [redirectAfterClose, setRedirectAfterClose] = useState(false);
+
   useEffect(() => {
     // 1. Lấy dữ liệu từ kho lưu trữ
     const token = localStorage.getItem("access_token");
-    const userRole = localStorage.getItem("user_role"); 
+    const userRole = localStorage.getItem("user_role");
 
     // 2. Kịch bản 1: Chưa đăng nhập
     if (!token) {
@@ -50,9 +55,10 @@ const PostJob = () => {
 
     // 3. Kịch bản 2: Đã đăng nhập nhưng là tài khoản Ứng viên (Candidate)
     if (userRole !== "EMPLOYER") {
-      // Chỗ này tùy thuộc vào giá trị role backend trả về thực tế
-      alert("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
-      navigate("/"); // Đá về trang chủ ứng viên
+      setPopupMessage("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
+      setIsSuccessPopup(false);
+      setRedirectAfterClose(true);
+      setOpenPopup(true);
     }
 
     // Nếu vượt qua hết các IF trên, người dùng mới được ở lại trang và gọi API categories
@@ -95,10 +101,6 @@ const PostJob = () => {
       "<h4>2. Yêu cầu ứng viên</h4><p>Nhập chi tiết yêu cầu...</p>",
     benefits_html: "<h4>3. Quyền lợi</h4><p>Nhập chi tiết quyền lợi...</p>",
   });
-
-  const [openPopup, setOpenPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
   // 1. Gọi API lấy danh sách categories khi vừa vào trang
   useEffect(() => {
@@ -254,8 +256,9 @@ const PostJob = () => {
 
   const handleClosePopup = () => {
     setOpenPopup(false);
-    if (isSuccessPopup) {
+    if (isSuccessPopup || redirectAfterClose) {
       navigate("/");
+      setRedirectAfterClose(false);
     }
   };
 

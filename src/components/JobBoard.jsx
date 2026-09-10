@@ -259,7 +259,6 @@ const JobBoard = ({
                       <JobHoverTooltip
                         title={<JobDetailCard job={j} />}
                         placement="right-start"
-                        interactive
                       >
                         <Typography
                           sx={{
