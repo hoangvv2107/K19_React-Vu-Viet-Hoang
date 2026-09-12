@@ -117,6 +117,7 @@ const CompanyList = () => {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 maxWidth: "700px",
                 mx: "auto",
                 gap: 1,
@@ -147,6 +148,7 @@ const CompanyList = () => {
                 sx={{
                   bgcolor: "#00b14f",
                   px: 4,
+                  width: { xs: "100%", sm: "auto" },
                   fontWeight: 600,
                   textTransform: "none",
                   whiteSpace: "nowrap",

@@ -14,6 +14,8 @@ import logoTopCV from "../assets/topcv-logo-home.png";
 import NavItem from "./NavItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import api from "../plugins/axios";
 import { useNavigate } from "react-router";
@@ -28,6 +30,7 @@ const Header = () => {
 
   // State quản lý việc đóng/mở menu của Avatar
   const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
 
   const handleAvatarClick = (event) => {
@@ -60,19 +63,38 @@ const Header = () => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        px: "24px",
+        px: { xs: 1, sm: 3 },
         bgcolor: "#fff",
         borderBottom: "1px solid #f4f5f5",
       }}
     >
       {/* Nửa bên trái: Logo & Menu */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: { xs: 1, sm: 4 },
+          minWidth: 0,
+        }}
+      >
+        <IconButton
+          aria-label="Mở menu"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          sx={{
+            display: { xs: "inline-flex", lg: "none" },
+            order: { xs: -1, lg: 0 },
+            color: "#263a4d",
+            bgcolor: "#f2f4f5",
+          }}
+        >
+          {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
         <Link href="/">
           <Box
             component="img"
             src={logoTopCV}
             alt="logo TopCV"
-            sx={{ height: "72px", display: "block" }}
+            sx={{ height: { xs: "52px", sm: "72px" }, display: "block" }}
           />
         </Link>
         <Box
@@ -88,13 +110,37 @@ const Header = () => {
         </Box>
       </Box>
 
+      {mobileMenuOpen && (
+        <Box
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            flexDirection: "column",
+            gap: 1,
+            p: 2,
+            bgcolor: "#fff",
+            borderBottom: "1px solid #e5e7eb",
+            boxShadow: "0 8px 20px rgba(0, 0, 0, 0.08)",
+          }}
+        >
+          <NavItem title="Việc làm" to="/" />
+          <NavItem title="Tạo CV" to="/tao-cv" />
+          <NavItem title="Danh sách công ty" to="/CompanyList" />
+          <NavItem title="Đăng tuyển & tìm hồ sơ" to="/dang-tuyen" />
+        </Box>
+      )}
+
       {isLoggedIn ? (
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "12px",
+            gap: { xs: 0.5, sm: "12px" },
           }}
         >
           {/* Nút Avatar */}
@@ -148,7 +194,7 @@ const Header = () => {
             }}
           ></Box>
 
-          <Box>
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Typography
               sx={{
                 color: "#7f878f",
@@ -183,17 +229,24 @@ const Header = () => {
           </Box>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 0.5, sm: 1.5 },
+          }}
+        >
           <Button
             href="/register"
             variant="outlined"
             sx={{
+              display: { xs: "none", sm: "inline-flex" },
               borderColor: "#00b14f",
               color: "#00b14f",
               borderRadius: "999px",
               textTransform: "none",
               fontWeight: 600,
-              px: 3,
+              px: { xs: 1.25, sm: 3 },
               py: 1,
               "&:hover": {
                 borderColor: "#009944",
@@ -213,7 +266,7 @@ const Header = () => {
               borderRadius: "999px",
               textTransform: "none",
               fontWeight: 600,
-              px: 3,
+              px: { xs: 1.25, sm: 3 },
               py: 1,
               boxShadow: "none",
               "&:hover": {
@@ -228,6 +281,7 @@ const Header = () => {
           <Button
             href="/dang-tuyen"
             sx={{
+              display: { xs: "none", md: "inline-flex" },
               bgcolor: "#f2f4f5",
               color: "#212f3f",
               borderRadius: "999px",

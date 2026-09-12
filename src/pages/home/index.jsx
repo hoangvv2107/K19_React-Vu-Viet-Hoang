@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import SearchBar from "../../components/SearchBar";
 import api from "../../plugins/axios";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import JobBoard from "../../components/JobBoard";
 import Footer from "../../components/Footer";
 const HomePage = () => {
@@ -68,9 +68,39 @@ const HomePage = () => {
           background:
             " linear-gradient(180deg, #002b33, rgba(0, 43, 51, .25)), linear-gradient(90deg, #008060 21.86%, #2bab60 78.13%)",
           backgroundSize: "cover",
-          py: "20px",
+          px: { xs: 1.25, sm: 2 },
+          py: { xs: 2.5, md: "20px" },
         }}
       >
+        <Box
+          sx={{
+            maxWidth: "760px",
+            mx: "auto",
+            textAlign: "center",
+            mb: { xs: 2, md: 2.5 },
+          }}
+        >
+          <Typography
+            component="h1"
+            sx={{
+              color: "#fff",
+              fontSize: { xs: "1.35rem", sm: "2rem", md: "2.35rem" },
+              lineHeight: 1.2,
+              fontWeight: 800,
+              mb: 1,
+            }}
+          >
+            Tìm việc làm nhanh, việc làm nổi bật
+          </Typography>
+          <Typography
+            sx={{
+              color: "rgba(255,255,255,0.86)",
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+            }}
+          >
+            Tiếp cận cơ hội việc làm phù hợp từ hàng nghìn doanh nghiệp uy tín
+          </Typography>
+        </Box>
         <SearchBar
           categoryData={categoryGroups}
           isLoading={isCategoryLoading}

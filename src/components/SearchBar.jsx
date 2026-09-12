@@ -91,12 +91,14 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "row",
           alignItems: "center",
           bgcolor: "#fff",
-          borderRadius: "999px", // Bo góc tròn hoàn toàn
+          borderRadius: { xs: 3, md: "999px" },
           width: "100%",
           maxWidth: "1170px", // Giới hạn chiều rộng tối đa
-          padding: "15px",
+          padding: { xs: 1.5, md: "15px" },
+          gap: { xs: 0.5, md: 0 },
           margin: "0 auto",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
           position: "relative",
@@ -111,6 +113,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             />
           }
           sx={{
+            display: { xs: "none", md: "inline-flex" },
             borderRadius: "999px",
             color: showCategoryJobs ? "#00b14f" : "#212f3f",
             borderColor: showCategoryJobs ? "#00b14f" : "#e5e7eb",
@@ -139,7 +142,11 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           orientation="vertical"
           variant="middle"
           flexItem
-          sx={{ mx: 2, borderColor: "#e5e7eb" }}
+          sx={{
+            mx: 2,
+            borderColor: "#e5e7eb",
+            display: { xs: "none", md: "flex" },
+          }}
         />
 
         {/* 2. Ô Input nhập liệu */}
@@ -152,6 +159,8 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           }}
           sx={{
             flex: 1, // Chiếm toàn bộ không gian còn lại
+            width: { xs: "100%", md: "auto" },
+            minWidth: 0,
             fontSize: "15px",
             color: "#212f3f",
             "& .MuiInputBase-input::placeholder": {
@@ -166,7 +175,11 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           orientation="vertical"
           variant="middle"
           flexItem
-          sx={{ mx: 2, borderColor: "#e5e7eb" }}
+          sx={{
+            mx: 2,
+            borderColor: "#e5e7eb",
+            display: { xs: "none", md: "flex" },
+          }}
         />
 
         {/* 3. Nút chọn "Địa điểm" */}
@@ -176,11 +189,13 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           endIcon={<KeyboardArrowDownIcon sx={{ color: "#4b5563" }} />}
           onClick={() => setShowCities((isOpen) => !isOpen)}
           sx={{
+            display: { xs: "none", md: "inline-flex" },
             color: "#212f3f",
             textTransform: "none",
             fontWeight: 600,
             fontSize: "14px",
-            minWidth: "160px",
+            minWidth: { xs: 0, md: "160px" },
+            width: { xs: "100%", md: "auto" },
             justifyContent: "flex-start", // Đẩy nội dung sang trái
             px: 1,
             "& .MuiButton-endIcon": {
@@ -207,8 +222,10 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             fontWeight: 600,
             fontSize: "15px",
             px: 3,
-            py: 1.25,
-            ml: 1, // Cách nút địa điểm một chút
+            py: { xs: 0.8, md: 1.25 },
+            ml: { xs: 0, md: 1 },
+            width: { xs: "auto", md: "auto" },
+            minWidth: { xs: "92px", md: "auto" },
             boxShadow: "none",
             whiteSpace: "nowrap",
             "&:hover": {
@@ -226,7 +243,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             position: "absolute",
             zIndex: 1000,
             top: "calc(100% + 10px)",
-            right: "170px",
+            right: { xs: 0, md: "170px" },
             width: "260px",
             maxHeight: "320px",
             overflowY: "auto",
@@ -337,14 +354,16 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           <Box
             sx={{
               display: "flex",
-              height: "420px", // Cố định chiều cao cho body để xuất hiện thanh cuộn
+              height: { xs: "60vh", md: "420px" },
+              flexDirection: { xs: "column", md: "row" },
               borderTop: "1px solid #e5e7eb",
             }}
           >
             {/* CỘT TRÁI: NHÓM NGHỀ */}
             <Box
               sx={{
-                width: "35%",
+                width: { xs: "100%", md: "35%" },
+                maxHeight: { xs: "180px", md: "none" },
                 borderRight: "1px solid #e5e7eb",
                 display: "flex",
                 flexDirection: "column",
@@ -421,7 +440,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             {/* CỘT PHẢI: NGHỀ  */}
             <Box
               sx={{
-                width: "65%",
+                width: { xs: "100%", md: "65%" },
                 display: "flex",
                 flexDirection: "column",
                 bgcolor: "#fff",

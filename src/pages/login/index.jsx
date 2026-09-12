@@ -91,7 +91,7 @@ const LoginPage = () => {
         sx={{ width: { xs: "100%", sm: "648px" }, maxWidth: "100%" }}
       >
         <Link
-          href="#"
+          href="/"
           sx={{
             textDecoration: "none",
             display: "flex",

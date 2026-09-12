@@ -176,7 +176,7 @@ const RegisterPage = () => {
         }}
       >
         <Link
-          href="#"
+          href="/"
           sx={{
             textDecoration: "none",
             display: "flex",

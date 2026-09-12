@@ -243,6 +243,9 @@ const JobDetail = ({ jobData, isLoading }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
+                  flexWrap: "wrap",
+                  fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                  overflowWrap: "anywhere",
                 }}
               >
                 {jobData.title}

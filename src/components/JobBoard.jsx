@@ -31,12 +31,20 @@ const JobHoverTooltip = styled(({ className, ...props }) => (
 const JobBoard = ({
   isLoading,
   jobs = [],
-  totalPage,
-  pageCurrent,
+  totalPage = 0,
+  pageCurrent = 1,
   onPageChange,
 }) => {
   const totalPages = Math.max(1, Math.ceil((totalPage || 0) / PAGE_SIZE));
   const [showHint, setShowHint] = useState(true);
+
+  const goToPage = (nextPage) => {
+    if (isLoading || nextPage < 1 || nextPage > totalPages) return;
+    onPageChange?.(nextPage);
+  };
+
+  const isFirstPage = pageCurrent <= 1;
+  const isLastPage = pageCurrent >= totalPages;
 
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Chưa cập nhật";
@@ -94,19 +102,23 @@ const JobBoard = ({
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             size="small"
-            disabled={pageCurrent <= 1 || isLoading}
-            onClick={() => onPageChange?.(pageCurrent - 1)}
-            sx={{ border: "1px solid #e5e7eb", bgcolor: "#fff" }}
+            disabled={isFirstPage || isLoading}
+            onClick={() => goToPage(pageCurrent - 1)}
+            sx={{
+              border: "1px solid #e5e7eb",
+              bgcolor: "#fff",
+              color: isFirstPage ? "#cbd5e1" : "#4b5563",
+            }}
           >
             <KeyboardArrowLeftIcon fontSize="small" />
           </IconButton>
           <IconButton
             size="small"
-            disabled={pageCurrent >= totalPages || isLoading}
-            onClick={() => onPageChange?.(pageCurrent + 1)}
+            disabled={isLastPage || isLoading}
+            onClick={() => goToPage(pageCurrent + 1)}
             sx={{
-              border: "1px solid #00b14f",
-              color: "#00b14f",
+              border: `1px solid ${isLastPage ? "#e5e7eb" : "#00b14f"}`,
+              color: isLastPage ? "#cbd5e1" : "#00b14f",
               bgcolor: "#fff",
             }}
           >
@@ -148,7 +160,11 @@ const JobBoard = ({
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, minmax(0, 1fr))",
+            md: "repeat(3, minmax(0, 1fr))",
+          },
           gap: 2.5,
         }}
       >
@@ -365,9 +381,13 @@ const JobBoard = ({
         >
           <IconButton
             size="small"
-            disabled={pageCurrent <= 1 || isLoading}
-            onClick={() => onPageChange?.(pageCurrent - 1)}
-            sx={{ border: "1px solid #e5e7eb", bgcolor: "#fff" }}
+            disabled={isFirstPage || isLoading}
+            onClick={() => goToPage(pageCurrent - 1)}
+            sx={{
+              border: "1px solid #e5e7eb",
+              bgcolor: "#fff",
+              color: isFirstPage ? "#cbd5e1" : "#4b5563",
+            }}
           >
             <KeyboardArrowLeftIcon fontSize="small" />
           </IconButton>
@@ -382,12 +402,12 @@ const JobBoard = ({
           </Typography>
           <IconButton
             size="small"
-            disabled={pageCurrent >= totalPages || isLoading}
-            onClick={() => onPageChange?.(pageCurrent + 1)}
+            disabled={isLastPage || isLoading}
+            onClick={() => goToPage(pageCurrent + 1)}
             sx={{
-              border: "1px solid #00b14f",
+              border: `1px solid ${isLastPage ? "#e5e7eb" : "#00b14f"}`,
               bgcolor: "#fff",
-              color: "#00b14f",
+              color: isLastPage ? "#cbd5e1" : "#00b14f",
             }}
           >
             <KeyboardArrowRightIcon fontSize="small" />
