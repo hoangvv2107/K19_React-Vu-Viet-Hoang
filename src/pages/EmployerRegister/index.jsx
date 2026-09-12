@@ -106,7 +106,8 @@ const EmployerRegisterPage = () => {
 
     // Gửi dữ liệu lên API (loại bỏ confirm_password vì API không nhận trường này)
     if (isOk) {
-      const { confirm_password, ...apiData } = formData;
+      const apiData = { ...formData };
+      delete apiData.confirm_password;
       try {
         await api.post("/api/v1/companies/register", apiData);
         setIsSuccessPopup(true);

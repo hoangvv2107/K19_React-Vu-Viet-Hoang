@@ -7,10 +7,6 @@ import {
   TextField,
   Typography,
   Checkbox,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import logoTopCV from "../../assets/topcv-logo-login.webp";
 import VisibilityIcon from "@mui/icons-material/Visibility";

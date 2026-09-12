@@ -12,7 +12,7 @@ import styles from "./index.module.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api, { getApiErrorMessage } from "../../plugins/axios";
 import NotificationDialog from "../../components/NotificationDialog";
 import { useNavigate } from "react-router";
