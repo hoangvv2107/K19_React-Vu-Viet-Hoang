@@ -49,6 +49,10 @@ const Header = () => {
       console.log("Logout API error:", error);
     } finally {
       localStorage.removeItem("access_token");
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("user_email");
+      localStorage.removeItem("last_created_cv_id");
+      localStorage.removeItem("last_created_cv_name");
       localStorage.removeItem("user_role");
       setIsLoggedIn(false);
       handleCloseMenu();
