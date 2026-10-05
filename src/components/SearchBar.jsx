@@ -73,12 +73,14 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
 
   // Gửi bộ lọc tìm kiếm đã chuẩn hóa cho page thực hiện gọi API.
   const handleSearch = () => {
+    // Tìm nhóm ngành chứa ngành con đang được chọn để lấy đúng category_slug.
     const selectedGroup = categoryData.find((group) =>
       group.categories?.some((category) =>
         selectedCategories.includes(category.id),
       ),
     );
 
+    // Chuẩn hóa từ khóa, ngành nghề và địa điểm trước khi gửi lên page cha.
     onSearch?.({
       keyword: keyword.trim(),
       category_slug: selectedGroup?.group_slug || "",

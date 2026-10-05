@@ -128,7 +128,7 @@ const CreateCV = () => {
       return;
     }
 
-    // Thêm một mục kinh nghiệm làm việc trống.
+    // Tài khoản doanh nghiệp không được phép tạo CV ứng viên.
     if (role === "EMPLOYER") {
       setPopupMessage("Tài khoản Nhà tuyển dụng không thể tạo CV!");
       setIsSuccessPopup(false);
@@ -136,7 +136,7 @@ const CreateCV = () => {
       return;
     }
 
-    // Xóa một mục kinh nghiệm làm việc theo vị trí.
+    // Kiểm tra các thông tin cá nhân bắt buộc trước khi lưu CV.
     if (
       !cvData.full_name.trim() ||
       !cvData.phone.trim() ||
@@ -146,12 +146,11 @@ const CreateCV = () => {
         "Vui lòng điền đầy đủ Họ và tên, Số điện thoại và Email!",
       );
       setIsSuccessPopup(false);
-      // Cập nhật một kỹ năng trong CV.
       setOpenDialog(true);
       return;
     }
 
-    // Thêm một ô kỹ năng trống.
+    // Yêu cầu ít nhất tên trường trong mục học vấn đầu tiên.
     if (cvData.education.length > 0 && !cvData.education[0].school.trim()) {
       setPopupMessage("Vui lòng điền ít nhất thông tin Học vấn (Tên trường)!");
       setIsSuccessPopup(false);
@@ -159,16 +158,17 @@ const CreateCV = () => {
       return;
     }
 
-    // Xóa một ô kỹ năng theo vị trí.
     try {
+      // Gửi toàn bộ nội dung CV đến API dành cho ứng viên.
       const { data } = await api.post("/api/v1/candidate/cvs", cvData);
+
+      // Lưu mã CV gần nhất để tự động sử dụng khi ứng tuyển.
       localStorage.setItem("last_created_cv_id", data.cv_id);
       localStorage.setItem(
         "last_created_cv_name",
         cvData.full_name || "CV của tôi",
       );
       setPopupMessage(`Lưu CV thành công! Mã CV của bạn là: ${data.cv_id}`);
-      // Kiểm tra và lưu CV, sau đó ghi nhớ CV cho những lần ứng tuyển sau.
       setIsSuccessPopup(true);
       setOpenDialog(true);
     } catch (error) {

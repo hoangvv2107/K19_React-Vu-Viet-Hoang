@@ -79,6 +79,7 @@ const JobDetail = ({ jobData, isLoading }) => {
 
     const savedCvId = localStorage.getItem("last_created_cv_id");
     if (!savedCvId) {
+      // Người dùng phải tạo ít nhất một CV trước khi có thể nộp hồ sơ.
       setPopupMessage("Bạn cần tạo CV trước khi ứng tuyển!");
       setIsSuccessPopup(false);
       setRedirectAfterClose("/create-cv");
@@ -86,6 +87,7 @@ const JobDetail = ({ jobData, isLoading }) => {
       return;
     }
 
+    // Gắn CV gần nhất vào form để người dùng không phải chọn lại thủ công.
     setApplyForm((prev) => ({ ...prev, cv_id: savedCvId }));
     setOpenApply(true);
   };
@@ -106,6 +108,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
 
     try {
+      // Gửi ID công việc, CV và thư giới thiệu đến API ứng tuyển.
       await api.post(`/api/v1/jobs/${jobData.id}/apply`, applyForm);
       handleCloseApply();
 
@@ -115,6 +118,7 @@ const JobDetail = ({ jobData, isLoading }) => {
       setIsSuccessPopup(true);
       setOpenDialog(true);
     } catch (error) {
+      // Hiển thị lỗi từ backend nếu yêu cầu ứng tuyển không thành công.
       const errorMsg = getApiErrorMessage(
         error,
         "Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.",

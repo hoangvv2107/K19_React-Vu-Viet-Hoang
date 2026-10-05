@@ -43,11 +43,13 @@ const PostJob = () => {
     const token = localStorage.getItem("access_token");
     const userRole = localStorage.getItem("user_role");
 
+    // Người chưa đăng nhập phải tạo tài khoản doanh nghiệp trước khi đăng tin.
     if (!token) {
       navigate("/employer-register");
       return;
     }
 
+    // Người dùng đã đăng nhập nhưng không có quyền EMPLOYER không được truy cập form.
     if (userRole !== "EMPLOYER") {
       setPopupMessage("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
       setIsSuccessPopup(false);
@@ -177,6 +179,7 @@ const PostJob = () => {
 
   // Trả về thông báo lỗi nếu form đăng tuyển chưa đầy đủ.
   const validateForm = () => {
+    // Kiểm tra lần lượt các nhóm dữ liệu để trả về lỗi đầu tiên cần người dùng sửa.
     if (!formData.title || formData.title.trim() === "") {
       return "Vui lòng nhập tiêu đề công việc!";
     }
@@ -204,6 +207,7 @@ const PostJob = () => {
       return "Hạn nộp hồ sơ không được nhỏ hơn ngày hôm nay!";
     }
     if (formData.salary.type === "RANGE") {
+      // Với kiểu lương RANGE, cả mức tối thiểu và tối đa đều phải hợp lệ.
       if (formData.salary.min === "" || formData.salary.max === "") {
         return "Vui lòng nhập đầy đủ khoảng lương tối thiểu và tối đa!";
       }
@@ -221,6 +225,7 @@ const PostJob = () => {
   const handlePostJob = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
+      // Không gọi API nếu form còn lỗi; hiển thị lỗi ngay trên giao diện.
       setIsSuccessPopup(false);
       setPopupMessage(errorMessage);
       setOpenPopup(true);
@@ -228,11 +233,13 @@ const PostJob = () => {
     }
 
     try {
+      // Gửi toàn bộ thông tin công việc, lương và địa điểm đến endpoint dành cho employer.
       await api.post("/api/v1/employer/jobs", formData);
       setIsSuccessPopup(true);
       setPopupMessage("Đăng tin tuyển dụng thành công!");
       setOpenPopup(true);
     } catch (error) {
+      // Hiển thị lỗi do backend trả về hoặc dùng thông báo mặc định nếu không có chi tiết.
       const errorMsg =
         error.response?.data?.detail?.[0]?.msg ||
         error.response?.data?.message ||

@@ -55,6 +55,8 @@ const LoginPage = () => {
   const submitBtn = async () => {
     let isOk = true;
     const dataE = { ...errors };
+
+    // Kiểm tra từng trường tài khoản và đánh dấu lỗi nếu người dùng bỏ trống.
     for (const acData in account) {
       if (!Object.hasOwn(account, acData)) continue;
 
@@ -68,7 +70,10 @@ const LoginPage = () => {
     setErrors(dataE);
     if (isOk) {
       try {
+        // Gửi email và mật khẩu đến API xác thực tài khoản.
         const { data } = await api.post("/api/v1/auth/login", account);
+
+        // Lưu token và thông tin người dùng cho các request tiếp theo.
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user_id", data.user.id);
         localStorage.setItem("user_email", data.user.email);
@@ -78,6 +83,7 @@ const LoginPage = () => {
         setIsSuccessPopup(true);
         navigate("/");
       } catch (error) {
+        // Hiển thị lỗi từ backend hoặc dùng thông báo mặc định.
         const errorMsg = getApiErrorMessage(
           error,
           "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại mật khẩu hoặc email.",
