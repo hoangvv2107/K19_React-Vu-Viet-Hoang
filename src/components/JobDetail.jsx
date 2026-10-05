@@ -46,6 +46,7 @@ const JobDetail = ({ jobData, isLoading }) => {
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
   const [redirectAfterClose, setRedirectAfterClose] = useState("");
 
+  // Close the notification and follow any pending redirect.
   const handleCloseDialog = () => {
     setOpenDialog(false);
     if (redirectAfterClose) {
@@ -54,6 +55,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
   };
 
+  // Check authentication, role, and CV requirements before opening the apply form.
   const handleOpenApply = () => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
@@ -75,7 +77,6 @@ const JobDetail = ({ jobData, isLoading }) => {
       return;
     }
 
-    // Reuse the most recently created CV for the application.
     const savedCvId = localStorage.getItem("last_created_cv_id");
     if (!savedCvId) {
       setPopupMessage("Bạn cần tạo CV trước khi ứng tuyển!");
@@ -89,11 +90,13 @@ const JobDetail = ({ jobData, isLoading }) => {
     setOpenApply(true);
   };
 
+  // Close the application form and clear its temporary data.
   const handleCloseApply = () => {
     setOpenApply(false);
     setApplyForm({ cv_id: "", cover_letter: "" });
   };
 
+  // Submit the selected CV and cover letter for this job.
   const submitApply = async () => {
     if (!applyForm.cv_id) {
       setPopupMessage("Vui lòng chọn CV để ứng tuyển!");
@@ -104,7 +107,7 @@ const JobDetail = ({ jobData, isLoading }) => {
 
     try {
       await api.post(`/api/v1/jobs/${jobData.id}/apply`, applyForm);
-      handleCloseApply(); // Close modal
+      handleCloseApply();
 
       setPopupMessage(
         "Ứng tuyển thành công! Nhà tuyển dụng sẽ sớm liên hệ với bạn.",

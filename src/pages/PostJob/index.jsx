@@ -38,18 +38,16 @@ const PostJob = () => {
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
   const [redirectAfterClose, setRedirectAfterClose] = useState(false);
 
+  // Protect the page so only authenticated employers can use it.
   useEffect(() => {
-    // Read the authentication data saved by the login flow.
     const token = localStorage.getItem("access_token");
     const userRole = localStorage.getItem("user_role");
 
-    // Redirect unauthenticated users to the login page.
     if (!token) {
       navigate("/login");
       return;
     }
 
-    // Only employer accounts can access this page.
     if (userRole !== "EMPLOYER") {
       setPopupMessage("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
       setIsSuccessPopup(false);
@@ -84,7 +82,7 @@ const PostJob = () => {
         address_detail: "",
       },
     ],
-    deadline: "", // Cho phép nhà tuyển dụng chủ động chọn ngày
+    deadline: "",
     is_hot: false,
     description_html:
       "<h4>1. Mô tả công việc</h4><p>Nhập chi tiết mô tả...</p>",
@@ -93,6 +91,7 @@ const PostJob = () => {
     benefits_html: "<h4>3. Quyền lợi</h4><p>Nhập chi tiết quyền lợi...</p>",
   });
 
+  // Load categories and initialize the first category selection.
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -113,6 +112,7 @@ const PostJob = () => {
     fetchCategories();
   }, []);
 
+  // Update a field and refresh specialties when the category changes.
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -136,6 +136,7 @@ const PostJob = () => {
     }
   };
 
+  // Update one value in the salary object.
   const handleSalaryChange = (field, value) => {
     setFormData({
       ...formData,
@@ -146,6 +147,7 @@ const PostJob = () => {
     });
   };
 
+  // Store the selected city in the job location.
   const handleCityChange = (event, selectedCity) => {
     setFormData({
       ...formData,
@@ -159,6 +161,7 @@ const PostJob = () => {
     });
   };
 
+  // Store the detailed address for the selected city.
   const handleLocationChange = (e) => {
     const value = e.target.value;
     setFormData({
@@ -172,7 +175,7 @@ const PostJob = () => {
     });
   };
 
-  // Validate the job payload before submitting it.
+  // Return a validation message when the job form is incomplete.
   const validateForm = () => {
     if (!formData.title || formData.title.trim() === "") {
       return "Vui lòng nhập tiêu đề công việc!";
@@ -214,6 +217,7 @@ const PostJob = () => {
     return null;
   };
 
+  // Validate and send the new job posting to the API.
   const handlePostJob = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
@@ -239,6 +243,7 @@ const PostJob = () => {
     }
   };
 
+  // Close the result dialog and return to the home page when appropriate.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup || redirectAfterClose) {
@@ -483,7 +488,6 @@ const PostJob = () => {
                   }}
                   inputProps={{
                     onClick: (e) => {
-                      // Open the native date picker when the date field is clicked.
                       if (typeof e.target.showPicker === "function") {
                         e.target.showPicker();
                       }

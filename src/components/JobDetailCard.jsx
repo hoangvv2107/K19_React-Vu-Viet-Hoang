@@ -139,9 +139,8 @@ const JobDetailCard = ({ job }) => {
           color: "#4b5563",
           fontSize: "13px",
           lineHeight: 1.6,
-          // Keep API-provided HTML readable inside the card.
           "& h3": {
-            display: "none", // Ẩn thẻ <h3> gốc từ DB vì đã có UI tiêu đề ở trên
+            display: "none",
           },
           "& ul": {
             m: 0,

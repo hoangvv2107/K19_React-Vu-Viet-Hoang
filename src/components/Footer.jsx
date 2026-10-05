@@ -79,6 +79,7 @@ const FOOTER_LINKS = {
   ],
 };
 
+// Render one titled group of footer links.
 const LinkGroup = ({ title, links }) => (
   <Box sx={{ mb: 3 }}>
     <Typography
@@ -106,6 +107,7 @@ const LinkGroup = ({ title, links }) => (
   </Box>
 );
 
+// Render the shared footer shown across the application.
 const Footer = () => {
   return (
     <Box sx={{ bgcolor: "#fff", pt: 6, pb: 3, borderTop: "1px solid #e5e7eb" }}>

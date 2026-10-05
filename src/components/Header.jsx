@@ -31,14 +31,17 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
 
+  // Open the account menu from the avatar button.
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  // Close the account menu.
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
+  // Sign out through the API, clear the local session, and return home.
   const handleLogout = async () => {
     try {
       await api.post("/api/v1/auth/logout");

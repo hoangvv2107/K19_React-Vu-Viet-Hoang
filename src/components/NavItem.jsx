@@ -2,14 +2,12 @@ import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link } from "react-router";
 
-const NavItem = (
-  { title, to }, // 2. Thêm prop 'to' để nhận đường dẫn
-) => (
+const NavItem = ({ title, to }) => (
   <Box
-    component={Link} // 3. Ép cái Box này hoạt động như một component Link
-    to={to} // 4. Gắn đường dẫn vào
+    component={Link}
+    to={to}
     sx={{
-      textDecoration: "none", // 5. Thêm dòng này để xóa gạch chân mặc định của thẻ <a>
+      textDecoration: "none",
       display: "flex",
       alignItems: "center",
       cursor: "pointer",

@@ -21,6 +21,8 @@ import NotificationDialog from "../../components/NotificationDialog";
 
 const CreateCV = () => {
   const navigate = useNavigate();
+
+  // Redirect users who are not authenticated.
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -42,21 +44,25 @@ const CreateCV = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
+  // Close the result dialog.
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
 
+  // Update a personal information field in the CV.
   const handleBasicChange = (e) => {
     const { name, value } = e.target;
     setCvData({ ...cvData, [name]: value });
   };
 
+  // Update one field in an education entry.
   const handleEduChange = (index, field, value) => {
     const newEdu = [...cvData.education];
     newEdu[index][field] = value;
     setCvData({ ...cvData, education: newEdu });
   };
 
+  // Add an empty education entry.
   const handleAddEdu = () => {
     setCvData({
       ...cvData,
@@ -67,11 +73,13 @@ const CreateCV = () => {
     });
   };
 
+  // Remove one education entry by index.
   const handleRemoveEdu = (index) => {
     const newEdu = cvData.education.filter((_, i) => i !== index);
     setCvData({ ...cvData, education: newEdu });
   };
 
+  // Update one field in a work experience entry.
   const handleExpChange = (index, field, value) => {
     const newExp = [...cvData.experience];
     newExp[index][field] = value;
@@ -87,6 +95,7 @@ const CreateCV = () => {
       ],
     });
   };
+  // Update one field in a work experience entry.
 
   const handleRemoveExp = (index) => {
     const newExp = cvData.experience.filter((_, i) => i !== index);
@@ -119,6 +128,7 @@ const CreateCV = () => {
       return;
     }
 
+    // Add an empty work experience entry.
     if (role === "EMPLOYER") {
       setPopupMessage("Tài khoản Nhà tuyển dụng không thể tạo CV!");
       setIsSuccessPopup(false);
@@ -126,7 +136,7 @@ const CreateCV = () => {
       return;
     }
 
-    // Validate required personal information before saving.
+    // Remove one work experience entry by index.
     if (
       !cvData.full_name.trim() ||
       !cvData.phone.trim() ||
@@ -136,11 +146,12 @@ const CreateCV = () => {
         "Vui lòng điền đầy đủ Họ và tên, Số điện thoại và Email!",
       );
       setIsSuccessPopup(false);
+      // Update one skill in the CV.
       setOpenDialog(true);
       return;
     }
 
-    // Require the school name in the first education entry.
+    // Add an empty skill field.
     if (cvData.education.length > 0 && !cvData.education[0].school.trim()) {
       setPopupMessage("Vui lòng điền ít nhất thông tin Học vấn (Tên trường)!");
       setIsSuccessPopup(false);
@@ -148,6 +159,7 @@ const CreateCV = () => {
       return;
     }
 
+    // Remove one skill field by index.
     try {
       const { data } = await api.post("/api/v1/candidate/cvs", cvData);
       localStorage.setItem("last_created_cv_id", data.cv_id);
@@ -156,6 +168,7 @@ const CreateCV = () => {
         cvData.full_name || "CV của tôi",
       );
       setPopupMessage(`Lưu CV thành công! Mã CV của bạn là: ${data.cv_id}`);
+      // Validate and save the CV, then remember it for future applications.
       setIsSuccessPopup(true);
       setOpenDialog(true);
     } catch (error) {

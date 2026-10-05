@@ -16,6 +16,7 @@ const JobInfo = () => {
   const [jobData, setJobData] = useState(null);
   const [isJobLoading, setIsJobLoading] = useState(true);
 
+  // Load categories for the search bar on the detail page.
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
@@ -28,6 +29,7 @@ const JobInfo = () => {
     }
   };
 
+  // Fetch the job selected by the slug in the URL.
   const getJobDetailData = async () => {
     if (!slug) return;
     try {

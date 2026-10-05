@@ -37,15 +37,21 @@ const LoginPage = () => {
 
   const [isError, setIsError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Toggle the password field between masked and visible text.
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  // Update the edited field and clear its validation message.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAccount({ ...account, [name]: value });
     if (errors[name]) setErrors({ ...errors, [name]: false });
     if (isError) setIsError(false);
   };
+
+  // Validate credentials, authenticate the user, and store the session data.
   const submitBtn = async () => {
     let isOk = true;
     const dataE = { ...errors };
@@ -87,7 +93,6 @@ const LoginPage = () => {
     <Box className={styles.login_wrapper}>
       <Box
         className={styles.login_container}
-        // Use the full width on mobile and a fixed width on larger screens.
         sx={{ width: { xs: "100%", sm: "648px" }, maxWidth: "100%" }}
       >
         <Link
@@ -217,8 +222,8 @@ const LoginPage = () => {
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            padding: "8px 12px", // Tăng xíu padding cho dễ bấm trên mobile
-            mt: 1, // Thêm margin top để tách biệt với ô password
+            padding: "8px 12px",
+            mt: 1,
           }}
         >
           Đăng nhập <ArrowForwardIcon sx={{ fontSize: "16px" }} />
@@ -250,12 +255,12 @@ const LoginPage = () => {
 
         <Typography
           sx={{
-            fontSize: { xs: "11px", sm: "12px" }, // Giữ nguyên 12px cho PC, 11px cho mobile
+            fontSize: { xs: "11px", sm: "12px" },
             padding: "8px 10px",
             background: "#f2f4f5",
             borderRadius: "999px",
             mt: "16px",
-            textAlign: "center", // Căn giữa nội dung khi rớt dòng
+            textAlign: "center",
             lineHeight: 1.5,
           }}
         >
@@ -269,7 +274,7 @@ const LoginPage = () => {
               textDecoration: "none",
               mx: "4px",
               "&:hover": { textDecoration: "underline" },
-              display: "inline-block", // Tránh link bị cắt đôi
+              display: "inline-block",
             }}
           >
             1900 068 889 | Nhánh 2
@@ -281,7 +286,6 @@ const LoginPage = () => {
       <Typography
         sx={{
           color: "#bfbfbf",
-          // Reduce the mobile spacing below the form.
           margin: { xs: "24px 0 16px", sm: "60px 0 24px" },
           fontSize: { xs: "12px", sm: "14px" },
           textAlign: "center",

@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 
+// Display the result of an action and notify the parent when it closes.
 const NotificationDialog = ({ open, onClose, message, isSuccess }) => {
   return (
     <Dialog

@@ -46,10 +46,13 @@ const EmployerRegisterPage = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
+  // Toggle password visibility for the main password field.
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  // Toggle password visibility for the confirmation field.
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
+  // Update company form data and clear related validation messages.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -66,12 +69,12 @@ const EmployerRegisterPage = () => {
     }
   };
 
+  // Validate the company form and create the employer account.
   const handleRegister = async () => {
     let isOk = true;
     const newErrors = {};
     let hasEmptyField = false;
 
-    // Validate that every required field has a value.
     for (const key in formData) {
       if (!formData[key] || formData[key].trim() === "") {
         newErrors[key] = true;
@@ -80,7 +83,6 @@ const EmployerRegisterPage = () => {
       }
     }
 
-    // Validate the password confirmation.
     let isPasswordMismatch = false;
     if (
       formData.password.trim() !== "" &&
@@ -97,13 +99,11 @@ const EmployerRegisterPage = () => {
     setGeneralError(hasEmptyField);
     setPasswordMatchError(isPasswordMismatch);
 
-    // Require agreement to the terms.
     if (!isAgreement) {
       setAgreementError(true);
       isOk = false;
     }
 
-    // Remove the UI-only confirmation field before sending the request.
     if (isOk) {
       const apiData = { ...formData };
       delete apiData.confirm_password;
@@ -124,6 +124,7 @@ const EmployerRegisterPage = () => {
     }
   };
 
+  // Close the result dialog and redirect after successful registration.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup) {

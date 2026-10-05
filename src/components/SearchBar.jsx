@@ -25,6 +25,8 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
   const [showCategoryJobs, setShowCategoryJobs] = useState(false);
   const [showCities, setShowCities] = useState(false);
   const [selectedCity, setSelectedCity] = useState(null);
+
+  // Open the category picker.
   const handleClickShowCategoryJobs = () => {
     setShowCategoryJobs(!showCategoryJobs);
   };
@@ -38,6 +40,8 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
   const activeCategories = activeGroup?.categories || [];
 
   const [selectedCategories, setSelectedCategories] = useState([]);
+
+  // Select or clear every child category in a parent group.
   const handleToggleParentCheckbox = (groupId, isCurrentlyChecked) => {
     const group = categoryData.find((g) => g.id === groupId);
     if (!group || !group.categories) return;
@@ -56,6 +60,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
     }
   };
 
+  // Toggle one child category without changing other selections.
   const handleToggleChildCheckbox = (childId) => {
     const isAlreadySelected = selectedCategories.includes(childId);
     if (isAlreadySelected) {
@@ -66,6 +71,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
     }
   };
 
+  // Send normalized search filters to the page that owns the API call.
   const handleSearch = () => {
     const selectedGroup = categoryData.find((group) =>
       group.categories?.some((category) =>
@@ -94,7 +100,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           bgcolor: "#fff",
           borderRadius: { xs: 3, md: "999px" },
           width: "100%",
-          maxWidth: "1170px", // Giới hạn chiều rộng tối đa
+          maxWidth: "1170px",
           padding: { xs: 1.5, md: "15px" },
           gap: { xs: 0.5, md: 0 },
           margin: "0 auto",
@@ -153,7 +159,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             if (event.key === "Enter") handleSearch();
           }}
           sx={{
-            flex: 1, // Chiếm toàn bộ không gian còn lại
+            flex: 1,
             width: { xs: "100%", md: "auto" },
             minWidth: 0,
             fontSize: "15px",
@@ -189,10 +195,10 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             fontSize: "14px",
             minWidth: { xs: 0, md: "160px" },
             width: { xs: "100%", md: "auto" },
-            justifyContent: "flex-start", // Đẩy nội dung sang trái
+            justifyContent: "flex-start",
             px: 1,
             "& .MuiButton-endIcon": {
-              marginLeft: "auto", // Đẩy icon mũi tên sát mép phải
+              marginLeft: "auto",
             },
             "&:hover": {
               bgcolor: "transparent",
@@ -208,7 +214,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           onClick={handleSearch}
           sx={{
             borderRadius: "999px",
-            bgcolor: "#00b14f", // Màu xanh lá đặc trưng
+            bgcolor: "#00b14f",
             color: "#fff",
             textTransform: "none",
             fontWeight: 600,
@@ -284,7 +290,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             width: "100%",
             bgcolor: "#fff",
             borderRadius: "12px",
-            boxShadow: "0px 8px 32px rgba(0, 0, 0, 0.15)", // Box shadow cho modal
+            boxShadow: "0px 8px 32px rgba(0, 0, 0, 0.15)",
             display: showCategoryJobs ? "flex" : "none",
             flexDirection: "column",
             overflow: "hidden",
@@ -461,8 +467,8 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                         sx={{
                           color: "#d1d5db",
                           "&.Mui-checked": { color: "#00b14f" },
-                          p: 0, // Xóa padding mặc định để căn lề đẹp hơn
-                          mr: 1.5, // Cách chữ một chút
+                          p: 0,
+                          mr: 1.5,
                         }}
                       />
 
@@ -471,7 +477,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                           fontSize: "14px",
                           fontWeight: 600,
                           color: "#212f3f",
-                          mt: "2px", // Đẩy nhẹ xuống cho bằng dòng với ô Checkbox
+                          mt: "2px",
                         }}
                       >
                         {category.name}

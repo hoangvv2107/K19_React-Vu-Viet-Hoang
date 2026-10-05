@@ -17,6 +17,8 @@ const HomePage = () => {
   });
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
   const [isJobsLoading, setIsJobsLoading] = useState(true);
+
+  // Load the category list used by the search form.
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
@@ -28,12 +30,14 @@ const HomePage = () => {
       setIsCategoryLoading(false);
     }
   };
+
+  // Fetch jobs using the current page and search filters.
   const getJobsData = async () => {
     try {
       setIsJobsLoading(true);
       const { data } = await api.get("/api/v1/jobs", {
         params: {
-          page: pageJobsCurrent, // Mặc định là trang 1
+          page: pageJobsCurrent,
           keyword: jobFilters.keyword || undefined,
           category_slug: jobFilters.category_slug || undefined,
           city_id: jobFilters.city_id || undefined,
@@ -54,6 +58,7 @@ const HomePage = () => {
     getJobsData();
   }, [pageJobsCurrent, jobFilters]);
 
+  // Replace the current filters and restart pagination from page one.
   const handleJobSearch = (filters) => {
     setPageJobsCurrent(1);
     setJobFilters(filters);

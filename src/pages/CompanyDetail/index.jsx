@@ -13,6 +13,8 @@ import api from "../../plugins/axios";
 const CompanyDetail = () => {
   const [categoryGroups, setCategoryGroups] = useState([]);
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
+
+  // Load categories used by the search bar on the company page.
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
@@ -67,7 +69,7 @@ const CompanyDetail = () => {
                 width: "100%",
                 height: "250px",
                 bgcolor: "#e5e7eb",
-                backgroundImage: "url('https://via.placeholder.com/1170x250')", // Thay bằng ảnh thật sau
+                backgroundImage: "url('https://via.placeholder.com/1170x250')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 borderRadius: "0 0 8px 8px",
@@ -78,7 +80,7 @@ const CompanyDetail = () => {
               sx={{
                 display: "flex",
                 alignItems: "flex-end",
-                mt: "-40px", // Kéo logo đè lên cover
+                mt: "-40px",
                 gap: 3,
               }}
             >
@@ -143,7 +145,7 @@ const CompanyDetail = () => {
               display: "flex",
               gap: 3,
               alignItems: "flex-start",
-              flexDirection: { xs: "column", md: "row" }, // Đảm bảo mobile nằm dọc
+              flexDirection: { xs: "column", md: "row" },
             }}
           >
             <Box

@@ -43,17 +43,21 @@ const RegisterPage = () => {
 
   const [openPopup, setOpenPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-  const [isSuccessPopup, setIsSuccessPopup] = useState(false); // true = Xanh (Thành công), false = Đỏ (Lỗi)
+  const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
+  // Toggle password visibility for the main password field.
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  // Toggle password visibility for the confirmation field.
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
+  // Toggle the terms agreement and clear its validation error.
   const handleClickIsAgreement = () => {
     setIsAgreement(!isAgreement);
     setAgreementError(false);
   };
 
+  // Update form data and clear related validation messages.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -70,12 +74,12 @@ const RegisterPage = () => {
     }
   };
 
+  // Validate the candidate form and create the account.
   const handleRegister = async () => {
     let isOk = true;
     const newErrors = { ...errors };
     let hasEmptyField = false;
 
-    // Validate required fields.
     for (const data in userData) {
       if (!Object.hasOwn(userData, data)) continue;
       const ud = userData[data];
@@ -86,7 +90,6 @@ const RegisterPage = () => {
       } else newErrors[data] = false;
     }
 
-    // Validate the password confirmation.
     let isPasswordMismatch = false;
     if (
       userData.password.trim() !== "" &&
@@ -103,7 +106,6 @@ const RegisterPage = () => {
     setGeneralError(hasEmptyField);
     setPasswordMatchError(isPasswordMismatch);
 
-    // Require agreement to the terms.
     if (!isAgreement) {
       setAgreementError(true);
       isOk = false;
@@ -137,6 +139,7 @@ const RegisterPage = () => {
     }
   };
 
+  // Close the result dialog and redirect after a successful registration.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup) {

@@ -39,7 +39,7 @@ const CompanyList = () => {
         const response = await api.get("/api/v1/companies", {
           params: {
             page: page,
-            keyword: keyword || null, // Nếu rỗng thì gửi null hoặc bỏ qua
+            keyword: keyword || null,
           },
         });
 
@@ -55,20 +55,23 @@ const CompanyList = () => {
     fetchCompanies();
   }, [page, keyword]);
 
+  // Apply the entered keyword and restart the company list from page one.
   const handleSearch = () => {
-    setPage(1); // Reset về trang 1 khi tìm kiếm mới
+    setPage(1);
     setKeyword(searchInput);
   };
 
+  // Submit a search when the user presses Enter.
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
+  // Change page and return the viewport to the top of the list.
   const handlePageChange = (event, value) => {
     setPage(value);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn lên đầu trang
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
@@ -165,8 +168,7 @@ const CompanyList = () => {
 
           <Grid container spacing={3}>
             {isLoading
-              ? // --- SKELETON LOADING ---
-                Array.from(new Array(6)).map((_, index) => (
+              ? Array.from(new Array(6)).map((_, index) => (
                   <Grid size={12} key={index}>
                     <Paper sx={{ p: 3, borderRadius: "8px", height: "100%" }}>
                       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -181,8 +183,7 @@ const CompanyList = () => {
                     </Paper>
                   </Grid>
                 ))
-              : // --- RENDER DỮ LIỆU THẬT ---
-                companies.map((company) => (
+              : companies.map((company) => (
                   <Grid size={12} key={company.id}>
                     <Paper
                       elevation={0}
@@ -213,7 +214,6 @@ const CompanyList = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {/* Use the company initial when no logo is available. */}
                           {!company.logo_url && company.company_name?.charAt(0)}
                         </Avatar>
                         <Box sx={{ flex: 1 }}>
@@ -339,7 +339,7 @@ const CompanyList = () => {
                 count={totalPages}
                 page={page}
                 onChange={handlePageChange}
-                color="success" // Màu xanh lá mặc định của MUI
+                color="success"
                 shape="rounded"
               />
             </Box>
