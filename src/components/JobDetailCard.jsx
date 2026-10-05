@@ -3,7 +3,6 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { Box, Typography, Avatar, Button } from "@mui/material";
 
-// Hàm hỗ trợ format tiền lương
 const formatSalary = (salaryObj) => {
   if (!salaryObj) return "Chưa cập nhật";
   if (salaryObj.type === "AGREEMENT") return "Thoả thuận";
@@ -15,13 +14,11 @@ const formatSalary = (salaryObj) => {
   return "Thoả thuận";
 };
 
-// Hàm hỗ trợ format địa điểm (Lấy thành phố đầu tiên)
 const formatLocation = (workLocation) => {
   if (!workLocation || workLocation.length === 0) return "Chưa cập nhật";
   return workLocation[0].city_name;
 };
 
-// Hàm tính toán số ngày còn lại đến hạn nộp
 const getDaysLeft = (deadline) => {
   if (!deadline) return "Chưa cập nhật";
   const diffTime = new Date(deadline).getTime() - new Date().getTime();
@@ -30,7 +27,6 @@ const getDaysLeft = (deadline) => {
 };
 
 const JobDetailCard = ({ job }) => {
-  // Tránh lỗi khi hover mà data chưa load kịp
   if (!job) return null;
 
   return (
@@ -44,7 +40,6 @@ const JobDetailCard = ({ job }) => {
         p: 2.5,
       }}
     >
-      {/* 1. HEADER: Logo + Tiêu đề + Công ty + Lương */}
       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
         <Avatar
           variant="square"
@@ -79,7 +74,6 @@ const JobDetailCard = ({ job }) => {
         </Box>
       </Box>
 
-      {/* 2. META INFO: Địa điểm, Kinh nghiệm, Hạn nộp */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 2.5 }}>
         <Box
           sx={{
@@ -122,7 +116,6 @@ const JobDetailCard = ({ job }) => {
         </Box>
       </Box>
 
-      {/* 3. TIÊU ĐỀ: Mô tả công việc (Cái vạch màu xanh lá) */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
         <Box
           sx={{
@@ -139,7 +132,6 @@ const JobDetailCard = ({ job }) => {
         </Typography>
       </Box>
 
-      {/* 4. LIST MÔ TẢ (Render an toàn từ chuỗi HTML của DB) */}
       <Box
         dangerouslySetInnerHTML={{ __html: job.description_html }}
         sx={{
@@ -147,7 +139,7 @@ const JobDetailCard = ({ job }) => {
           color: "#4b5563",
           fontSize: "13px",
           lineHeight: 1.6,
-          // Ghi đè CSS cho dữ liệu HTML trả về từ API
+          // Keep API-provided HTML readable inside the card.
           "& h3": {
             display: "none", // Ẩn thẻ <h3> gốc từ DB vì đã có UI tiêu đề ở trên
           },
@@ -161,7 +153,6 @@ const JobDetailCard = ({ job }) => {
         }}
       />
 
-      {/* 5. ACTION BUTTONS */}
       <Box sx={{ display: "flex", gap: 1.5 }}>
         <Button
           variant="outlined"

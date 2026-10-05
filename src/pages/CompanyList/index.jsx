@@ -13,7 +13,6 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-// === Import Icons ===
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
@@ -23,19 +22,16 @@ import Header from "../../components/Header";
 import api from "../../plugins/axios";
 
 const CompanyList = () => {
-  // --- STATE ---
   const [companies, setCompanies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  // State cho thanh tìm kiếm
   const [searchInput, setSearchInput] = useState("");
   const [keyword, setKeyword] = useState("");
 
   const PAGE_SIZE = 20;
 
-  // --- GỌI API LẤY DANH SÁCH ---
   useEffect(() => {
     const fetchCompanies = async () => {
       setIsLoading(true);
@@ -59,7 +55,6 @@ const CompanyList = () => {
     fetchCompanies();
   }, [page, keyword]);
 
-  // --- XỬ LÝ SỰ KIỆN ---
   const handleSearch = () => {
     setPage(1); // Reset về trang 1 khi tìm kiếm mới
     setKeyword(searchInput);
@@ -76,7 +71,6 @@ const CompanyList = () => {
     window.scrollTo({ top: 0, behavior: "smooth" }); // Cuộn lên đầu trang
   };
 
-  // Tính tổng số trang (Giả sử backend trả về tổng số record trong 'total')
   const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
 
   return (
@@ -84,7 +78,6 @@ const CompanyList = () => {
       <Header />
 
       <Box sx={{ bgcolor: "#f4f5f5", minHeight: "100vh", pb: 5 }}>
-        {/* ================= HERO SECTION & SEARCH ================= */}
         <Box
           sx={{
             bgcolor: "#fff",
@@ -113,7 +106,6 @@ const CompanyList = () => {
               cho bạn
             </Typography>
 
-            {/* Thanh tìm kiếm */}
             <Box
               sx={{
                 display: "flex",
@@ -162,7 +154,6 @@ const CompanyList = () => {
           </Box>
         </Box>
 
-        {/* ================= DANH SÁCH CÔNG TY ================= */}
         <Box sx={{ width: "100%", maxWidth: "1170px", mx: "auto", px: 2 }}>
           <Typography
             variant="h6"
@@ -172,7 +163,6 @@ const CompanyList = () => {
             Danh sách công ty nổi bật
           </Typography>
 
-          {/* Grid Layout */}
           <Grid container spacing={3}>
             {isLoading
               ? // --- SKELETON LOADING ---
@@ -210,7 +200,6 @@ const CompanyList = () => {
                         },
                       }}
                     >
-                      {/* Avatar & Tên */}
                       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                         <Avatar
                           variant="rounded"
@@ -224,7 +213,7 @@ const CompanyList = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {/* Fallback nếu không có logo: lấy chữ cái đầu */}
+                          {/* Use the company initial when no logo is available. */}
                           {!company.logo_url && company.company_name?.charAt(0)}
                         </Avatar>
                         <Box sx={{ flex: 1 }}>
@@ -244,7 +233,6 @@ const CompanyList = () => {
                         </Box>
                       </Box>
 
-                      {/* Thông tin Meta */}
                       <Box
                         sx={{
                           display: "flex",
@@ -317,7 +305,6 @@ const CompanyList = () => {
                           </Box>
                         </Box>
 
-                        {/* Tag trạng thái Xác thực (Nếu cần hiển thị) */}
                         {company.verification_tier === "VERIFIED" && (
                           <Chip
                             label="Đã xác thực"
@@ -338,7 +325,6 @@ const CompanyList = () => {
                 ))}
           </Grid>
 
-          {/* Trạng thái không tìm thấy */}
           {!isLoading && companies.length === 0 && (
             <Box sx={{ textAlign: "center", py: 10 }}>
               <Typography variant="h6" color="text.secondary">
@@ -347,7 +333,6 @@ const CompanyList = () => {
             </Box>
           )}
 
-          {/* ================= PHÂN TRANG ================= */}
           {!isLoading && totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
               <Pagination

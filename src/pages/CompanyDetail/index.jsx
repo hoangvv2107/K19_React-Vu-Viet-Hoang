@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Button, Stack, Divider } from "@mui/material";
 
-// === Import Icons ===
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
@@ -47,7 +46,6 @@ const CompanyDetail = () => {
       </Box>
 
       <Box sx={{ bgcolor: "#f4f5f5", minHeight: "100vh", pb: 5 }}>
-        {/* ================= 1. HEADER CÔNG TY (COVER & LOGO) ================= */}
         <Box
           sx={{
             bgcolor: "#fff",
@@ -64,7 +62,6 @@ const CompanyDetail = () => {
               px: "15px",
             }}
           >
-            {/* Ảnh bìa */}
             <Box
               sx={{
                 width: "100%",
@@ -77,7 +74,6 @@ const CompanyDetail = () => {
               }}
             />
 
-            {/* Khối Logo & Tên công ty dàn ngang */}
             <Box
               sx={{
                 display: "flex",
@@ -86,7 +82,6 @@ const CompanyDetail = () => {
                 gap: 3,
               }}
             >
-              {/* Logo */}
               <Box sx={{ p: 0.5, bgcolor: "#fff", borderRadius: "8px" }}>
                 <Avatar
                   variant="square"
@@ -100,7 +95,6 @@ const CompanyDetail = () => {
                 />
               </Box>
 
-              {/* Tên công ty & Nút Follow */}
               <Box
                 sx={{
                   display: "flex",
@@ -136,7 +130,6 @@ const CompanyDetail = () => {
           </Box>
         </Box>
 
-        {/* ================= 2. NỘI DUNG CHÍNH (CHIA 2 CỘT BẰNG FLEXBOX) ================= */}
         <Box
           sx={{
             width: "100%",
@@ -153,7 +146,6 @@ const CompanyDetail = () => {
               flexDirection: { xs: "column", md: "row" }, // Đảm bảo mobile nằm dọc
             }}
           >
-            {/* ================= CỘT TRÁI (CHIẾM 2 PHẦN) ================= */}
             <Box
               sx={{
                 flex: 2,
@@ -163,7 +155,6 @@ const CompanyDetail = () => {
                 gap: 3,
               }}
             >
-              {/* Khối Giới thiệu */}
               <Box
                 sx={{
                   bgcolor: "#fff",
@@ -206,7 +197,6 @@ const CompanyDetail = () => {
                 </Typography>
               </Box>
 
-              {/* Khối Việc làm đang tuyển */}
               <Box
                 sx={{
                   bgcolor: "#fff",
@@ -239,7 +229,6 @@ const CompanyDetail = () => {
                   </Typography>
                 </Box>
 
-                {/* Box chứa tạm 1 Job Card mồi để làm UI */}
                 <Box
                   sx={{
                     border: "1px solid #e5e7eb",
@@ -257,12 +246,9 @@ const CompanyDetail = () => {
                     Tới 1,000 USD
                   </Typography>
                 </Box>
-                {/* Sau này bạn sẽ map() danh sách jobs của công ty vào đây */}
               </Box>
             </Box>
-            {/* ================= HẾT CỘT TRÁI ================= */}
 
-            {/* ================= CỘT PHẢI (CHIẾM 1 PHẦN) ================= */}
             <Box sx={{ flex: 1, width: "100%" }}>
               <Box
                 sx={{
@@ -364,7 +350,6 @@ const CompanyDetail = () => {
                 </Stack>
               </Box>
             </Box>
-            {/* ================= HẾT CỘT PHẢI ================= */}
           </Box>
         </Box>
       </Box>

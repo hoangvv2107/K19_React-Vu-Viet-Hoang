@@ -12,7 +12,6 @@ const NotificationDialog = ({ open, onClose, message, isSuccess }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      // Thêm sx để làm bo tròn góc giống style của thẻ Card
       PaperProps={{
         sx: { borderRadius: "12px", padding: "8px", minWidth: "320px" },
       }}

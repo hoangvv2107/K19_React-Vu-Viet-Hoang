@@ -23,12 +23,10 @@ import { useNavigate } from "react-router";
 const Header = () => {
   let navigate = useNavigate();
 
-  // 1. Tạo state quản lý trạng thái đăng nhập
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
     Boolean(localStorage.getItem("access_token")),
   );
 
-  // State quản lý việc đóng/mở menu của Avatar
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
@@ -68,7 +66,6 @@ const Header = () => {
         borderBottom: "1px solid #f4f5f5",
       }}
     >
-      {/* Nửa bên trái: Logo & Menu */}
       <Box
         sx={{
           display: "flex",
@@ -105,7 +102,7 @@ const Header = () => {
           }}
         >
           <NavItem title="Việc làm" to={"/"} />
-          <NavItem title="Tạo CV" to={"/tao-cv"} />
+          <NavItem title="Tạo CV" to={"/create-cv"} />
           <NavItem title="Danh sách công ty " to={"/CompanyList"} />
         </Box>
       </Box>
@@ -128,9 +125,9 @@ const Header = () => {
           }}
         >
           <NavItem title="Việc làm" to="/" />
-          <NavItem title="Tạo CV" to="/tao-cv" />
+          <NavItem title="Tạo CV" to="/create-cv" />
           <NavItem title="Danh sách công ty" to="/CompanyList" />
-          <NavItem title="Đăng tuyển & tìm hồ sơ" to="/dang-tuyen" />
+          <NavItem title="Đăng tuyển & tìm hồ sơ" to="/post-job" />
         </Box>
       )}
 
@@ -143,7 +140,6 @@ const Header = () => {
             gap: { xs: 0.5, sm: "12px" },
           }}
         >
-          {/* Nút Avatar */}
           <IconButton
             onClick={handleAvatarClick}
             disableRipple
@@ -167,7 +163,6 @@ const Header = () => {
             </Badge>
           </IconButton>
 
-          {/* Menu xổ xuống chỉ chứa nút Đăng xuất */}
           <Menu
             anchorEl={anchorEl}
             open={openMenu}
@@ -208,7 +203,7 @@ const Header = () => {
               Bạn là nhà tuyển dụng?
             </Typography>
             <Link
-              href="/dang-tuyen"
+              href="/post-job"
               sx={{
                 textDecoration: "none",
                 display: "flex",
@@ -279,7 +274,7 @@ const Header = () => {
           </Button>
 
           <Button
-            href="/dang-tuyen"
+            href="/post-job"
             sx={{
               display: { xs: "none", md: "inline-flex" },
               bgcolor: "#f2f4f5",

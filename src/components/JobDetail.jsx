@@ -18,7 +18,6 @@ import {
   MenuItem,
 } from "@mui/material";
 
-// === Import Icons ===
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
@@ -36,29 +35,25 @@ import NotificationDialog from "./NotificationDialog";
 const JobDetail = ({ jobData, isLoading }) => {
   const navigate = useNavigate();
 
-  // --- STATE QUẢN LÝ POPUP ỨNG TUYỂN ---
   const [openApply, setOpenApply] = useState(false);
   const [applyForm, setApplyForm] = useState({
     cv_id: "",
     cover_letter: "",
   });
 
-  // --- STATE QUẢN LÝ THÔNG BÁO (NOTIFICATION DIALOG) ---
   const [openDialog, setOpenDialog] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
-  const [redirectAfterClose, setRedirectAfterClose] = useState(""); // Lưu URL cần chuyển hướng sau khi đóng thông báo
+  const [redirectAfterClose, setRedirectAfterClose] = useState("");
 
-  // Đóng Dialog thông báo
   const handleCloseDialog = () => {
     setOpenDialog(false);
     if (redirectAfterClose) {
       navigate(redirectAfterClose);
-      setRedirectAfterClose(""); // Reset
+      setRedirectAfterClose("");
     }
   };
 
-  // --- LOGIC XỬ LÝ ỨNG TUYỂN ---
   const handleOpenApply = () => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
@@ -80,12 +75,12 @@ const JobDetail = ({ jobData, isLoading }) => {
       return;
     }
 
-    // --- TỰ ĐỘNG LẤY CV ID VỪA TẠO GẦN NHẤT ---
+    // Reuse the most recently created CV for the application.
     const savedCvId = localStorage.getItem("last_created_cv_id");
     if (!savedCvId) {
       setPopupMessage("Bạn cần tạo CV trước khi ứng tuyển!");
       setIsSuccessPopup(false);
-      setRedirectAfterClose("/tao-cv");
+      setRedirectAfterClose("/create-cv");
       setOpenDialog(true);
       return;
     }
@@ -109,7 +104,7 @@ const JobDetail = ({ jobData, isLoading }) => {
 
     try {
       await api.post(`/api/v1/jobs/${jobData.id}/apply`, applyForm);
-      handleCloseApply(); // Đóng modal nộp đơn trước
+      handleCloseApply(); // Close modal
 
       setPopupMessage(
         "Ứng tuyển thành công! Nhà tuyển dụng sẽ sớm liên hệ với bạn.",
@@ -128,7 +123,6 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
   };
 
-  // --- Các hàm Format Dữ Liệu ---
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Chưa cập nhật";
     if (salaryObj.type === "AGREEMENT") return "Thoả thuận";
@@ -223,7 +217,6 @@ const JobDetail = ({ jobData, isLoading }) => {
             flexDirection: { xs: "column", md: "row" },
           }}
         >
-          {/* ================= CỘT TRÁI (NỘI DUNG CHÍNH) ================= */}
           <Box sx={{ flex: 2, width: "100%" }}>
             <Box
               sx={{
@@ -357,7 +350,6 @@ const JobDetail = ({ jobData, isLoading }) => {
                 </Grid>
               </Grid>
 
-              {/* Nút Ứng tuyển */}
               <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
                 <Button
                   variant="contained"
@@ -527,7 +519,6 @@ const JobDetail = ({ jobData, isLoading }) => {
             </Box>
           </Box>
 
-          {/* ================= CỘT PHẢI (SIDEBAR) ================= */}
           <Box sx={{ flex: 1, width: "100%" }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Box
@@ -804,7 +795,6 @@ const JobDetail = ({ jobData, isLoading }) => {
         </Box>
       </Box>
 
-      {/* ================= DIALOG / POPUP ỨNG TUYỂN ================= */}
       <Dialog
         open={openApply}
         onClose={handleCloseApply}
@@ -898,7 +888,6 @@ const JobDetail = ({ jobData, isLoading }) => {
         </DialogActions>
       </Dialog>
 
-      {/* ================= NOTIFICATION DIALOG ================= */}
       <NotificationDialog
         open={openDialog}
         onClose={handleCloseDialog}

@@ -108,7 +108,6 @@ const CreateCV = () => {
     setCvData({ ...cvData, skills: newSkills });
   };
 
-  // --- GỌI API LƯU CV ---
   const handleSaveCV = async () => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
@@ -127,7 +126,7 @@ const CreateCV = () => {
       return;
     }
 
-    // --- KIỂM TRA NHẬP ĐỦ THÔNG TIN CƠ BẢN ---
+    // Validate required personal information before saving.
     if (
       !cvData.full_name.trim() ||
       !cvData.phone.trim() ||
@@ -141,7 +140,7 @@ const CreateCV = () => {
       return;
     }
 
-    // --- KIỂM TRA THÔNG TIN HỌC VẤN (Ít nhất phải điền tên trường dòng đầu tiên) ---
+    // Require the school name in the first education entry.
     if (cvData.education.length > 0 && !cvData.education[0].school.trim()) {
       setPopupMessage("Vui lòng điền ít nhất thông tin Học vấn (Tên trường)!");
       setIsSuccessPopup(false);
@@ -179,7 +178,6 @@ const CreateCV = () => {
           bgcolor: "#f4f5f5",
         }}
       >
-        {/* === Thanh Sub-header === */}
         <Box
           sx={{
             height: "60px",
@@ -221,7 +219,6 @@ const CreateCV = () => {
           </Button>
         </Box>
 
-        {/* === KHU VỰC NHẬP LIỆU FORM === */}
         <Box
           sx={{
             flex: 1,
@@ -244,7 +241,6 @@ const CreateCV = () => {
               gap: 5,
             }}
           >
-            {/* 1. THÔNG TIN CÁ NHÂN */}
             <Box>
               <Typography
                 variant="h6"
@@ -289,7 +285,6 @@ const CreateCV = () => {
 
             <Divider />
 
-            {/* 2. HỌC VẤN (EDUCATION) */}
             <Box>
               <Box
                 sx={{
@@ -389,7 +384,6 @@ const CreateCV = () => {
 
             <Divider />
 
-            {/* 3. KINH NGHIỆM LÀM VIỆC (EXPERIENCE) */}
             <Box>
               <Box
                 sx={{
@@ -479,7 +473,6 @@ const CreateCV = () => {
 
             <Divider />
 
-            {/* 4. KỸ NĂNG (SKILLS) */}
             <Box>
               <Box
                 sx={{

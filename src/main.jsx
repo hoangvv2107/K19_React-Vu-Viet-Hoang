@@ -3,11 +3,9 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
-// 1. Import các thành phần của MUI
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// font Inter
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
@@ -59,11 +57,11 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/tao-cv",
+    path: "/create-cv",
     element: <CreateCV />,
   },
   {
-    path: "/dang-tuyen",
+    path: "/post-job",
     element: <PostJob />,
   },
   {

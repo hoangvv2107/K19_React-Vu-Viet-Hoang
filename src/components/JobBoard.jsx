@@ -84,7 +84,6 @@ const JobBoard = ({
         p: "15px",
       }}
     >
-      {/* ================= 1. HEADER ================= */}
       <Box
         sx={{
           display: "flex",
@@ -127,7 +126,6 @@ const JobBoard = ({
         </Box>
       </Box>
 
-      {/* ================= 3. HINT BANNER ================= */}
       {showHint && (
         <Box
           sx={{
@@ -156,7 +154,6 @@ const JobBoard = ({
         </Box>
       )}
 
-      {/* ================= 4. JOB GRID ================= */}
       <Box
         sx={{
           display: "grid",
@@ -368,7 +365,6 @@ const JobBoard = ({
         </Box>
       )}
 
-      {/* ================= 5. PAGINATION ================= */}
       {totalPages > 1 && (
         <Box
           sx={{

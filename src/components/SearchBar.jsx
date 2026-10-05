@@ -39,11 +39,9 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const handleToggleParentCheckbox = (groupId, isCurrentlyChecked) => {
-    // 1. Tìm object của Nhóm nghề (Cha) dựa vào groupId
     const group = categoryData.find((g) => g.id === groupId);
     if (!group || !group.categories) return;
 
-    // 2. Lấy danh sách ID của tất cả các con
     const childrenIds = group.categories.map((cat) => cat.id);
 
     if (isCurrentlyChecked) {
@@ -104,7 +102,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           position: "relative",
         }}
       >
-        {/* 1. Nút "Danh mục Nghề" */}
         <Button
           variant="outlined"
           startIcon={
@@ -137,7 +134,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           Danh mục Nghề
         </Button>
 
-        {/* Vạch kẻ dọc */}
         <Divider
           orientation="vertical"
           variant="middle"
@@ -149,7 +145,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           }}
         />
 
-        {/* 2. Ô Input nhập liệu */}
         <InputBase
           placeholder="Vị trí tuyển dụng, tên công ty"
           value={keyword}
@@ -170,7 +165,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           }}
         />
 
-        {/* Vạch kẻ dọc */}
         <Divider
           orientation="vertical"
           variant="middle"
@@ -182,7 +176,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           }}
         />
 
-        {/* 3. Nút chọn "Địa điểm" */}
         <Button
           variant="text"
           startIcon={<LocationOnOutlinedIcon sx={{ color: "#4b5563" }} />}
@@ -209,7 +202,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           {selectedCity?.name || "Địa điểm"}
         </Button>
 
-        {/* 4. Nút "Tìm kiếm" */}
         <Button
           variant="contained"
           startIcon={<SearchIcon />}
@@ -287,7 +279,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
           ))}
         </Box>
 
-        {/* category list */}
         <Box
           sx={{
             width: "100%",
@@ -303,7 +294,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             left: 0,
           }}
         >
-          {/* ================= HEADER ================= */}
           <Box
             sx={{
               p: "16px 24px",
@@ -326,7 +316,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             </IconButton>
           </Box>
 
-          {/* ================= SEARCH BAR ================= */}
           <Box sx={{ px: "24px", pb: "16px" }}>
             <InputBase
               placeholder="Nhập từ khóa tìm kiếm"
@@ -350,7 +339,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             />
           </Box>
 
-          {/* ================= BODY (2 CỘT) ================= */}
           <Box
             sx={{
               display: "flex",
@@ -359,7 +347,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
               borderTop: "1px solid #e5e7eb",
             }}
           >
-            {/* CỘT TRÁI: NHÓM NGHỀ */}
             <Box
               sx={{
                 width: { xs: "100%", md: "35%" },
@@ -369,7 +356,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                 flexDirection: "column",
               }}
             >
-              {/* Tiêu đề cột */}
               <Typography
                 sx={{
                   fontSize: "12px",
@@ -437,7 +423,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
               })}
             </Box>
 
-            {/* CỘT PHẢI: NGHỀ  */}
             <Box
               sx={{
                 width: { xs: "100%", md: "65%" },
@@ -446,7 +431,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                 bgcolor: "#fff",
               }}
             >
-              {/* Tiêu đề cột */}
               <Box
                 sx={{
                   display: "flex",
@@ -467,13 +451,10 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                 </Typography>
               </Box>
 
-              {/* Vùng chứa nội dung / Empty State */}
               <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
                 {activeCategories.length > 0 ? (
-                  // NẾU CÓ DATA: Lặp để in ra danh sách
                   activeCategories.map((category) => (
                     <Box key={category.id} sx={{ display: "flex", mb: 2 }}>
-                      {/* Render Checkbox và Tên Nghề ở đây (category.name) */}
                       <Checkbox
                         checked={selectedCategories.includes(category.id)}
                         onChange={() => handleToggleChildCheckbox(category.id)}
@@ -485,7 +466,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                         }}
                       />
 
-                      {/* 2. Tên Nghề */}
                       <Typography
                         sx={{
                           fontSize: "14px",
@@ -499,7 +479,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
                     </Box>
                   ))
                 ) : (
-                  // NẾU KHÔNG CÓ DATA: Hiện Empty State
                   <Box
                     sx={{
                       display: "flex",
@@ -520,7 +499,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             </Box>
           </Box>
 
-          {/* ================= FOOTER ================= */}
           <Box
             sx={{
               display: "flex",
@@ -547,7 +525,6 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
             </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {/* Text Bỏ chọn tất cả (Ví dụ đang ở trạng thái disable màu xám) */}
               <Typography
                 sx={{
                   fontSize: "14px",

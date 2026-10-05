@@ -87,7 +87,7 @@ const LoginPage = () => {
     <Box className={styles.login_wrapper}>
       <Box
         className={styles.login_container}
-        // Responsive width: mobile dùng full 100%, từ màn sm trở lên dùng 648px
+        // Use the full width on mobile and a fixed width on larger screens.
         sx={{ width: { xs: "100%", sm: "648px" }, maxWidth: "100%" }}
       >
         <Link
@@ -107,7 +107,6 @@ const LoginPage = () => {
           <h2 className={styles.header_title}>Chào mừng quay trở lại</h2>
         </Link>
 
-        {/* Email */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -139,7 +138,6 @@ const LoginPage = () => {
           />
         </Box>
 
-        {/* password */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -280,11 +278,10 @@ const LoginPage = () => {
         </Typography>
       </Box>
 
-      {/* Footer Text */}
       <Typography
         sx={{
           color: "#bfbfbf",
-          // Responsive margin: giảm khoảng cách m trên mobile
+          // Reduce the mobile spacing below the form.
           margin: { xs: "24px 0 16px", sm: "60px 0 24px" },
           fontSize: { xs: "12px", sm: "14px" },
           textAlign: "center",

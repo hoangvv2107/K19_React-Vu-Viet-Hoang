@@ -12,7 +12,6 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-// === DỮ LIỆU CÁC CỘT LINK ===
 const FOOTER_LINKS = {
   col1: [
     {
@@ -80,7 +79,6 @@ const FOOTER_LINKS = {
   ],
 };
 
-// Component tiện ích để render từng nhóm link
 const LinkGroup = ({ title, links }) => (
   <Box sx={{ mb: 3 }}>
     <Typography
@@ -112,9 +110,7 @@ const Footer = () => {
   return (
     <Box sx={{ bgcolor: "#fff", pt: 6, pb: 3, borderTop: "1px solid #e5e7eb" }}>
       <Box sx={{ width: "100%", maxWidth: "1200px", mx: "auto", px: 2 }}>
-        {/* ================= PHẦN 1: UPPER FOOTER (4 CỘT) ================= */}
         <Grid container spacing={4}>
-          {/* Cột 1: Thông tin liên hệ & App */}
           <Grid xs={12} md={4}>
             <Box sx={{ mb: 2 }}>
               <Typography
@@ -253,21 +249,18 @@ const Footer = () => {
             </Box>
           </Grid>
 
-          {/* Cột 2 */}
           <Grid xs={12} md={2.5}>
             {FOOTER_LINKS.col1.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
             ))}
           </Grid>
 
-          {/* Cột 3 */}
           <Grid xs={12} md={2.5}>
             {FOOTER_LINKS.col2.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
             ))}
           </Grid>
 
-          {/* Cột 4 */}
           <Grid xs={12} md={3}>
             {FOOTER_LINKS.col3.map((group, idx) => (
               <LinkGroup key={idx} {...group} />
@@ -277,7 +270,6 @@ const Footer = () => {
 
         <Divider sx={{ my: 4, borderColor: "#e5e7eb" }} />
 
-        {/* ================= PHẦN 2: LOWER FOOTER ================= */}
         <Box
           sx={{
             display: "flex",
@@ -352,7 +344,6 @@ const Footer = () => {
               Hệ sinh thái HR Tech của TopCV
             </Typography>
 
-            {/* Hệ sinh thái Buttons */}
             <Grid container spacing={2}>
               <Grid xs={12} sm={6} md={3}>
                 <Box
@@ -439,7 +430,6 @@ const Footer = () => {
             </Grid>
           </Box>
 
-          {/* QR Code */}
           <Box
             sx={{
               display: "flex",

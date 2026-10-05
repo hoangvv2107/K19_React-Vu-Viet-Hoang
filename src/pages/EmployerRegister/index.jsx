@@ -22,7 +22,6 @@ const EmployerRegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // State khớp 100% API + thêm confirm_password để xử lý giao diện
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -72,7 +71,7 @@ const EmployerRegisterPage = () => {
     const newErrors = {};
     let hasEmptyField = false;
 
-    // Kiểm tra rỗng tất cả các trường
+    // Validate that every required field has a value.
     for (const key in formData) {
       if (!formData[key] || formData[key].trim() === "") {
         newErrors[key] = true;
@@ -81,7 +80,7 @@ const EmployerRegisterPage = () => {
       }
     }
 
-    // Kiểm tra mật khẩu khớp nhau
+    // Validate the password confirmation.
     let isPasswordMismatch = false;
     if (
       formData.password.trim() !== "" &&
@@ -98,13 +97,13 @@ const EmployerRegisterPage = () => {
     setGeneralError(hasEmptyField);
     setPasswordMatchError(isPasswordMismatch);
 
-    // Kiểm tra điều khoản
+    // Require agreement to the terms.
     if (!isAgreement) {
       setAgreementError(true);
       isOk = false;
     }
 
-    // Gửi dữ liệu lên API (loại bỏ confirm_password vì API không nhận trường này)
+    // Remove the UI-only confirmation field before sending the request.
     if (isOk) {
       const apiData = { ...formData };
       delete apiData.confirm_password;
@@ -134,7 +133,6 @@ const EmployerRegisterPage = () => {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f5f5" }}>
-      {/* CỘT TRÁI: FORM ĐĂNG KÝ */}
       <Box
         sx={{
           flex: { xs: 1, md: 7 },
@@ -156,7 +154,6 @@ const EmployerRegisterPage = () => {
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
           }}
         >
-          {/* Logo & Tiêu đề */}
           <Link
             href="#"
             sx={{
@@ -192,9 +189,7 @@ const EmployerRegisterPage = () => {
             </Typography>
           </Link>
 
-          {/* Form Fields */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {/* Email đăng nhập */}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <TextField
                 label="Email"
@@ -216,7 +211,6 @@ const EmployerRegisterPage = () => {
               </Typography>
             </Box>
 
-            {/* Mật khẩu */}
             <TextField
               label="Mật khẩu"
               name="password"
@@ -244,7 +238,6 @@ const EmployerRegisterPage = () => {
               }}
             />
 
-            {/* Nhập lại mật khẩu */}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <TextField
                 label="Nhập lại mật khẩu"
@@ -283,7 +276,6 @@ const EmployerRegisterPage = () => {
               )}
             </Box>
 
-            {/* TIÊU ĐỀ: Thông tin nhà tuyển dụng */}
             <Typography
               variant="h6"
               sx={{
@@ -297,7 +289,6 @@ const EmployerRegisterPage = () => {
               Thông tin nhà tuyển dụng
             </Typography>
 
-            {/* Tên công ty & Tên viết tắt */}
             <Box
               sx={{
                 display: "flex",
@@ -327,7 +318,6 @@ const EmployerRegisterPage = () => {
               />
             </Box>
 
-            {/* Tên quốc tế & Mã số thuế */}
             <Box
               sx={{
                 display: "flex",
@@ -357,7 +347,6 @@ const EmployerRegisterPage = () => {
               />
             </Box>
 
-            {/* Người đại diện pháp luật & Số điện thoại */}
             <Box
               sx={{
                 display: "flex",
@@ -387,7 +376,6 @@ const EmployerRegisterPage = () => {
               />
             </Box>
 
-            {/* Địa chỉ trụ sở chính */}
             <TextField
               label="Địa chỉ trụ sở chính"
               name="headquarters_address"
@@ -399,7 +387,6 @@ const EmployerRegisterPage = () => {
               color="success"
             />
 
-            {/* Website công ty */}
             <TextField
               label="Website công ty"
               name="website"
@@ -412,7 +399,6 @@ const EmployerRegisterPage = () => {
             />
           </Box>
 
-          {/* Checkbox điều khoản */}
           <Box sx={{ mt: 3, mb: 2 }}>
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
               <Checkbox
@@ -478,7 +464,6 @@ const EmployerRegisterPage = () => {
             </Typography>
           )}
 
-          {/* Nút Submit */}
           <Button
             onClick={handleRegister}
             variant="contained"
@@ -523,7 +508,6 @@ const EmployerRegisterPage = () => {
         </Box>
       </Box>
 
-      {/* CỘT PHẢI: BANNER TRANG TRÍ */}
       <Box
         sx={{
           display: { xs: "none", md: "flex" },
@@ -559,7 +543,6 @@ const EmployerRegisterPage = () => {
         </Typography>
       </Box>
 
-      {/* Popup thông báo kết quả */}
       <NotificationDialog
         open={openPopup}
         onClose={handleClosePopup}

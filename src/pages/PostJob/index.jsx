@@ -10,7 +10,6 @@ import {
   Autocomplete,
 } from "@mui/material";
 
-// === Import CKEditor ===
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   ClassicEditor,
@@ -25,10 +24,8 @@ import {
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
 
-// === Import Icons ===
 import SendIcon from "@mui/icons-material/Send";
 
-// === Import Plugin Axios, Navigation & Danh sách Tỉnh thành ===
 import api from "../../plugins/axios";
 import { useNavigate } from "react-router";
 import NotificationDialog from "../../components/NotificationDialog";
@@ -42,34 +39,29 @@ const PostJob = () => {
   const [redirectAfterClose, setRedirectAfterClose] = useState(false);
 
   useEffect(() => {
-    // 1. Lấy dữ liệu từ kho lưu trữ
+    // Read the authentication data saved by the login flow.
     const token = localStorage.getItem("access_token");
     const userRole = localStorage.getItem("user_role");
 
-    // 2. Kịch bản 1: Chưa đăng nhập
+    // Redirect unauthenticated users to the login page.
     if (!token) {
       navigate("/login");
       return;
     }
 
-    // 3. Kịch bản 2: Đã đăng nhập nhưng là tài khoản Ứng viên (Candidate)
+    // Only employer accounts can access this page.
     if (userRole !== "EMPLOYER") {
       setPopupMessage("Tính năng này chỉ dành cho tài khoản Nhà tuyển dụng!");
       setIsSuccessPopup(false);
       setRedirectAfterClose(true);
       setOpenPopup(true);
     }
-
-    // Nếu vượt qua hết các IF trên, người dùng mới được ở lại trang và gọi API categories
   }, [navigate]);
 
-  // State lưu danh sách categories lấy từ API
   const [categoriesData, setCategoriesData] = useState([]);
 
-  // State lưu danh sách các nghề con (chuyên ngành) ứng với nhóm nghề đang chọn
   const [availableSpecialties, setAvailableSpecialties] = useState([]);
 
-  // Khởi tạo state dữ liệu gửi lên API tạo job
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -101,7 +93,6 @@ const PostJob = () => {
     benefits_html: "<h4>3. Quyền lợi</h4><p>Nhập chi tiết quyền lợi...</p>",
   });
 
-  // 1. Gọi API lấy danh sách categories khi vừa vào trang
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -122,7 +113,6 @@ const PostJob = () => {
     fetchCategories();
   }, []);
 
-  // Xử lý thay đổi các trường text đơn giản
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -146,7 +136,6 @@ const PostJob = () => {
     }
   };
 
-  // Xử lý thay đổi cấu hình lương
   const handleSalaryChange = (field, value) => {
     setFormData({
       ...formData,
@@ -157,7 +146,6 @@ const PostJob = () => {
     });
   };
 
-  // Xử lý chọn Tỉnh/Thành phố thông qua Autocomplete (Gõ tìm kiếm)
   const handleCityChange = (event, selectedCity) => {
     setFormData({
       ...formData,
@@ -171,7 +159,6 @@ const PostJob = () => {
     });
   };
 
-  // Xử lý địa chỉ chi tiết
   const handleLocationChange = (e) => {
     const value = e.target.value;
     setFormData({
@@ -185,7 +172,7 @@ const PostJob = () => {
     });
   };
 
-  // Hàm kiểm tra tính hợp lệ trước khi gửi API
+  // Validate the job payload before submitting it.
   const validateForm = () => {
     if (!formData.title || formData.title.trim() === "") {
       return "Vui lòng nhập tiêu đề công việc!";
@@ -227,7 +214,6 @@ const PostJob = () => {
     return null;
   };
 
-  // Gửi request lên API tạo Job
   const handlePostJob = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
@@ -286,7 +272,6 @@ const PostJob = () => {
             border: "1px solid #e5e7eb",
           }}
         >
-          {/* ================= PHẦN 1: THÔNG TIN CHUNG ================= */}
           <Typography
             variant="h6"
             sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
@@ -295,7 +280,6 @@ const PostJob = () => {
           </Typography>
 
           <Grid container spacing={3}>
-            {/* Tiêu đề công việc */}
             <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
@@ -307,7 +291,6 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Ngành nghề */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -325,7 +308,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Chuyên ngành */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -343,7 +325,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Cấp bậc */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -360,7 +341,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Hình thức làm việc */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -377,7 +357,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Giới tính yêu cầu */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -393,7 +372,6 @@ const PostJob = () => {
               </TextField>
             </Grid>
 
-            {/* Số lượng tuyển */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -405,7 +383,6 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Hình thức trả lương */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -442,7 +419,6 @@ const PostJob = () => {
               </>
             )}
 
-            {/* Ô tìm kiếm Tỉnh / Thành phố bằng Autocomplete */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Autocomplete
                 options={CITIES_DATA}
@@ -463,7 +439,6 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Địa chỉ làm việc chi tiết */}
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -474,7 +449,6 @@ const PostJob = () => {
               />
             </Grid>
 
-            {/* Ô chọn hạn nộp hồ sơ (Deadline) */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Box
                 component="label"
@@ -509,7 +483,7 @@ const PostJob = () => {
                   }}
                   inputProps={{
                     onClick: (e) => {
-                      // Kích hoạt bảng lịch của trình duyệt ngay cả khi bấm vào vùng chữ số ngày tháng
+                      // Open the native date picker when the date field is clicked.
                       if (typeof e.target.showPicker === "function") {
                         e.target.showPicker();
                       }
@@ -523,7 +497,6 @@ const PostJob = () => {
 
           <Divider sx={{ my: 4 }} />
 
-          {/* ================= PHẦN 2: CHI TIẾT MÔ TẢ CÔNG VIỆC (CKEDITOR) ================= */}
           <Typography
             variant="h6"
             sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
@@ -531,7 +504,6 @@ const PostJob = () => {
             2. Chi tiết mô tả công việc
           </Typography>
 
-          {/* Mô tả công việc */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Mô tả công việc
@@ -576,7 +548,6 @@ const PostJob = () => {
             />
           </Box>
 
-          {/* Yêu cầu ứng viên */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Yêu cầu ứng viên
@@ -621,7 +592,6 @@ const PostJob = () => {
             />
           </Box>
 
-          {/* Quyền lợi được hưởng */}
           <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
             <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
               Quyền lợi được hưởng
@@ -665,7 +635,6 @@ const PostJob = () => {
 
           <Divider sx={{ my: 4 }} />
 
-          {/* ================= PHẦN 3: NÚT HÀNH ĐỘNG ================= */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               variant="contained"
@@ -685,7 +654,6 @@ const PostJob = () => {
         </Box>
       </Box>
 
-      {/* Popup thông báo kết quả */}
       <NotificationDialog
         open={openPopup}
         onClose={handleClosePopup}

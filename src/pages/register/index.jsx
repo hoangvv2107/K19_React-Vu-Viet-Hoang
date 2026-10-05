@@ -41,7 +41,6 @@ const RegisterPage = () => {
   const [generalError, setGeneralError] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState(false);
 
-  // 2. Tạo State quản lý trạng thái của Popup
   const [openPopup, setOpenPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false); // true = Xanh (Thành công), false = Đỏ (Lỗi)
@@ -76,7 +75,7 @@ const RegisterPage = () => {
     const newErrors = { ...errors };
     let hasEmptyField = false;
 
-    // Check rỗng
+    // Validate required fields.
     for (const data in userData) {
       if (!Object.hasOwn(userData, data)) continue;
       const ud = userData[data];
@@ -87,7 +86,7 @@ const RegisterPage = () => {
       } else newErrors[data] = false;
     }
 
-    // Check mật khẩu khớp
+    // Validate the password confirmation.
     let isPasswordMismatch = false;
     if (
       userData.password.trim() !== "" &&
@@ -104,13 +103,12 @@ const RegisterPage = () => {
     setGeneralError(hasEmptyField);
     setPasswordMatchError(isPasswordMismatch);
 
-    // Check điều khoản
+    // Require agreement to the terms.
     if (!isAgreement) {
       setAgreementError(true);
       isOk = false;
     }
 
-    // Gọi API
     if (isOk) {
       const registerData = {
         email: userData.email,
@@ -139,10 +137,8 @@ const RegisterPage = () => {
     }
   };
 
-  // Hàm đóng Popup
   const handleClosePopup = () => {
     setOpenPopup(false);
-    // Nếu thành công thì khi đóng popup có thể điều hướng sang trang đăng nhập
     if (isSuccessPopup) {
       navigate("/");
     }
@@ -205,9 +201,6 @@ const RegisterPage = () => {
           </Typography>
         </Link>
 
-        {/* --- Các thẻ input, mật khẩu, xác nhận mật khẩu, điều khoản giữ nguyên như cũ --- */}
-
-        {/* Họ và tên */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -236,7 +229,6 @@ const RegisterPage = () => {
           />
         </Box>
 
-        {/* Email */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -265,7 +257,6 @@ const RegisterPage = () => {
           />
         </Box>
 
-        {/* Mật khẩu */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -310,7 +301,6 @@ const RegisterPage = () => {
           />
         </Box>
 
-        {/* Xác nhận mật khẩu */}
         <Box
           sx={{ display: "flex", flexDirection: "column", gap: 0.75, mb: 1.25 }}
         >
@@ -364,7 +354,6 @@ const RegisterPage = () => {
           )}
         </Box>
 
-        {/* Checkbox Điều khoản */}
         <Box sx={{ mt: 1, mb: 2 }}>
           <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
             <Checkbox
@@ -427,7 +416,6 @@ const RegisterPage = () => {
           </Typography>
         )}
 
-        {/* Nút Submit */}
         <Button
           onClick={handleRegister}
           variant="contained"
@@ -474,7 +462,6 @@ const RegisterPage = () => {
         </Box>
       </Box>
 
-      {/* 4. Đặt Component Dialog ra ngoài cùng của khối giao diện chính */}
       <NotificationDialog
         open={openPopup}
         onClose={handleClosePopup}
