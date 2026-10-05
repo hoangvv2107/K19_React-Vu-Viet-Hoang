@@ -18,7 +18,7 @@ const HomePage = () => {
   const [isCategoryLoading, setIsCategoryLoading] = useState(true);
   const [isJobsLoading, setIsJobsLoading] = useState(true);
 
-  // Load the category list used by the search form.
+  // Tải danh sách ngành nghề cho form tìm kiếm.
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
@@ -31,7 +31,7 @@ const HomePage = () => {
     }
   };
 
-  // Fetch jobs using the current page and search filters.
+  // Tải việc làm theo trang hiện tại và bộ lọc tìm kiếm.
   const getJobsData = async () => {
     try {
       setIsJobsLoading(true);
@@ -58,7 +58,7 @@ const HomePage = () => {
     getJobsData();
   }, [pageJobsCurrent, jobFilters]);
 
-  // Replace the current filters and restart pagination from page one.
+  // Cập nhật bộ lọc và bắt đầu lại phân trang từ trang đầu tiên.
   const handleJobSearch = (filters) => {
     setPageJobsCurrent(1);
     setJobFilters(filters);

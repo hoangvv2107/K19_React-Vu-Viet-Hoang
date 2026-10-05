@@ -38,13 +38,13 @@ const PostJob = () => {
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
   const [redirectAfterClose, setRedirectAfterClose] = useState(false);
 
-  // Protect the page so only authenticated employers can use it.
+  // Bảo vệ trang để chỉ nhà tuyển dụng đã đăng nhập mới được sử dụng.
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const userRole = localStorage.getItem("user_role");
 
     if (!token) {
-      navigate("/login");
+      navigate("/employer-register");
       return;
     }
 
@@ -91,7 +91,7 @@ const PostJob = () => {
     benefits_html: "<h4>3. Quyền lợi</h4><p>Nhập chi tiết quyền lợi...</p>",
   });
 
-  // Load categories and initialize the first category selection.
+  // Tải danh mục và chọn sẵn nhóm ngành đầu tiên.
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -112,7 +112,7 @@ const PostJob = () => {
     fetchCategories();
   }, []);
 
-  // Update a field and refresh specialties when the category changes.
+  // Cập nhật trường dữ liệu và tải lại chuyên ngành khi đổi nhóm ngành.
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -136,7 +136,7 @@ const PostJob = () => {
     }
   };
 
-  // Update one value in the salary object.
+  // Cập nhật một giá trị trong đối tượng lương.
   const handleSalaryChange = (field, value) => {
     setFormData({
       ...formData,
@@ -147,7 +147,7 @@ const PostJob = () => {
     });
   };
 
-  // Store the selected city in the job location.
+  // Lưu tỉnh/thành phố được chọn vào địa điểm làm việc.
   const handleCityChange = (event, selectedCity) => {
     setFormData({
       ...formData,
@@ -161,7 +161,7 @@ const PostJob = () => {
     });
   };
 
-  // Store the detailed address for the selected city.
+  // Lưu địa chỉ chi tiết của tỉnh/thành phố đã chọn.
   const handleLocationChange = (e) => {
     const value = e.target.value;
     setFormData({
@@ -175,7 +175,7 @@ const PostJob = () => {
     });
   };
 
-  // Return a validation message when the job form is incomplete.
+  // Trả về thông báo lỗi nếu form đăng tuyển chưa đầy đủ.
   const validateForm = () => {
     if (!formData.title || formData.title.trim() === "") {
       return "Vui lòng nhập tiêu đề công việc!";
@@ -217,7 +217,7 @@ const PostJob = () => {
     return null;
   };
 
-  // Validate and send the new job posting to the API.
+  // Kiểm tra và gửi tin tuyển dụng mới lên API.
   const handlePostJob = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
@@ -243,7 +243,7 @@ const PostJob = () => {
     }
   };
 
-  // Close the result dialog and return to the home page when appropriate.
+  // Đóng hộp thoại kết quả và quay về trang chủ khi cần.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup || redirectAfterClose) {

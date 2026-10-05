@@ -38,12 +38,12 @@ const LoginPage = () => {
   const [isError, setIsError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Toggle the password field between masked and visible text.
+  // Ẩn hoặc hiện nội dung trong ô mật khẩu.
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  // Update the edited field and clear its validation message.
+  // Cập nhật trường đang nhập và xóa thông báo lỗi tương ứng.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAccount({ ...account, [name]: value });
@@ -51,7 +51,7 @@ const LoginPage = () => {
     if (isError) setIsError(false);
   };
 
-  // Validate credentials, authenticate the user, and store the session data.
+  // Kiểm tra thông tin, đăng nhập và lưu dữ liệu phiên làm việc.
   const submitBtn = async () => {
     let isOk = true;
     const dataE = { ...errors };

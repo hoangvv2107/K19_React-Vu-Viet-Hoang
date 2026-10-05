@@ -2,10 +2,11 @@ import { Box, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link } from "react-router";
 
-const NavItem = ({ title, to }) => (
+const NavItem = ({ title, to, onClick }) => (
   <Box
     component={Link}
     to={to}
+    onClick={onClick}
     sx={{
       textDecoration: "none",
       display: "flex",

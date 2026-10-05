@@ -38,7 +38,7 @@ const JobBoard = ({
   const totalPages = Math.max(1, Math.ceil((totalPage || 0) / PAGE_SIZE));
   const [showHint, setShowHint] = useState(true);
 
-  // Move to a valid page and notify the parent component.
+  // Chuyển đến trang hợp lệ và thông báo cho component cha.
   const goToPage = (nextPage) => {
     if (isLoading || nextPage < 1 || nextPage > totalPages) return;
     onPageChange?.(nextPage);
@@ -47,7 +47,7 @@ const JobBoard = ({
   const isFirstPage = pageCurrent <= 1;
   const isLastPage = pageCurrent >= totalPages;
 
-  // Convert the API salary object into display text.
+  // Chuyển dữ liệu lương từ API thành nội dung hiển thị.
   const formatSalary = (salaryObj) => {
     if (!salaryObj) return "Chưa cập nhật";
 
@@ -72,7 +72,7 @@ const JobBoard = ({
     return "Thoả thuận";
   };
 
-  // Convert the work location list into a readable label.
+  // Chuyển danh sách địa điểm làm việc thành chuỗi dễ đọc.
   const formatWorkLocation = (work_location) => {
     if (!work_location || work_location.length === 0) return "Chưa cập nhật";
     return work_location.map((location) => location.city_name).join(" & ");

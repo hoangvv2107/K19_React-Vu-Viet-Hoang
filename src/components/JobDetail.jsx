@@ -46,7 +46,7 @@ const JobDetail = ({ jobData, isLoading }) => {
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
   const [redirectAfterClose, setRedirectAfterClose] = useState("");
 
-  // Close the notification and follow any pending redirect.
+  // Đóng thông báo và thực hiện chuyển hướng đang chờ nếu có.
   const handleCloseDialog = () => {
     setOpenDialog(false);
     if (redirectAfterClose) {
@@ -55,7 +55,7 @@ const JobDetail = ({ jobData, isLoading }) => {
     }
   };
 
-  // Check authentication, role, and CV requirements before opening the apply form.
+  // Kiểm tra đăng nhập, vai trò và CV trước khi mở form ứng tuyển.
   const handleOpenApply = () => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
@@ -90,13 +90,13 @@ const JobDetail = ({ jobData, isLoading }) => {
     setOpenApply(true);
   };
 
-  // Close the application form and clear its temporary data.
+  // Đóng form ứng tuyển và xóa dữ liệu tạm thời.
   const handleCloseApply = () => {
     setOpenApply(false);
     setApplyForm({ cv_id: "", cover_letter: "" });
   };
 
-  // Submit the selected CV and cover letter for this job.
+  // Gửi CV được chọn và thư giới thiệu cho công việc này.
   const submitApply = async () => {
     if (!applyForm.cv_id) {
       setPopupMessage("Vui lòng chọn CV để ứng tuyển!");

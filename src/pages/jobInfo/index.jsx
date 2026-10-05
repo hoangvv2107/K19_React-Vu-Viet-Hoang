@@ -16,7 +16,7 @@ const JobInfo = () => {
   const [jobData, setJobData] = useState(null);
   const [isJobLoading, setIsJobLoading] = useState(true);
 
-  // Load categories for the search bar on the detail page.
+  // Tải danh sách ngành nghề cho thanh tìm kiếm ở trang chi tiết.
   const getCategoryGroupsData = async () => {
     try {
       setIsCategoryLoading(true);
@@ -29,7 +29,7 @@ const JobInfo = () => {
     }
   };
 
-  // Fetch the job selected by the slug in the URL.
+  // Tải công việc được xác định bằng slug trên URL.
   const getJobDetailData = async () => {
     if (!slug) return;
     try {

@@ -26,7 +26,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
   const [showCities, setShowCities] = useState(false);
   const [selectedCity, setSelectedCity] = useState(null);
 
-  // Open the category picker.
+  // Mở danh sách chọn ngành nghề.
   const handleClickShowCategoryJobs = () => {
     setShowCategoryJobs(!showCategoryJobs);
   };
@@ -41,7 +41,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
 
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  // Select or clear every child category in a parent group.
+  // Chọn hoặc bỏ chọn tất cả ngành con trong một nhóm ngành.
   const handleToggleParentCheckbox = (groupId, isCurrentlyChecked) => {
     const group = categoryData.find((g) => g.id === groupId);
     if (!group || !group.categories) return;
@@ -60,7 +60,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
     }
   };
 
-  // Toggle one child category without changing other selections.
+  // Chọn hoặc bỏ chọn một ngành con mà không ảnh hưởng lựa chọn khác.
   const handleToggleChildCheckbox = (childId) => {
     const isAlreadySelected = selectedCategories.includes(childId);
     if (isAlreadySelected) {
@@ -71,7 +71,7 @@ const SearchBar = ({ isLoading, categoryData, onSearch }) => {
     }
   };
 
-  // Send normalized search filters to the page that owns the API call.
+  // Gửi bộ lọc tìm kiếm đã chuẩn hóa cho page thực hiện gọi API.
   const handleSearch = () => {
     const selectedGroup = categoryData.find((group) =>
       group.categories?.some((category) =>

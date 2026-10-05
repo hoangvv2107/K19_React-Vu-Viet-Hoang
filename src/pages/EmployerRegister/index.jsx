@@ -46,13 +46,13 @@ const EmployerRegisterPage = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
-  // Toggle password visibility for the main password field.
+  // Ẩn hoặc hiện ô mật khẩu chính.
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  // Toggle password visibility for the confirmation field.
+  // Ẩn hoặc hiện ô xác nhận mật khẩu.
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  // Update company form data and clear related validation messages.
+  // Cập nhật dữ liệu công ty và xóa các thông báo lỗi liên quan.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -69,7 +69,7 @@ const EmployerRegisterPage = () => {
     }
   };
 
-  // Validate the company form and create the employer account.
+  // Kiểm tra form và tạo tài khoản nhà tuyển dụng.
   const handleRegister = async () => {
     let isOk = true;
     const newErrors = {};
@@ -124,7 +124,7 @@ const EmployerRegisterPage = () => {
     }
   };
 
-  // Close the result dialog and redirect after successful registration.
+  // Đóng hộp thoại kết quả và chuyển trang sau khi đăng ký thành công.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup) {
@@ -156,7 +156,7 @@ const EmployerRegisterPage = () => {
           }}
         >
           <Link
-            href="#"
+            href="/"
             sx={{
               textDecoration: "none",
               display: "flex",

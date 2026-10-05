@@ -31,17 +31,27 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
 
-  // Open the account menu from the avatar button.
+  // Mở menu tài khoản khi người dùng bấm vào avatar.
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Close the account menu.
+  // Đóng menu tài khoản.
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
-  // Sign out through the API, clear the local session, and return home.
+  // Chuyển người chưa đủ điều kiện đến trang đăng ký trước khi đăng tin.
+  const handleEmployerAction = (event) => {
+    event?.preventDefault();
+    const token = localStorage.getItem("access_token");
+    const role = localStorage.getItem("user_role");
+
+    navigate(token && role === "EMPLOYER" ? "/post-job" : "/employer-register");
+    setMobileMenuOpen(false);
+  };
+
+  // Gọi API đăng xuất, xóa phiên cục bộ và quay về trang chủ.
   const handleLogout = async () => {
     try {
       await api.post("/api/v1/auth/logout");
@@ -134,7 +144,11 @@ const Header = () => {
           <NavItem title="Việc làm" to="/" />
           <NavItem title="Tạo CV" to="/create-cv" />
           <NavItem title="Danh sách công ty" to="/CompanyList" />
-          <NavItem title="Đăng tuyển & tìm hồ sơ" to="/post-job" />
+          <NavItem
+            title="Đăng tuyển & tìm hồ sơ"
+            to="/post-job"
+            onClick={handleEmployerAction}
+          />
         </Box>
       )}
 
@@ -211,6 +225,7 @@ const Header = () => {
             </Typography>
             <Link
               href="/post-job"
+              onClick={handleEmployerAction}
               sx={{
                 textDecoration: "none",
                 display: "flex",
@@ -282,6 +297,7 @@ const Header = () => {
 
           <Button
             href="/post-job"
+            onClick={handleEmployerAction}
             sx={{
               display: { xs: "none", md: "inline-flex" },
               bgcolor: "#f2f4f5",

@@ -79,7 +79,7 @@ const FOOTER_LINKS = {
   ],
 };
 
-// Render one titled group of footer links.
+// Hiển thị một nhóm liên kết có tiêu đề trong footer.
 const LinkGroup = ({ title, links }) => (
   <Box sx={{ mb: 3 }}>
     <Typography
@@ -107,7 +107,7 @@ const LinkGroup = ({ title, links }) => (
   </Box>
 );
 
-// Render the shared footer shown across the application.
+// Hiển thị footer dùng chung cho toàn bộ ứng dụng.
 const Footer = () => {
   return (
     <Box sx={{ bgcolor: "#fff", pt: 6, pb: 3, borderTop: "1px solid #e5e7eb" }}>

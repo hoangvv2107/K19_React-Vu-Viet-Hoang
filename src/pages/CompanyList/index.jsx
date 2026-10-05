@@ -55,20 +55,20 @@ const CompanyList = () => {
     fetchCompanies();
   }, [page, keyword]);
 
-  // Apply the entered keyword and restart the company list from page one.
+  // Áp dụng từ khóa và tải lại danh sách công ty từ trang đầu tiên.
   const handleSearch = () => {
     setPage(1);
     setKeyword(searchInput);
   };
 
-  // Submit a search when the user presses Enter.
+  // Thực hiện tìm kiếm khi người dùng nhấn Enter.
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Change page and return the viewport to the top of the list.
+  // Đổi trang và đưa vị trí cuộn về đầu danh sách.
   const handlePageChange = (event, value) => {
     setPage(value);
     window.scrollTo({ top: 0, behavior: "smooth" });

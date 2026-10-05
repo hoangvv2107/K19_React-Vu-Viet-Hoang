@@ -45,19 +45,19 @@ const RegisterPage = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccessPopup, setIsSuccessPopup] = useState(false);
 
-  // Toggle password visibility for the main password field.
+  // Ẩn hoặc hiện ô mật khẩu chính.
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  // Toggle password visibility for the confirmation field.
+  // Ẩn hoặc hiện ô xác nhận mật khẩu.
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  // Toggle the terms agreement and clear its validation error.
+  // Chọn hoặc bỏ chọn điều khoản và xóa lỗi liên quan.
   const handleClickIsAgreement = () => {
     setIsAgreement(!isAgreement);
     setAgreementError(false);
   };
 
-  // Update form data and clear related validation messages.
+  // Cập nhật dữ liệu form và xóa các thông báo lỗi liên quan.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -74,7 +74,7 @@ const RegisterPage = () => {
     }
   };
 
-  // Validate the candidate form and create the account.
+  // Kiểm tra form ứng viên và tạo tài khoản.
   const handleRegister = async () => {
     let isOk = true;
     const newErrors = { ...errors };
@@ -139,7 +139,7 @@ const RegisterPage = () => {
     }
   };
 
-  // Close the result dialog and redirect after a successful registration.
+  // Đóng hộp thoại kết quả và chuyển trang sau khi đăng ký thành công.
   const handleClosePopup = () => {
     setOpenPopup(false);
     if (isSuccessPopup) {
