@@ -15,7 +15,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
 import api, { getApiErrorMessage } from "../../plugins/axios";
 import NotificationDialog from "../../components/NotificationDialog";
-import Header from "../../components/Header";
 import { useNavigate } from "react-router";
 
 const EmployerRegisterPage = () => {
@@ -141,7 +140,6 @@ const EmployerRegisterPage = () => {
 
   return (
     <>
-      <Header />
       <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f5f5" }}>
         <Box
           sx={{

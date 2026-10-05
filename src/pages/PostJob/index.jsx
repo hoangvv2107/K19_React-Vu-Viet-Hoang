@@ -30,6 +30,7 @@ import api from "../../plugins/axios";
 import { useNavigate } from "react-router";
 import NotificationDialog from "../../components/NotificationDialog";
 import { CITIES_DATA } from "../../plugins/cities";
+import Header from "../../components/Header";
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -260,418 +261,431 @@ const PostJob = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: "#f4f5f5", minHeight: "100vh", py: 4 }}>
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "1000px",
-          margin: "0 auto",
-          px: "15px",
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: 700, color: "#212f3f", mb: 3 }}
-        >
-          Tạo tin tuyển dụng mới
-        </Typography>
-
+    <>
+      <Header />
+      <Box sx={{ bgcolor: "#f4f5f5", minHeight: "100vh", py: 4 }}>
         <Box
           sx={{
-            bgcolor: "#fff",
-            p: 4,
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
+            width: "100%",
+            maxWidth: "1000px",
+            margin: "0 auto",
+            px: "15px",
           }}
         >
           <Typography
-            variant="h6"
-            sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
+            variant="h5"
+            sx={{ fontWeight: 700, color: "#212f3f", mb: 3 }}
           >
-            1. Thông tin chung
+            Tạo tin tuyển dụng mới
           </Typography>
 
-          <Grid container spacing={3}>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Tiêu đề công việc *"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="VD: Lập trình viên ReactJS (Mid/Senior)"
-              />
-            </Grid>
+          <Box
+            sx={{
+              bgcolor: "#fff",
+              p: 4,
+              borderRadius: "8px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
+            >
+              1. Thông tin chung
+            </Typography>
 
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Ngành nghề *"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-              >
-                {categoriesData.map((group) => (
-                  <MenuItem key={group.id} value={group.group_name}>
-                    {group.group_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Chuyên ngành *"
-                name="specialty"
-                value={formData.specialty}
-                onChange={handleChange}
-              >
-                {availableSpecialties.map((sub) => (
-                  <MenuItem key={sub.id} value={sub.name}>
-                    {sub.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Cấp bậc"
-                name="experience_level"
-                value={formData.experience_level}
-                onChange={handleChange}
-              >
-                <MenuItem value="Thực tập sinh">Thực tập sinh</MenuItem>
-                <MenuItem value="Nhân viên">Nhân viên</MenuItem>
-                <MenuItem value="Trưởng phòng">Trưởng phòng</MenuItem>
-                <MenuItem value="Senior">Senior</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Hình thức làm việc"
-                name="job_type"
-                value={formData.job_type}
-                onChange={handleChange}
-              >
-                <MenuItem value="FULL_TIME">Toàn thời gian</MenuItem>
-                <MenuItem value="PART_TIME">Bán thời gian</MenuItem>
-                <MenuItem value="FREELANCE">Freelance</MenuItem>
-                <MenuItem value="INTERNSHIP">Thực tập</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Yêu cầu giới tính"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <MenuItem value="MALE">Nam</MenuItem>
-                <MenuItem value="FEMALE">Nữ</MenuItem>
-                <MenuItem value="NOT_REQUIRED">Không yêu cầu</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Số lượng tuyển *"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                label="Hình thức trả lương"
-                value={formData.salary.type}
-                onChange={(e) => handleSalaryChange("type", e.target.value)}
-              >
-                <MenuItem value="RANGE">Khoảng giá (Range)</MenuItem>
-                <MenuItem value="AGREEMENT">Thoả thuận</MenuItem>
-              </TextField>
-            </Grid>
-
-            {formData.salary.type === "RANGE" && (
-              <>
-                <Grid size={{ xs: 12, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Lương tối thiểu (VND) *"
-                    value={formData.salary.min}
-                    onChange={(e) => handleSalaryChange("min", e.target.value)}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Lương tối đa (VND) *"
-                    value={formData.salary.max}
-                    onChange={(e) => handleSalaryChange("max", e.target.value)}
-                  />
-                </Grid>
-              </>
-            )}
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Autocomplete
-                options={CITIES_DATA}
-                getOptionLabel={(option) => option.name}
-                value={
-                  CITIES_DATA.find(
-                    (c) => c.id === formData.work_location[0].city_id,
-                  ) || null
-                }
-                onChange={handleCityChange}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Tỉnh / Thành phố *"
-                    placeholder="Gõ để tìm nhanh tên tỉnh/thành..."
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                label="Địa chỉ chi tiết làm việc *"
-                placeholder="VD: Tòa nhà A, Số 47 Nguyễn Tuân"
-                value={formData.work_location[0].address_detail}
-                onChange={handleLocationChange}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Box
-                component="label"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 0.5,
-                  cursor: "pointer",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  fontWeight={600}
-                  sx={{ color: "#212f3f" }}
-                >
-                  Hạn nộp hồ sơ *
-                </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
-                  type="date"
-                  value={
-                    formData.deadline ? formData.deadline.split("T")[0] : ""
-                  }
-                  onChange={(e) => {
-                    const selectedDate = e.target.value;
-                    setFormData({
-                      ...formData,
-                      deadline: selectedDate
-                        ? new Date(selectedDate).toISOString()
-                        : "",
-                    });
-                  }}
-                  inputProps={{
-                    onClick: (e) => {
-                      if (typeof e.target.showPicker === "function") {
-                        e.target.showPicker();
-                      }
-                    },
-                    style: { cursor: "pointer" },
-                  }}
+                  label="Tiêu đề công việc *"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="VD: Lập trình viên ReactJS (Mid/Senior)"
                 />
-              </Box>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Ngành nghề *"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                >
+                  {categoriesData.map((group) => (
+                    <MenuItem key={group.id} value={group.group_name}>
+                      {group.group_name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Chuyên ngành *"
+                  name="specialty"
+                  value={formData.specialty}
+                  onChange={handleChange}
+                >
+                  {availableSpecialties.map((sub) => (
+                    <MenuItem key={sub.id} value={sub.name}>
+                      {sub.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Cấp bậc"
+                  name="experience_level"
+                  value={formData.experience_level}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="Thực tập sinh">Thực tập sinh</MenuItem>
+                  <MenuItem value="Nhân viên">Nhân viên</MenuItem>
+                  <MenuItem value="Trưởng phòng">Trưởng phòng</MenuItem>
+                  <MenuItem value="Senior">Senior</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Hình thức làm việc"
+                  name="job_type"
+                  value={formData.job_type}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="FULL_TIME">Toàn thời gian</MenuItem>
+                  <MenuItem value="PART_TIME">Bán thời gian</MenuItem>
+                  <MenuItem value="FREELANCE">Freelance</MenuItem>
+                  <MenuItem value="INTERNSHIP">Thực tập</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Yêu cầu giới tính"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="MALE">Nam</MenuItem>
+                  <MenuItem value="FEMALE">Nữ</MenuItem>
+                  <MenuItem value="NOT_REQUIRED">Không yêu cầu</MenuItem>
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Số lượng tuyển *"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Hình thức trả lương"
+                  value={formData.salary.type}
+                  onChange={(e) => handleSalaryChange("type", e.target.value)}
+                >
+                  <MenuItem value="RANGE">Khoảng giá (Range)</MenuItem>
+                  <MenuItem value="AGREEMENT">Thoả thuận</MenuItem>
+                </TextField>
+              </Grid>
+
+              {formData.salary.type === "RANGE" && (
+                <>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Lương tối thiểu (VND) *"
+                      value={formData.salary.min}
+                      onChange={(e) =>
+                        handleSalaryChange("min", e.target.value)
+                      }
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Lương tối đa (VND) *"
+                      value={formData.salary.max}
+                      onChange={(e) =>
+                        handleSalaryChange("max", e.target.value)
+                      }
+                    />
+                  </Grid>
+                </>
+              )}
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Autocomplete
+                  options={CITIES_DATA}
+                  getOptionLabel={(option) => option.name}
+                  value={
+                    CITIES_DATA.find(
+                      (c) => c.id === formData.work_location[0].city_id,
+                    ) || null
+                  }
+                  onChange={handleCityChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Tỉnh / Thành phố *"
+                      placeholder="Gõ để tìm nhanh tên tỉnh/thành..."
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Địa chỉ chi tiết làm việc *"
+                  placeholder="VD: Tòa nhà A, Số 47 Nguyễn Tuân"
+                  value={formData.work_location[0].address_detail}
+                  onChange={handleLocationChange}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Box
+                  component="label"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 0.5,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    sx={{ color: "#212f3f" }}
+                  >
+                    Hạn nộp hồ sơ *
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    value={
+                      formData.deadline ? formData.deadline.split("T")[0] : ""
+                    }
+                    onChange={(e) => {
+                      const selectedDate = e.target.value;
+                      setFormData({
+                        ...formData,
+                        deadline: selectedDate
+                          ? new Date(selectedDate).toISOString()
+                          : "",
+                      });
+                    }}
+                    inputProps={{
+                      onClick: (e) => {
+                        if (typeof e.target.showPicker === "function") {
+                          e.target.showPicker();
+                        }
+                      },
+                      style: { cursor: "pointer" },
+                    }}
+                  />
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
 
-          <Divider sx={{ my: 4 }} />
+            <Divider sx={{ my: 4 }} />
 
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
-          >
-            2. Chi tiết mô tả công việc
-          </Typography>
-
-          <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              Mô tả công việc
-            </Typography>
-            <CKEditor
-              editor={ClassicEditor}
-              config={{
-                licenseKey: "GPL",
-                plugins: [
-                  Essentials,
-                  Paragraph,
-                  Bold,
-                  Italic,
-                  List,
-                  Heading,
-                  Link,
-                  Alignment,
-                ],
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "|",
-                  "alignment",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo",
-                ],
-              }}
-              data={formData.description_html}
-              onChange={(event, editor) => {
-                setFormData({
-                  ...formData,
-                  description_html: editor.getData(),
-                });
-              }}
-            />
-          </Box>
-
-          <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              Yêu cầu ứng viên
-            </Typography>
-            <CKEditor
-              editor={ClassicEditor}
-              config={{
-                licenseKey: "GPL",
-                plugins: [
-                  Essentials,
-                  Paragraph,
-                  Bold,
-                  Italic,
-                  List,
-                  Heading,
-                  Link,
-                  Alignment,
-                ],
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "|",
-                  "alignment",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo",
-                ],
-              }}
-              data={formData.requirements_html}
-              onChange={(event, editor) => {
-                setFormData({
-                  ...formData,
-                  requirements_html: editor.getData(),
-                });
-              }}
-            />
-          </Box>
-
-          <Box sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              Quyền lợi được hưởng
-            </Typography>
-            <CKEditor
-              editor={ClassicEditor}
-              config={{
-                licenseKey: "GPL",
-                plugins: [
-                  Essentials,
-                  Paragraph,
-                  Bold,
-                  Italic,
-                  List,
-                  Heading,
-                  Link,
-                  Alignment,
-                ],
-                toolbar: [
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "|",
-                  "alignment",
-                  "|",
-                  "bulletedList",
-                  "numberedList",
-                  "|",
-                  "link",
-                  "undo",
-                  "redo",
-                ],
-              }}
-              data={formData.benefits_html}
-              onChange={(event, editor) => {
-                setFormData({ ...formData, benefits_html: editor.getData() });
-              }}
-            />
-          </Box>
-
-          <Divider sx={{ my: 4 }} />
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <Button
-              variant="contained"
-              onClick={handlePostJob}
-              startIcon={<SendIcon />}
-              sx={{
-                bgcolor: "#00b14f",
-                textTransform: "none",
-                fontWeight: 600,
-                px: 4,
-                "&:hover": { bgcolor: "#009944" },
-              }}
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, color: "#00b14f", mb: 2 }}
             >
-              Đăng tin tuyển dụng
-            </Button>
+              2. Chi tiết mô tả công việc
+            </Typography>
+
+            <Box
+              sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Mô tả công việc
+              </Typography>
+              <CKEditor
+                editor={ClassicEditor}
+                config={{
+                  licenseKey: "GPL",
+                  plugins: [
+                    Essentials,
+                    Paragraph,
+                    Bold,
+                    Italic,
+                    List,
+                    Heading,
+                    Link,
+                    Alignment,
+                  ],
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "|",
+                    "alignment",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo",
+                  ],
+                }}
+                data={formData.description_html}
+                onChange={(event, editor) => {
+                  setFormData({
+                    ...formData,
+                    description_html: editor.getData(),
+                  });
+                }}
+              />
+            </Box>
+
+            <Box
+              sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Yêu cầu ứng viên
+              </Typography>
+              <CKEditor
+                editor={ClassicEditor}
+                config={{
+                  licenseKey: "GPL",
+                  plugins: [
+                    Essentials,
+                    Paragraph,
+                    Bold,
+                    Italic,
+                    List,
+                    Heading,
+                    Link,
+                    Alignment,
+                  ],
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "|",
+                    "alignment",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo",
+                  ],
+                }}
+                data={formData.requirements_html}
+                onChange={(event, editor) => {
+                  setFormData({
+                    ...formData,
+                    requirements_html: editor.getData(),
+                  });
+                }}
+              />
+            </Box>
+
+            <Box
+              sx={{ mb: 3, "& .ck-editor__editable": { minHeight: "200px" } }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Quyền lợi được hưởng
+              </Typography>
+              <CKEditor
+                editor={ClassicEditor}
+                config={{
+                  licenseKey: "GPL",
+                  plugins: [
+                    Essentials,
+                    Paragraph,
+                    Bold,
+                    Italic,
+                    List,
+                    Heading,
+                    Link,
+                    Alignment,
+                  ],
+                  toolbar: [
+                    "heading",
+                    "|",
+                    "bold",
+                    "italic",
+                    "|",
+                    "alignment",
+                    "|",
+                    "bulletedList",
+                    "numberedList",
+                    "|",
+                    "link",
+                    "undo",
+                    "redo",
+                  ],
+                }}
+                data={formData.benefits_html}
+                onChange={(event, editor) => {
+                  setFormData({ ...formData, benefits_html: editor.getData() });
+                }}
+              />
+            </Box>
+
+            <Divider sx={{ my: 4 }} />
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+              <Button
+                variant="contained"
+                onClick={handlePostJob}
+                startIcon={<SendIcon />}
+                sx={{
+                  bgcolor: "#00b14f",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  px: 4,
+                  "&:hover": { bgcolor: "#009944" },
+                }}
+              >
+                Đăng tin tuyển dụng
+              </Button>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <NotificationDialog
-        open={openPopup}
-        onClose={handleClosePopup}
-        message={popupMessage}
-        isSuccess={isSuccessPopup}
-      />
-    </Box>
+        <NotificationDialog
+          open={openPopup}
+          onClose={handleClosePopup}
+          message={popupMessage}
+          isSuccess={isSuccessPopup}
+        />
+      </Box>
+    </>
   );
 };
 
