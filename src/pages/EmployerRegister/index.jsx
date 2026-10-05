@@ -202,14 +202,6 @@ const EmployerRegisterPage = () => {
                 fullWidth
                 color="success"
               />
-              <Typography
-                variant="caption"
-                sx={{ color: "#d32f2f", fontSize: "11px", lineHeight: 1.4 }}
-              >
-                Trường hợp bạn đăng ký tài khoản bằng email không phải email tên
-                miền công ty, một số dịch vụ trên tài khoản có thể sẽ bị giới
-                hạn quyền mua hoặc sử dụng.
-              </Typography>
             </Box>
 
             <TextField
